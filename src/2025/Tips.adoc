@@ -1,0 +1,446 @@
+= Personal Tips & Tricks
+
+My working environment is mostly CentOS 7. Thus, unless specified otherwise, it
+can be assumed that the commands are to be run on this OS.
+
+== OpenSSH - Generating Keys
+
+Generating authentication keys for OpenSSH:
+
+----
+$ ssh-keygen -t rsa -b 4096 -C <hostname>
+----
+
+== Sysstat - pidstat timestamp
+
+This issue occurred on 7.9.2009 with sysstat 10.1.5-20.el7_9. `pidstat`
+printed the opening timestamp in a different format depending on the logged-in
+user:
+
+Sample 1 (memory value is at position 8):
+
+----
+05:29:05 AM     0      7144 224393.65      0.00 4629044 1943848   1.97  app
+----
+
+Sample 2 (memory value is at position 7):
+
+----
+04:14:22        0     34658 210790.37      0.00 4786596 2050684   2.08  app
+----
+
+We were not able to resolve by using the `S_TIME_FORMAT` environment variable.
+We resolved it by using the `-h` switch that made `pidstat` print the
+timestamp in seconds since Epoch.
+
+== AsciiDoc - PDF
+
+Install the packages necessary to convert AsciiDoc (usually `.adoc` file
+extension) file to PDF:
+
+----
+$  sudo yum install asciidoc dblatex
+----
+
+A command-line that I have used:
+
+----
+$ a2x --icons-dir /usr/share/asciidoc/images -f pdf  \
+ --dblatex-opts "-P doc.publisher.show=0 -P latex.output.revhistory=0 \
+ -Pdoc.layout=\"coverpage frontmatter mainmatter index \"" \
+ --doctype=article README.adoc
+----
+
+This is useful when the table of contents needs to be disabled. Otherwise, the
+`-Pdoc.layout` switch is not required.
+
+== AsciiDoc - Relative Links
+
+To generate hyperlinks to a file inside a Git repo use the `link` macro
+(https://docs.asciidoctor.org/asciidoc/latest/macros/link-macro/[source]).
+Example:
+
+----
+link:path/to/file.pdf[file.pdf]
+----
+
+== Markdown - Generate Table of Contents
+
+https://github.com/thlorenz/doctoc[Doctoc] can be used to generate table of
+contents in markdown files. Essentially:
+
+----
+$ sudo npm install -g doctoc
+----
+
+The table of contents of this file has been generated using `doctoc`:
+
+----
+$ doctoc Tips.md
+----
+
+== Markdown - CLI Preview
+
+https://github.com/charmbracelet/glow[Glow] makes it possible to preview
+Markdown files on the terminal. Download an install a suitable binary package
+from the https://github.com/charmbracelet/glow/releases[releases page]
+
+== Markdown - Table Genrator
+
+The https://www.tablesgenerator.com/markdown_tables[tables generator]
+site can be used to generate markdown for tables.
+
+== Vim - Installing Vim 8 on CentOS 7
+
+It is always easiest to install from binary packages (than compiling from
+source). Vim 8 is available from the GhettoForge Plus repo. Install it:
+
+----
+$ sudo yum install
+https://mirror.ghettoforge.org/distributions/gf/gf-release-latest.gf.el7.noarch.rpm
+----
+
+The repo has to be manually enabled:
+
+----
+$ sudo vi /etc/yum.repos.d/gf.repo
+----
+
+The package conflicts with the one coming from base CentOS and so has to be
+removed. Do keep a backup of `sudo` config (e.g. `/etc/sudoers`) because it
+gets removed in the process:
+
+----
+$ sudo yum autoremove vim-minimal
+$ sudo yum install vim-enhanced sudo
+----
+
+== Vim - Building Vim 8 on CentOS 7
+
+The main reason why I wanted to upgrade to Vim 8 on CentOS 7 was the
+https://github.com/fatih/vim-go[vim-go] plugin. It did not find the version
+that came from GhettoForge new enough and kept complaining. Therefore, I had to
+resort to compiling from sources:
+
+----
+$ sudo yum groupinstall "Development Tools"
+$ sudo yum install ncurses ncurses-devel
+
+----
+
+As of this writing the tip of the master branch was `4b4b1b8` tagged as
+`v8.2.3426`.
+
+----
+$ git clone https://github.com/vim/vim.git
+$ cd vim
+$ ./configure --with-features=huge \
+    --enable-multibyte \
+    --enable-rubyinterp \
+    --enable-pythoninterp \
+    --enable-luainterp \
+    --prefix=/usr/local/vim8
+----
+
+Enabling Perl did not work for me. The compilation failed with an "Unrecognized
+switch: -rototypes" error message. So, I had to drop it.
+
+----
+sudo mkdir /usr/local/vim8
+sudo chown osboxes:osboxes /usr/local/vim8
+----
+
+Finally, compile and install:
+
+----
+$ make
+$ make install
+----
+
+Notice how the install step was run as non-root. This ensures that we don't
+modify system-wide locations any more than expected. If uninstallation is
+required, then removing this one directory is enough.
+
+----
+$ sudo yum autoremove vim-enhanced
+$ sudo ln -s /usr/local/vim8/bin/vim /usr/local/bin/
+----
+
+== Go - Setting up Vim
+
+After installing Vim 8, just do:
+
+----
+git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go
+----
+
+Commits that have worked in the past:
+
+- **2024-01-14** Go 1.18.10 (https://github.com/fatih/vim-go/commit/e2e7ad7c[commit])
+- **2023-06-21** Go 1.18.10 (https://github.com/fatih/vim-go/commit/397a9c57[commit])
+- **2023-05-29** Go 1.18.10 (https://github.com/fatih/vim-go/commit/2a874910[commit])
+
+That's it! For details see https://tpaschalis.github.io/vim-go-setup/[this] blog.
+
+== Go - Directory Layout
+
+I have kind of started liking the Go Project
+https://github.com/golang-standards/project-layout[layout].
+
+== Go - Private Repository
+
+Using a private repository in a Go involves the execution of multiple steps.
+One, tell Git to use alternative SSH protocol to make `go get` commands work:
+
+----
+$ git config --global url."git@gitlab.mycompany.com:".insteadOf "https://gitlab.mycompany.com/"
+----
+
+TWO, tell Go do disable validating certain modules:
+
+----
+$ go env -w GOPRIVATE=gitlab.mycompany.com
+----
+
+Do, `go help private` for more information.
+
+THREE, ensure that the package's module uses the `.git` extension in its `go.mod`:
+
+----
+module gitlab.mycompany.com/group/subgroup/playground.git
+----
+
+FOUR, include the `.git` extension in the `import` declaration. Example:
+
+== C/C++ - Reformat
+
+https://astyle.sourceforge.net/astyle.html[Astyle] can be used to ensure
+consistent code indentation and formatting. The following works on Ubuntu
+22.04:
+
+----
+sudo apt-get install astyle
+----
+
+Example command-line
+
+----
+LC_ALL="en_US.UTF-8" astyle -q -R --style=java -H '*.java' '*.c' '*.cc' '*.cpp' '*.h'
+----
+
+== C/C++ - Core Dumps
+
+Enabling core dumps depends on kernel (Linux) settings. Configuration
+that worked for me on Oracle Linux 9:
+
+----
+$ echo "/var/dumps/core.%e.%p" | sudo tee /proc/sys/kernel/core_pattern
+----
+
+The directory mentioned in `core_pattern`
+(https://www.kernel.org/doc/Documentation/sysctl/kernel.txt[doc]) must exist.
+
+----
+$ sudo mkdir /var/dumps
+----
+
+Besides, the shell's resource limit for core files might have to be changed:
+
+----
+$ ulimit -c unlimited
+----
+
+== C/C++ - Detecting Memory Errors
+
+AddressSanitizer was added to GCC in the
+https://gcc.gnu.org/gcc-4.8/changes.html[4.8] release. To use on Oracle Linux
+9, an additional package has to be installed apart from `gcc`.
+
+----
+$ sudo yum install libasan.x86_64
+----
+
+Example program with a memory leak
+(https://stackoverflow.com/questions/47201087/gcc-how-to-use-address-sanitizer[source]):
+
+----
+int main()
+{
+  int *prt = new int;
+  return 0;
+}
+----
+
+Let us say it is saved in a file named `main.cc`. To compile with the address
+sanitizer enabled, do:
+
+----
+$ g++ -g -O0 -fsanitize=address main.cc
+----
+
+Running the generated executable would report the error along with the source
+line number.
+
+== Git - Git 2 on CentOS 7
+
+Installing the newer Git 2 on CentOS 7 is required to avoid `git fetch-pack`
+errors (https://github.com/golang/go/issues/38373[38373]). First, uninstall
+Git coming from base CentOS:
+
+----
+$ sudo yum erase git perl-Git
+----
+
+Then, install the Inline with Upstream Stable (https://ius.io/[IUS]) Yum
+repository:
+
+----
+$ yum install \
+  https://repo.ius.io/ius-release-el7.rpm \
+  https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+----
+
+Install Git 2:
+
+----
+$ sudo yum install git222
+----
+
+== Git - Email id per Repo
+
+Sometimes there is a need to use separate author emails IDs in Git commits
+residing in differente repos (e.g.  work and personal). To setup an email ID
+specific to a repo, change directory to it and then run:
+
+----
+$ git config user.email "own_email@domain"
+----
+
+== Git - Renaming branches
+
+----
+$ git branch -m main master
+$ git push -u origin master
+$ git push origin --delete main
+----
+
+== Python - Pip on Python 2.7
+
+To install a newer version of Pip on CentOS 7 than the one coming with the
+distribution, do:
+
+----
+$ curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py
+$ python get-pip.py
+----
+
+This helped me get Pip 20.3.4.
+
+== Python - requirements.txt
+
+Dependencies of a Python codebase are often specified in a `requirements.txt`
+file. An automated way to create this file is through the use of
+https://github.com/bndr/pipreqs[pipreqs] that can be installed on Ubuntu 22.04
+by running the following commands:
+
+----
+sudo apt install python3-pip
+sudo pip3 install pipreqs
+----
+
+Oracle Linux 9 users can do:
+
+----
+sudo yum install python3-pip
+sudo pip3 install pipreqs
+----
+
+Example usage:
+
+----
+cd path/to/project
+pipreqs .
+----
+
+Some readers might have noticed that I wrote `pip3` instead of `pip`.
+In environments that have only one from Python 3 or Python 2 the command `pip`
+is likely to refer to the correct Python installation. However, this might not
+work in mixed systems that have both Python versions installed. Therefore, it
+is appropriate to specifically write `pip3` when working with Python 3
+packages and likewise for `pip` and Python 2.
+
+== Shell - lftp
+
+`lftp` is a useful command. The interaction with a FTP server is faster and
+more Bash-like. It also has an option to download complete directory trees.
+Install it by running:
+
+----
+$ sudo yum install lftp
+----
+
+The command reads login information from `/.netrc`. Example contents:
+
+----
+machine <hostname1> login <user1> password <pass1>
+machine <hostname2>.login <user2> password <pass2>
+----
+
+Then logging to a server and directly switching to a directory
+becomes very convenient:
+
+----
+$ lftp sftp://<user1>@<hostname1>/upload
+----
+
+== Shell - find
+
+Sometimes I want to search for files that have been recently downloaded or
+edited. This means finding files on the basis of last modification time. The
+following command finds files modified within the last 100 days:
+
+----
+$ find . -type f -mtime -100
+----
+
+== CMake - Python
+
+This tip is useful at the time of packaging a Python module. The directory
+where modules should be copied differs between Linux distributions. It could
+be `/usr/lib/python3/dist-packages` on Ubuntu and
+`/usr/lib64/python3.9/site-packages` on a Fedora derived
+distribution. CMake can auto-detect the value and make it available through a
+variable. This can be done by:
+
+----
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+----
+
+Subsequently, the `Python3_SITEARCH` variable will containe the directory
+path.
+
+== Names - System Facts
+
+A source of system related variable names that can be used in shell scripts is
+in the CMake man page, `/etc/os-release`. Here is a list that I have
+constructed after studying such sources:
+
+- OS_NAME="Ubuntu"
+- OS_NAME_PRETTY="Ubuntu 22.04.4 LTS"
+- OS_VERSION_ID="22.04.4" I don't want anything around release because it
+  causes confusion with version.
+- OS_VERSION_CODENAME="jammy"
+- OS_ID="ubuntu"
+- OS_ID_LIKE="debian"
+
+== Locale
+
+Few of my text files don't get correctly rendered unless the
+https://wiki.archlinux.org/title/Locale[locale] is set to
+en_US.UTF-8. To display the currently set locale use the `locale` command. If
+it is not set to en_US-UTF-8, then installing it on Oracle Linux 9 involves:
+
+----
+sudo yum install glibc-langpack-en.x86_64
+sudo localectl set-locale LANG=en_US.UTF-8
+----

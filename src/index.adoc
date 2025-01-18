@@ -1,0 +1,9 @@
+= Index
+
+== 2025
+
+- link:2025/Tips.adoc[Tips & Tricks]
+
+== 2024
+
+- link:2024/Tips.adoc[Tips & Tricks]

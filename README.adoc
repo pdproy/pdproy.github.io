@@ -1,3 +1,0 @@
-= pdproy.github.io
-
-Trying the GitHub pages

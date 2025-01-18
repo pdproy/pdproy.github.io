@@ -11,15 +11,6 @@ Generating authentication keys for OpenSSH:
 $ ssh-keygen -t rsa -b 4096 -C <hostname>
 ----
 
-== OpenSSH - Adding Host Key
-
-Programs like `lftp` expect a host's public key to be known before connecting.
-To add the public key to the default per-user file:
-
-----
-$ ssh-keyscan <hostname> >> ~/.ssh/known_hosts
-----
-
 == Sysstat - pidstat timestamp
 
 This issue occurred on 7.9.2009 with sysstat 10.1.5-20.el7_9. `pidstat`

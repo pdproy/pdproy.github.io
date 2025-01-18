@@ -13,7 +13,7 @@ info() {
 }
 
 update_links() {
-    sed -i -e "s|\(link rel=\"stylesheet\" href=\)".*"|\1\"${CSS_URL}\"|" $1/*.html
+    sed -i -e "s|\(link rel=\"stylesheet\" href=\)\".*\"|\1\"${CSS_URL}\"|" $1/*.html
     sed -i -e 's|\(<a href=.*\)\.adoc"|\1.html"|' $1/*.html
 }
 

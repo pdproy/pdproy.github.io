@@ -43,7 +43,7 @@ main() {
     info "Committing and pushing changes"
     git add $DOCS_DIR
     git commit -q -m "Update published site"
-    #git push origin gh-pages
+    git push origin gh-pages
 
     info "Switching back to dev branch"
     git_checkout "dev"

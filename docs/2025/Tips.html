@@ -439,8 +439,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1>Personal Tips &amp; Tricks</h1>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_platform">Platform</h2>
+<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>My working environment is mostly CentOS 7. Thus, unless specified otherwise, it
@@ -449,10 +448,8 @@ can be assumed that the commands are to be run on this OS.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tips_tricks">Tips &amp; Tricks</h2>
+<h2 id="_openssh_generating_keys">OpenSSH - Generating Keys</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_openssh_generating_keys">OpenSSH - Generating Keys</h3>
 <div class="paragraph">
 <p>Generating authentication keys for OpenSSH:</p>
 </div>
@@ -462,8 +459,10 @@ can be assumed that the commands are to be run on this OS.</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_sysstat_pidstat_timestamp">Sysstat - pidstat timestamp</h3>
+</div>
+<div class="sect1">
+<h2 id="_sysstat_pidstat_timestamp">Sysstat - pidstat timestamp</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>This issue occurred on 7.9.2009 with sysstat 10.1.5-20.el7_9. <code>pidstat</code>
 printed the opening timestamp in a different format depending on the logged-in
@@ -491,8 +490,10 @@ We resolved it by using the <code>-h</code> switch that made <code>pidstat</code
 timestamp in seconds since Epoch.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_asciidoc_pdf">AsciiDoc - PDF</h3>
+</div>
+<div class="sect1">
+<h2 id="_asciidoc_pdf">AsciiDoc - PDF</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Install the packages necessary to convert AsciiDoc (usually <code>.adoc</code> file
 extension) file to PDF:</p>
@@ -518,8 +519,25 @@ extension) file to PDF:</p>
 <code>-Pdoc.layout</code> switch is not required.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_markdown_generate_table_of_contents">Markdown - Generate Table of Contents</h3>
+</div>
+<div class="sect1">
+<h2 id="_asciidoc_relative_links">AsciiDoc - Relative Links</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To generate hyperlinks to a file inside a Git repo use the <code>link</code> macro
+(<a href="https://docs.asciidoctor.org/asciidoc/latest/macros/link-macro/">source</a>).
+Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>link:path/to/file.pdf[file.pdf]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_markdown_generate_table_of_contents">Markdown - Generate Table of Contents</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p><a href="https://github.com/thlorenz/doctoc">Doctoc</a> can be used to generate table of
 contents in markdown files. Essentially:</p>
@@ -538,23 +556,29 @@ contents in markdown files. Essentially:</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_markdown_cli_preview">Markdown - CLI Preview</h3>
+</div>
+<div class="sect1">
+<h2 id="_markdown_cli_preview">Markdown - CLI Preview</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p><a href="https://github.com/charmbracelet/glow">Glow</a> makes it possible to preview
 Markdown files on the terminal. Download an install a suitable binary package
 from the <a href="https://github.com/charmbracelet/glow/releases">releases page</a></p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_markdown_table_genrator">Markdown - Table Genrator</h3>
+</div>
+<div class="sect1">
+<h2 id="_markdown_table_genrator">Markdown - Table Genrator</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>The <a href="https://www.tablesgenerator.com/markdown_tables">tables generator</a>
 site can be used to generate markdown for tables.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_vim_installing_vim_8_on_centos_7">Vim - Installing Vim 8 on CentOS 7</h3>
+</div>
+<div class="sect1">
+<h2 id="_vim_installing_vim_8_on_centos_7">Vim - Installing Vim 8 on CentOS 7</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>It is always easiest to install from binary packages (than compiling from
 source). Vim 8 is available from the GhettoForge Plus repo. Install it:</p>
@@ -585,8 +609,10 @@ $ sudo yum install vim-enhanced sudo</pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_vim_building_vim_8_on_centos_7">Vim - Building Vim 8 on CentOS 7</h3>
+</div>
+<div class="sect1">
+<h2 id="_vim_building_vim_8_on_centos_7">Vim - Building Vim 8 on CentOS 7</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>The main reason why I wanted to upgrade to Vim 8 on CentOS 7 was the
 <a href="https://github.com/fatih/vim-go">vim-go</a> plugin. It did not find the version
@@ -646,8 +672,10 @@ $ sudo ln -s /usr/local/vim8/bin/vim /usr/local/bin/</pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_go_setting_up_vim">Go - Setting up Vim</h3>
+</div>
+<div class="sect1">
+<h2 id="_go_setting_up_vim">Go - Setting up Vim</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>After installing Vim 8, just do:</p>
 </div>
@@ -676,15 +704,150 @@ $ sudo ln -s /usr/local/vim8/bin/vim /usr/local/bin/</pre>
 <p>That&#8217;s it! For details see <a href="https://tpaschalis.github.io/vim-go-setup/">this</a> blog.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_go_directory_layout">Go - Directory Layout</h3>
+</div>
+<div class="sect1">
+<h2 id="_go_directory_layout">Go - Directory Layout</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>I have kind of started liking the Go Project
 <a href="https://github.com/golang-standards/project-layout">layout</a>.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_git_git_2_on_centos_7">Git - Git 2 on CentOS 7</h3>
+</div>
+<div class="sect1">
+<h2 id="_go_private_repository">Go - Private Repository</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Using a private repository in a Go involves the execution of multiple steps.
+One, tell Git to use alternative SSH protocol to make <code>go get</code> commands work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ git config --global url."git@gitlab.mycompany.com:".insteadOf "https://gitlab.mycompany.com/"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>TWO, tell Go do disable validating certain modules:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ go env -w GOPRIVATE=gitlab.mycompany.com</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Do, <code>go help private</code> for more information.</p>
+</div>
+<div class="paragraph">
+<p>THREE, ensure that the package&#8217;s module uses the <code>.git</code> extension in its <code>go.mod</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>module gitlab.mycompany.com/group/subgroup/playground.git</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>FOUR, include the <code>.git</code> extension in the <code>import</code> declaration. Example:</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_cc_reformat">C/C++ - Reformat</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://astyle.sourceforge.net/astyle.html">Astyle</a> can be used to ensure
+consistent code indentation and formatting. The following works on Ubuntu
+22.04:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo apt-get install astyle</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example command-line</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>LC_ALL="en_US.UTF-8" astyle -q -R --style=java -H '*.java' '*.c' '*.cc' '*.cpp' '*.h'</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_cc_core_dumps">C/C++ - Core Dumps</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Enabling core dumps depends on kernel (Linux) settings. Configuration
+that worked for me on Oracle Linux 9:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ echo "/var/dumps/core.%e.%p" | sudo tee /proc/sys/kernel/core_pattern</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The directory mentioned in <code>core_pattern</code>
+(<a href="https://www.kernel.org/doc/Documentation/sysctl/kernel.txt">doc</a>) must exist.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ sudo mkdir /var/dumps</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Besides, the shell&#8217;s resource limit for core files might have to be changed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ ulimit -c unlimited</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_cc_detecting_memory_errors">C/C++ - Detecting Memory Errors</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>AddressSanitizer was added to GCC in the
+<a href="https://gcc.gnu.org/gcc-4.8/changes.html">4.8</a> release. To use on Oracle Linux
+9, an additional package has to be installed apart from <code>gcc</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ sudo yum install libasan.x86_64</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example program with a memory leak
+(<a href="https://stackoverflow.com/questions/47201087/gcc-how-to-use-address-sanitizer">source</a>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>int main()
+{
+  int *prt = new int;
+  return 0;
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let us say it is saved in a file named <code>main.cc</code>. To compile with the address
+sanitizer enabled, do:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ g++ -g -O0 -fsanitize=address main.cc</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Running the generated executable would report the error along with the source
+line number.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_git_git_2_on_centos_7">Git - Git 2 on CentOS 7</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Installing the newer Git 2 on CentOS 7 is required to avoid <code>git fetch-pack</code>
 errors (<a href="https://github.com/golang/go/issues/38373">38373</a>). First, uninstall
@@ -715,8 +878,10 @@ repository:</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_git_email_id_per_repo">Git - Email id per Repo</h3>
+</div>
+<div class="sect1">
+<h2 id="_git_email_id_per_repo">Git - Email id per Repo</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Sometimes there is a need to use separate author emails IDs in Git commits
 residing in differente repos (e.g.  work and personal). To setup an email ID
@@ -728,8 +893,10 @@ specific to a repo, change directory to it and then run:</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_git_renaming_branches">Git - Renaming branches</h3>
+</div>
+<div class="sect1">
+<h2 id="_git_renaming_branches">Git - Renaming branches</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="content">
 <pre>$ git branch -m main master
@@ -738,8 +905,10 @@ $ git push origin --delete main</pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_python_pip_on_python_2_7">Python - Pip on Python 2.7</h3>
+</div>
+<div class="sect1">
+<h2 id="_python_pip_on_python_2_7">Python - Pip on Python 2.7</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>To install a newer version of Pip on CentOS 7 than the one coming with the
 distribution, do:</p>
@@ -754,8 +923,53 @@ $ python get-pip.py</pre>
 <p>This helped me get Pip 20.3.4.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_cli_lftp">CLI - lftp</h3>
+</div>
+<div class="sect1">
+<h2 id="_python_requirements_txt">Python - requirements.txt</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Dependencies of a Python codebase are often specified in a <code>requirements.txt</code>
+file. An automated way to create this file is through the use of
+<a href="https://github.com/bndr/pipreqs">pipreqs</a> that can be installed on Ubuntu 22.04
+by running the following commands:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo apt install python3-pip
+sudo pip3 install pipreqs</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Oracle Linux 9 users can do:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo yum install python3-pip
+sudo pip3 install pipreqs</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cd path/to/project
+pipreqs .</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Some readers might have noticed that I wrote <code>pip3</code> instead of <code>pip</code>.
+In environments that have only one from Python 3 or Python 2 the command <code>pip</code>
+is likely to refer to the correct Python installation. However, this might not
+work in mixed systems that have both Python versions installed. Therefore, it
+is appropriate to specifically write <code>pip3</code> when working with Python 3
+packages and likewise for <code>pip</code> and Python 2.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_shell_lftp">Shell - lftp</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p><code>lftp</code> is a useful command. The interaction with a FTP server is faster and
 more Bash-like. It also has an option to download complete directory trees.
@@ -786,11 +1000,97 @@ becomes very convenient:</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_shell_find">Shell - find</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sometimes I want to search for files that have been recently downloaded or
+edited. This means finding files on the basis of last modification time. The
+following command finds files modified within the last 100 days:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ find . -type f -mtime -100</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_cmake_python">CMake - Python</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This tip is useful at the time of packaging a Python module. The directory
+where modules should be copied differs between Linux distributions. It could
+be <code>/usr/lib/python3/dist-packages</code> on Ubuntu and
+<code>/usr/lib64/python3.9/site-packages</code> on a Fedora derived
+distribution. CMake can auto-detect the value and make it available through a
+variable. This can be done by:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>find_package(Python3 REQUIRED COMPONENTS Interpreter Development)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Subsequently, the <code>Python3_SITEARCH</code> variable will containe the directory
+path.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_names_system_facts">Names - System Facts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A source of system related variable names that can be used in shell scripts is
+in the CMake man page, <code>/etc/os-release</code>. Here is a list that I have
+constructed after studying such sources:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OS_NAME="Ubuntu"</p>
+</li>
+<li>
+<p>OS_NAME_PRETTY="Ubuntu 22.04.4 LTS"</p>
+</li>
+<li>
+<p>OS_VERSION_ID="22.04.4" I don&#8217;t want anything around release because it
+causes confusion with version.</p>
+</li>
+<li>
+<p>OS_VERSION_CODENAME="jammy"</p>
+</li>
+<li>
+<p>OS_ID="ubuntu"</p>
+</li>
+<li>
+<p>OS_ID_LIKE="debian"</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_locale">Locale</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Few of my text files don&#8217;t get correctly rendered unless the
+<a href="https://wiki.archlinux.org/title/Locale">locale</a> is set to
+en_US.UTF-8. To display the currently set locale use the <code>locale</code> command. If
+it is not set to en_US-UTF-8, then installing it on Oracle Linux 9 involves:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo yum install glibc-langpack-en.x86_64
+sudo localectl set-locale LANG=en_US.UTF-8</pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-18 12:31:26 UTC
+Last updated 2025-01-18 12:33:22 UTC
 </div>
 </div>
 </body>

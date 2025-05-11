@@ -1,0 +1,3 @@
+= My GitHub Pages
+
+I wanted to be able to write in AsciiDoc and publish.

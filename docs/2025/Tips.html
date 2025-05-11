@@ -461,6 +461,63 @@ can be assumed that the commands are to be run on this OS.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_openssh_client_configuration">OpenSSH - Client Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Connecting to hosts via <code>ssh</code> is a common activity for me. Leveraging the
+client configuration file (<code>~/.ssh/config</code>) is a productivity improving
+tip. This file makes it possible to separately specify port number, user name,
+identity file for hosts. I generally find it useful when connecting to servers
+that are listening on non-standard ports. Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Host my-sftp-2022
+User sftpuser
+Hostname 192.168.1.5
+IdentityFile ~/.ssh/my-key.pem
+Port 2022</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Such a configuration generally shortens the command-line and can even be
+necessary when using <code>lftp</code> to connect to hosts that support public key
+authentication only (not password).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tmux_status_line">Tmux - Status Line</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>These commands worked for me on Tmux 3.2a. The status line printed by Tmux at
+the bottom is controlled by the <code>status-right</code> option.  One can view the
+current value by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>tmux show-option -g status-right</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To temporarily set the status:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>tmux set -g status-right "%H:%M | %d-%b-%y"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With colours:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>tmux set-option -g status-right "#[fg=green]%H:%M #[fg=black]| #[fg=blue,bold]%d-%b-%y"</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_sysstat_pidstat_timestamp">Sysstat - pidstat timestamp</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -751,6 +808,85 @@ One, tell Git to use alternative SSH protocol to make <code>go get</code> comman
 </div>
 </div>
 <div class="sect1">
+<h2 id="_git_git_2_on_centos_7">Git - Git 2 on CentOS 7</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Installing the newer Git 2 on CentOS 7 is required to avoid <code>git fetch-pack</code>
+errors (<a href="https://github.com/golang/go/issues/38373">38373</a>). First, uninstall
+Git coming from base CentOS:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ sudo yum erase git perl-Git</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, install the Inline with Upstream Stable (<a href="https://ius.io/">IUS</a>) Yum
+repository:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ yum install \
+  https://repo.ius.io/ius-release-el7.rpm \
+  https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Install Git 2:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ sudo yum install git222</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_git_email_id_per_repo">Git - Email id per Repo</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sometimes there is a need to use separate author emails IDs in Git commits
+residing in differente repos (e.g.  work and personal). To setup an email ID
+specific to a repo, change directory to it and then run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ git config user.email "own_email@domain"</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_git_renaming_branches">Git - Renaming branches</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>$ git branch -m main master
+$ git push -u origin master
+$ git push origin --delete main</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_python_pip_on_python_2_7">Python - Pip on Python 2.7</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To install a newer version of Pip on CentOS 7 than the one coming with the
+distribution, do:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py
+$ python get-pip.py</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This helped me get Pip 20.3.4.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_cc_reformat">C/C++ - Reformat</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -846,85 +982,6 @@ line number.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_git_git_2_on_centos_7">Git - Git 2 on CentOS 7</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Installing the newer Git 2 on CentOS 7 is required to avoid <code>git fetch-pack</code>
-errors (<a href="https://github.com/golang/go/issues/38373">38373</a>). First, uninstall
-Git coming from base CentOS:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum erase git perl-Git</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then, install the Inline with Upstream Stable (<a href="https://ius.io/">IUS</a>) Yum
-repository:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ yum install \
-  https://repo.ius.io/ius-release-el7.rpm \
-  https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Install Git 2:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install git222</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_git_email_id_per_repo">Git - Email id per Repo</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Sometimes there is a need to use separate author emails IDs in Git commits
-residing in differente repos (e.g.  work and personal). To setup an email ID
-specific to a repo, change directory to it and then run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ git config user.email "own_email@domain"</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_git_renaming_branches">Git - Renaming branches</h2>
-<div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre>$ git branch -m main master
-$ git push -u origin master
-$ git push origin --delete main</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_python_pip_on_python_2_7">Python - Pip on Python 2.7</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>To install a newer version of Pip on CentOS 7 than the one coming with the
-distribution, do:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py
-$ python get-pip.py</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This helped me get Pip 20.3.4.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
 <h2 id="_python_requirements_txt">Python - requirements.txt</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -964,6 +1021,30 @@ is likely to refer to the correct Python installation. However, this might not
 work in mixed systems that have both Python versions installed. Therefore, it
 is appropriate to specifically write <code>pip3</code> when working with Python 3
 packages and likewise for <code>pip</code> and Python 2.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_shell_linter">Shell - Linter</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Linters catch common coding mistake. I have found that a report mentioning
+specific issues provides motivation to remove them. This is more powerful than
+a bunch of guidelines that have to be kept in one&#8217;s head. A useful shell
+script linter is <code>shellcheck</code>. Install it on Ubuntu 22.04 by running</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ sudo apt-get install shellcheck</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use the following command to run a shell script through the linter:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ shellcheck -x &lt;script&gt;</pre>
+</div>
 </div>
 </div>
 </div>
@@ -1038,6 +1119,28 @@ path.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_cmake_java">CMake - Java</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I want to give two tips through this item. First is that the variables that
+will get defined through a successful <code>find_package()</code> call can be known by
+reading a <code>Find&lt;PackageName&gt;.cmake</code> file. These files are located inside
+<code>/usr/share/cmake-*/Modules</code>. An actual example from Ubuntu 22.04 is
+<code>/usr/share/cmake-3.22/Modules/FindJNI.cmake</code>. Second is that a successful
+call depends on the <code>JAVA_HOME</code> environment variable being defined. Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ echo $JAVA_HOME
+/usr/lib/jvm/java-21-openjdk-amd64</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details around <code>find_package()</code> refer <code>cmake-commands</code> man page.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_names_system_facts">Names - System Facts</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -1087,10 +1190,126 @@ sudo localectl set-locale LANG=en_US.UTF-8</pre>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_trivy_scanning_jars">Trivy - Scanning JARs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Trivy is a useful open source vulnerability scanner. It can be easily
+installed by following
+<a href="https://trivy.dev/latest/getting-started/installation/">official instructions</a>.
+To install on a RHEL type of distribution (e.g. Oracle Linux 9), configure the
+package manager:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cat &lt;&lt; EOF | sudo tee -a /etc/yum.repos.d/trivy.repo
+[trivy]
+name=Trivy repository
+baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
+EOF</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Followed by:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo yum update
+sudo yum install trivy</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To install on Ubuntu 22.04, configure APT:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo apt-get install gnupg2
+curl -s https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg
+echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Followed by:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo apt-get update
+sudo apt-get install trivy</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To scan a single JAR:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>trivy rootfs &lt;path/to/jar&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_yum_prevent_removal_of_dependencies">Yum - Prevent Removal of Dependencies</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Let us say there is a RPM package that we have created and it has sevaral
+dependencies (hundreds of MBs) and no other package on the system needs those
+dependencies. In such a situation, every time the package is erased by Yum,
+all the dependencies get removed too. However, during rapid cycles of
+development and testing removal and installation might have to be done several
+times. It saves time if the dependencies are not removed. To do this with Yum,
+make use of the <code>--noautoremove</code> command-line switch.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo yum erase --noautoremove &lt;rpm&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_packages_available_version">Packages - Available Version</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sometimes I want to know the available version of a package prior to
+installing it. For instance, if the most recent Java 21 update might happens
+to be 21.0.6 (<a href="https://www.java.com/releases/">releases</a>) then I want to know if
+this version can be installed on my system through the default package
+manager. To check for available package version on Ubuntu 22.04 one can do:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>apt-cache madison openjdk-21-jdk</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An alternative command that also reports if the package is installed is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>apt-cache policy openjdk-21-jdk</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To do the same thing on a RHEL-like system (e.g. Oracle Linux 9), do:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>yum list java-21-openjdk.x86_64</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Yum&#8217;s <code>list</code> command needs a full package name. For instance, the argument
+<code>man</code> does not list anything while <code>man-db</code> does so.</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-18 12:33:22 UTC
+Last updated 2025-05-11 17:43:34 UTC
 </div>
 </div>
 </body>

@@ -11,6 +11,48 @@ Generating authentication keys for OpenSSH:
 $ ssh-keygen -t rsa -b 4096 -C <hostname>
 ----
 
+== OpenSSH - Client Configuration
+
+Connecting to hosts via `ssh` is a common activity for me. Leveraging the
+client configuration file (`~/.ssh/config`) is a productivity improving
+tip. This file makes it possible to separately specify port number, user name,
+identity file for hosts. I generally find it useful when connecting to servers
+that are listening on non-standard ports. Example:
+
+----
+Host my-sftp-2022
+User sftpuser
+Hostname 192.168.1.5
+IdentityFile ~/.ssh/my-key.pem
+Port 2022
+----
+
+Such a configuration generally shortens the command-line and can even be
+necessary when using `lftp` to connect to hosts that support public key
+authentication only (not password).
+
+== Tmux - Status Line
+
+These commands worked for me on Tmux 3.2a. The status line printed by Tmux at
+the bottom is controlled by the `status-right` option.  One can view the
+current value by running:
+
+----
+tmux show-option -g status-right
+----
+
+To temporarily set the status:
+
+----
+tmux set -g status-right "%H:%M | %d-%b-%y"
+----
+
+With colours:
+
+----
+tmux set-option -g status-right "#[fg=green]%H:%M #[fg=black]| #[fg=blue,bold]%d-%b-%y"
+----
+
 == Sysstat - pidstat timestamp
 
 This issue occurred on 7.9.2009 with sysstat 10.1.5-20.el7_9. `pidstat`
@@ -212,6 +254,61 @@ module gitlab.mycompany.com/group/subgroup/playground.git
 
 FOUR, include the `.git` extension in the `import` declaration. Example:
 
+== Git - Git 2 on CentOS 7
+
+Installing the newer Git 2 on CentOS 7 is required to avoid `git fetch-pack`
+errors (https://github.com/golang/go/issues/38373[38373]). First, uninstall
+Git coming from base CentOS:
+
+----
+$ sudo yum erase git perl-Git
+----
+
+Then, install the Inline with Upstream Stable (https://ius.io/[IUS]) Yum
+repository:
+
+----
+$ yum install \
+  https://repo.ius.io/ius-release-el7.rpm \
+  https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+----
+
+Install Git 2:
+
+----
+$ sudo yum install git222
+----
+
+== Git - Email id per Repo
+
+Sometimes there is a need to use separate author emails IDs in Git commits
+residing in differente repos (e.g.  work and personal). To setup an email ID
+specific to a repo, change directory to it and then run:
+
+----
+$ git config user.email "own_email@domain"
+----
+
+== Git - Renaming branches
+
+----
+$ git branch -m main master
+$ git push -u origin master
+$ git push origin --delete main
+----
+
+== Python - Pip on Python 2.7
+
+To install a newer version of Pip on CentOS 7 than the one coming with the
+distribution, do:
+
+----
+$ curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py
+$ python get-pip.py
+----
+
+This helped me get Pip 20.3.4.
+
 == C/C++ - Reformat
 
 https://astyle.sourceforge.net/astyle.html[Astyle] can be used to ensure
@@ -281,61 +378,6 @@ $ g++ -g -O0 -fsanitize=address main.cc
 Running the generated executable would report the error along with the source
 line number.
 
-== Git - Git 2 on CentOS 7
-
-Installing the newer Git 2 on CentOS 7 is required to avoid `git fetch-pack`
-errors (https://github.com/golang/go/issues/38373[38373]). First, uninstall
-Git coming from base CentOS:
-
-----
-$ sudo yum erase git perl-Git
-----
-
-Then, install the Inline with Upstream Stable (https://ius.io/[IUS]) Yum
-repository:
-
-----
-$ yum install \
-  https://repo.ius.io/ius-release-el7.rpm \
-  https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-----
-
-Install Git 2:
-
-----
-$ sudo yum install git222
-----
-
-== Git - Email id per Repo
-
-Sometimes there is a need to use separate author emails IDs in Git commits
-residing in differente repos (e.g.  work and personal). To setup an email ID
-specific to a repo, change directory to it and then run:
-
-----
-$ git config user.email "own_email@domain"
-----
-
-== Git - Renaming branches
-
-----
-$ git branch -m main master
-$ git push -u origin master
-$ git push origin --delete main
-----
-
-== Python - Pip on Python 2.7
-
-To install a newer version of Pip on CentOS 7 than the one coming with the
-distribution, do:
-
-----
-$ curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py
-$ python get-pip.py
-----
-
-This helped me get Pip 20.3.4.
-
 == Python - requirements.txt
 
 Dependencies of a Python codebase are often specified in a `requirements.txt`
@@ -368,6 +410,23 @@ is likely to refer to the correct Python installation. However, this might not
 work in mixed systems that have both Python versions installed. Therefore, it
 is appropriate to specifically write `pip3` when working with Python 3
 packages and likewise for `pip` and Python 2.
+
+== Shell - Linter
+
+Linters catch common coding mistake. I have found that a report mentioning
+specific issues provides motivation to remove them. This is more powerful than
+a bunch of guidelines that have to be kept in one's head. A useful shell
+script linter is `shellcheck`. Install it on Ubuntu 22.04 by running
+
+----
+$ sudo apt-get install shellcheck
+----
+
+Use the following command to run a shell script through the linter:
+
+----
+$ shellcheck -x <script>
+----
 
 == Shell - lftp
 
@@ -419,6 +478,22 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 Subsequently, the `Python3_SITEARCH` variable will containe the directory
 path.
 
+== CMake - Java
+
+I want to give two tips through this item. First is that the variables that
+will get defined through a successful `find_package()` call can be known by
+reading a `Find<PackageName>.cmake` file. These files are located inside
+`/usr/share/cmake-*/Modules`. An actual example from Ubuntu 22.04 is
+`/usr/share/cmake-3.22/Modules/FindJNI.cmake`. Second is that a successful
+call depends on the `JAVA_HOME` environment variable being defined. Example:
+
+----
+$ echo $JAVA_HOME
+/usr/lib/jvm/java-21-openjdk-amd64
+----
+
+For details around `find_package()` refer `cmake-commands` man page.
+
 == Names - System Facts
 
 A source of system related variable names that can be used in shell scripts is
@@ -444,3 +519,91 @@ it is not set to en_US-UTF-8, then installing it on Oracle Linux 9 involves:
 sudo yum install glibc-langpack-en.x86_64
 sudo localectl set-locale LANG=en_US.UTF-8
 ----
+
+== Trivy - Scanning JARs
+
+Trivy is a useful open source vulnerability scanner. It can be easily
+installed by following
+https://trivy.dev/latest/getting-started/installation/[official instructions].
+To install on a RHEL type of distribution (e.g. Oracle Linux 9), configure the
+package manager:
+
+----
+cat << EOF | sudo tee -a /etc/yum.repos.d/trivy.repo
+[trivy]
+name=Trivy repository
+baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
+EOF
+----
+
+Followed by:
+
+----
+sudo yum update
+sudo yum install trivy
+----
+
+To install on Ubuntu 22.04, configure APT:
+
+----
+sudo apt-get install gnupg2
+curl -s https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg
+echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+----
+
+Followed by:
+
+----
+sudo apt-get update
+sudo apt-get install trivy
+----
+
+To scan a single JAR:
+
+----
+trivy rootfs <path/to/jar>
+----
+
+== Yum - Prevent Removal of Dependencies
+
+Let us say there is a RPM package that we have created and it has sevaral
+dependencies (hundreds of MBs) and no other package on the system needs those
+dependencies. In such a situation, every time the package is erased by Yum,
+all the dependencies get removed too. However, during rapid cycles of
+development and testing removal and installation might have to be done several
+times. It saves time if the dependencies are not removed. To do this with Yum,
+make use of the `--noautoremove` command-line switch.
+
+----
+sudo yum erase --noautoremove <rpm>
+----
+
+== Packages - Available Version
+
+Sometimes I want to know the available version of a package prior to
+installing it. For instance, if the most recent Java 21 update might happens
+to be 21.0.6 (https://www.java.com/releases/[releases]) then I want to know if
+this version can be installed on my system through the default package
+manager. To check for available package version on Ubuntu 22.04 one can do:
+
+----
+apt-cache madison openjdk-21-jdk
+----
+
+An alternative command that also reports if the package is installed is:
+
+----
+apt-cache policy openjdk-21-jdk
+----
+
+To do the same thing on a RHEL-like system (e.g. Oracle Linux 9), do:
+
+----
+yum list java-21-openjdk.x86_64
+----
+
+Yum's `list` command needs a full package name. For instance, the argument
+`man` does not list anything while `man-db` does so.

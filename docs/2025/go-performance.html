@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<title>Personal Tips &amp; Tricks</title>
+<title>Go Performance and Memory Optimization</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,880 +436,98 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Personal Tips &amp; Tricks</h1>
+<h1>Go Performance and Memory Optimization</h1>
 </div>
 <div id="content">
-<div id="preamble">
-<div class="sectionbody">
 <div class="paragraph">
-<p>My working environment is mostly CentOS 7. Thus, unless specified otherwise, it
-can be assumed that the commands are to be run on this OS.</p>
+<p>Main lessons while working on certain optimization changes in June 2025.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_openssh_generating_keys">OpenSSH - Generating Keys</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Generating authentication keys for OpenSSH:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ ssh-keygen -t rsa -b 4096 -C &lt;hostname&gt;</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_openssh_client_configuration">OpenSSH - Client Configuration</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Connecting to hosts via <code>ssh</code> is a common activity for me. Leveraging the
-client configuration file (<code>~/.ssh/config</code>) is a productivity improving
-tip. This file makes it possible to separately specify port number, user name,
-identity file for hosts. I generally find it useful when connecting to servers
-that are listening on non-standard ports. Example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>Host my-sftp-2022
-User sftpuser
-Hostname 192.168.1.5
-IdentityFile ~/.ssh/my-key.pem
-Port 2022</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Such a configuration generally shortens the command-line and can even be
-necessary when using <code>lftp</code> to connect to hosts that support public key
-authentication only (not password).</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_tmux_status_line">Tmux - Status Line</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>These commands worked for me on Tmux 3.2a. The status line printed by Tmux at
-the bottom is controlled by the <code>status-right</code> option.  One can view the
-current value by running:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>tmux show-option -g status-right</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To temporarily set the status:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>tmux set -g status-right "%H:%M | %d-%b-%y"</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>With colours:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>tmux set-option -g status-right "#[fg=green]%H:%M #[fg=black]| #[fg=blue,bold]%d-%b-%y"</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_sysstat_pidstat_timestamp">Sysstat - pidstat timestamp</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This issue occurred on 7.9.2009 with sysstat 10.1.5-20.el7_9. <code>pidstat</code>
-printed the opening timestamp in a different format depending on the logged-in
-user:</p>
-</div>
-<div class="paragraph">
-<p>Sample 1 (memory value is at position 8):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>05:29:05 AM     0      7144 224393.65      0.00 4629044 1943848   1.97  app</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Sample 2 (memory value is at position 7):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>04:14:22        0     34658 210790.37      0.00 4786596 2050684   2.08  app</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>We were not able to resolve by using the <code>S_TIME_FORMAT</code> environment variable.
-We resolved it by using the <code>-h</code> switch that made <code>pidstat</code> print the
-timestamp in seconds since Epoch.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_asciidoc_pdf">AsciiDoc - PDF</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Install the packages necessary to convert AsciiDoc (usually <code>.adoc</code> file
-extension) file to PDF:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$  sudo yum install asciidoc dblatex</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>A command-line that I have used:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ a2x --icons-dir /usr/share/asciidoc/images -f pdf  \
- --dblatex-opts "-P doc.publisher.show=0 -P latex.output.revhistory=0 \
- -Pdoc.layout=\"coverpage frontmatter mainmatter index \"" \
- --doctype=article README.adoc</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This is useful when the table of contents needs to be disabled. Otherwise, the
-<code>-Pdoc.layout</code> switch is not required.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_asciidoc_relative_links">AsciiDoc - Relative Links</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>To generate hyperlinks to a file inside a Git repo use the <code>link</code> macro
-(<a href="https://docs.asciidoctor.org/asciidoc/latest/macros/link-macro/">source</a>).
-Example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>link:path/to/file.pdf[file.pdf]</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_markdown_generate_table_of_contents">Markdown - Generate Table of Contents</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p><a href="https://github.com/thlorenz/doctoc">Doctoc</a> can be used to generate table of
-contents in markdown files. Essentially:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo npm install -g doctoc</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The table of contents of this file has been generated using <code>doctoc</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ doctoc Tips.md</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_markdown_cli_preview">Markdown - CLI Preview</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p><a href="https://github.com/charmbracelet/glow">Glow</a> makes it possible to preview
-Markdown files on the terminal. Download an install a suitable binary package
-from the <a href="https://github.com/charmbracelet/glow/releases">releases page</a></p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_markdown_table_genrator">Markdown - Table Genrator</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The <a href="https://www.tablesgenerator.com/markdown_tables">tables generator</a>
-site can be used to generate markdown for tables.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_vim_installing_vim_8_on_centos_7">Vim - Installing Vim 8 on CentOS 7</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>It is always easiest to install from binary packages (than compiling from
-source). Vim 8 is available from the GhettoForge Plus repo. Install it:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install
-https://mirror.ghettoforge.org/distributions/gf/gf-release-latest.gf.el7.noarch.rpm</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The repo has to be manually enabled:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo vi /etc/yum.repos.d/gf.repo</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The package conflicts with the one coming from base CentOS and so has to be
-removed. Do keep a backup of <code>sudo</code> config (e.g. <code>/etc/sudoers</code>) because it
-gets removed in the process:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum autoremove vim-minimal
-$ sudo yum install vim-enhanced sudo</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_vim_building_vim_8_on_centos_7">Vim - Building Vim 8 on CentOS 7</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The main reason why I wanted to upgrade to Vim 8 on CentOS 7 was the
-<a href="https://github.com/fatih/vim-go">vim-go</a> plugin. It did not find the version
-that came from GhettoForge new enough and kept complaining. Therefore, I had to
-resort to compiling from sources:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum groupinstall "Development Tools"
-$ sudo yum install ncurses ncurses-devel</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As of this writing the tip of the master branch was <code>4b4b1b8</code> tagged as
-<code>v8.2.3426</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ git clone https://github.com/vim/vim.git
-$ cd vim
-$ ./configure --with-features=huge \
-    --enable-multibyte \
-    --enable-rubyinterp \
-    --enable-pythoninterp \
-    --enable-luainterp \
-    --prefix=/usr/local/vim8</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Enabling Perl did not work for me. The compilation failed with an "Unrecognized
-switch: -rototypes" error message. So, I had to drop it.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo mkdir /usr/local/vim8
-sudo chown osboxes:osboxes /usr/local/vim8</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Finally, compile and install:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ make
-$ make install</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Notice how the install step was run as non-root. This ensures that we don&#8217;t
-modify system-wide locations any more than expected. If uninstallation is
-required, then removing this one directory is enough.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum autoremove vim-enhanced
-$ sudo ln -s /usr/local/vim8/bin/vim /usr/local/bin/</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_go_setting_up_vim">Go - Setting up Vim</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>After installing Vim 8, just do:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Commits that have worked in the past:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>2024-01-14</strong> Go 1.18.10 (<a href="https://github.com/fatih/vim-go/commit/e2e7ad7c">commit</a>)</p>
-</li>
-<li>
-<p><strong>2023-06-21</strong> Go 1.18.10 (<a href="https://github.com/fatih/vim-go/commit/397a9c57">commit</a>)</p>
-</li>
-<li>
-<p><strong>2023-05-29</strong> Go 1.18.10 (<a href="https://github.com/fatih/vim-go/commit/2a874910">commit</a>)</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>That&#8217;s it! For details see <a href="https://tpaschalis.github.io/vim-go-setup/">this</a> blog.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_go_directory_layout">Go - Directory Layout</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>I have kind of started liking the Go Project
-<a href="https://github.com/golang-standards/project-layout">layout</a>.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_go_private_repository">Go - Private Repository</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Using a private repository in a Go involves the execution of multiple steps.
-One, tell Git to use alternative SSH protocol to make <code>go get</code> commands work:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ git config --global url."git@gitlab.mycompany.com:".insteadOf "https://gitlab.mycompany.com/"</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>TWO, tell Go do disable validating certain modules:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ go env -w GOPRIVATE=gitlab.mycompany.com</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Do, <code>go help private</code> for more information.</p>
-</div>
-<div class="paragraph">
-<p>THREE, ensure that the package&#8217;s module uses the <code>.git</code> extension in its <code>go.mod</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>module gitlab.mycompany.com/group/subgroup/playground.git</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>FOUR, include the <code>.git</code> extension in the <code>import</code> declaration. Example:</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_git_git_2_on_centos_7">Git - Git 2 on CentOS 7</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Installing the newer Git 2 on CentOS 7 is required to avoid <code>git fetch-pack</code>
-errors (<a href="https://github.com/golang/go/issues/38373">38373</a>). First, uninstall
-Git coming from base CentOS:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum erase git perl-Git</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then, install the Inline with Upstream Stable (<a href="https://ius.io/">IUS</a>) Yum
-repository:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ yum install \
-  https://repo.ius.io/ius-release-el7.rpm \
-  https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Install Git 2:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install git222</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_git_email_id_per_repo">Git - Email id per Repo</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Sometimes there is a need to use separate author emails IDs in Git commits
-residing in differente repos (e.g.  work and personal). To setup an email ID
-specific to a repo, change directory to it and then run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ git config user.email "own_email@domain"</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_git_renaming_branches">Git - Renaming branches</h2>
-<div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre>$ git branch -m main master
-$ git push -u origin master
-$ git push origin --delete main</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_python_pip_on_python_2_7">Python - Pip on Python 2.7</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>To install a newer version of Pip on CentOS 7 than the one coming with the
-distribution, do:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py
-$ python get-pip.py</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This helped me get Pip 20.3.4.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_cc_reformat">C/C++ - Reformat</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p><a href="https://astyle.sourceforge.net/astyle.html">Astyle</a> can be used to ensure
-consistent code indentation and formatting. The following works on Ubuntu
-22.04:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo apt-get install astyle</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Example command-line</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>LC_ALL="en_US.UTF-8" astyle -q -R --style=java -H '*.java' '*.c' '*.cc' '*.cpp' '*.h'</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_cc_core_dumps">C/C++ - Core Dumps</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Enabling core dumps depends on kernel (Linux) settings. Configuration
-that worked for me on Oracle Linux 9:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ echo "/var/dumps/core.%e.%p" | sudo tee /proc/sys/kernel/core_pattern</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The directory mentioned in <code>core_pattern</code>
-(<a href="https://www.kernel.org/doc/Documentation/sysctl/kernel.txt">doc</a>) must exist.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo mkdir /var/dumps</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Besides, the shell&#8217;s resource limit for core files might have to be changed:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ ulimit -c unlimited</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_cc_detecting_memory_errors">C/C++ - Detecting Memory Errors</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>AddressSanitizer was added to GCC in the
-<a href="https://gcc.gnu.org/gcc-4.8/changes.html">4.8</a> release. To use on Oracle Linux
-9, an additional package has to be installed apart from <code>gcc</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install libasan.x86_64</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Example program with a memory leak
-(<a href="https://stackoverflow.com/questions/47201087/gcc-how-to-use-address-sanitizer">source</a>):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>int main()
-{
-  int *prt = new int;
-  return 0;
-}</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Let us say it is saved in a file named <code>main.cc</code>. To compile with the address
-sanitizer enabled, do:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ g++ -g -O0 -fsanitize=address main.cc</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Running the generated executable would report the error along with the source
-line number.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_python_requirements_txt">Python - requirements.txt</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Dependencies of a Python codebase are often specified in a <code>requirements.txt</code>
-file. An automated way to create this file is through the use of
-<a href="https://github.com/bndr/pipreqs">pipreqs</a> that can be installed on Ubuntu 22.04
-by running the following commands:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo apt install python3-pip
-sudo pip3 install pipreqs</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Oracle Linux 9 users can do:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo yum install python3-pip
-sudo pip3 install pipreqs</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Example usage:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>cd path/to/project
-pipreqs .</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Some readers might have noticed that I wrote <code>pip3</code> instead of <code>pip</code>.
-In environments that have only one from Python 3 or Python 2 the command <code>pip</code>
-is likely to refer to the correct Python installation. However, this might not
-work in mixed systems that have both Python versions installed. Therefore, it
-is appropriate to specifically write <code>pip3</code> when working with Python 3
-packages and likewise for <code>pip</code> and Python 2.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_shell_linter">Shell - Linter</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Linters catch common coding mistake. I have found that a report mentioning
-specific issues provides motivation to remove them. This is more powerful than
-a bunch of guidelines that have to be kept in one&#8217;s head. A useful shell
-script linter is <code>shellcheck</code>. Install it on Ubuntu 22.04 by running</p>
+<p>Input consisted of several files containing records from overlapping periods
+of time. A software that was to consume these files had the limitation of
+wanting timestamps in a globally sorted order. It was not sufficient for
+records to be sorted in a single file. Therefore, we started writing a program
+that would take input files with overlapping timestamps producing files that
+encoded the time period in their names and ensured that all the records in the
+input that were from the same time period were contained in it.  For instance,
+a filename like <code>events-20250625100200-20250625100300.txt</code> would contain
+records for the third minute of the 10th hour of 25-Jun-2025.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo apt-get install shellcheck</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Use the following command to run a shell script through the linter:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ shellcheck -x &lt;script&gt;</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_shell_lftp">Shell - lftp</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p><code>lftp</code> is a useful command. The interaction with a FTP server is faster and
-more Bash-like. It also has an option to download complete directory trees.
-Install it by running:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install lftp</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The command reads login information from <code>/.netrc</code>. Example contents:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>machine &lt;hostname1&gt; login &lt;user1&gt; password &lt;pass1&gt;
-machine &lt;hostname2&gt;.login &lt;user2&gt; password &lt;pass2&gt;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then logging to a server and directly switching to a directory
-becomes very convenient:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ lftp sftp://&lt;user1&gt;@&lt;hostname1&gt;/upload</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_shell_find">Shell - find</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Sometimes I want to search for files that have been recently downloaded or
-edited. This means finding files on the basis of last modification time. The
-following command finds files modified within the last 100 days:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ find . -type f -mtime -100</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_cmake_python">CMake - Python</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This tip is useful at the time of packaging a Python module. The directory
-where modules should be copied differs between Linux distributions. It could
-be <code>/usr/lib/python3/dist-packages</code> on Ubuntu and
-<code>/usr/lib64/python3.9/site-packages</code> on a Fedora derived
-distribution. CMake can auto-detect the value and make it available through a
-variable. This can be done by:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>find_package(Python3 REQUIRED COMPONENTS Interpreter Development)</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Subsequently, the <code>Python3_SITEARCH</code> variable will containe the directory
-path.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_cmake_java">CMake - Java</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>I want to give two tips through this item. First is that the variables that
-will get defined through a successful <code>find_package()</code> call can be known by
-reading a <code>Find&lt;PackageName&gt;.cmake</code> file. These files are located inside
-<code>/usr/share/cmake-*/Modules</code>. An actual example from Ubuntu 22.04 is
-<code>/usr/share/cmake-3.22/Modules/FindJNI.cmake</code>. Second is that a successful
-call depends on the <code>JAVA_HOME</code> environment variable being defined. Example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ echo $JAVA_HOME
-/usr/lib/jvm/java-21-openjdk-amd64</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>For details around <code>find_package()</code> refer <code>cmake-commands</code> man page.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_names_system_facts">Names - System Facts</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>A source of system related variable names that can be used in shell scripts is
-in the CMake man page, <code>/etc/os-release</code>. Here is a list that I have
-constructed after studying such sources:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>OS_NAME="Ubuntu"</p>
-</li>
-<li>
-<p>OS_NAME_PRETTY="Ubuntu 22.04.4 LTS"</p>
-</li>
-<li>
-<p>OS_VERSION_ID="22.04.4" I don&#8217;t want anything around release because it
-causes confusion with version.</p>
-</li>
-<li>
-<p>OS_VERSION_CODENAME="jammy"</p>
-</li>
-<li>
-<p>OS_ID="ubuntu"</p>
-</li>
-<li>
-<p>OS_ID_LIKE="debian"</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_locale">Locale</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Few of my text files don&#8217;t get correctly rendered unless the
-<a href="https://wiki.archlinux.org/title/Locale">locale</a> is set to
-en_US.UTF-8. To display the currently set locale use the <code>locale</code> command. If
-it is not set to en_US-UTF-8, then installing it on Oracle Linux 9 involves:</p>
+<p>The program was required to deal with large amounts of data. For instance, 6
+million records every minute, each record of size 500 bytes. This meant
+sorting data for even a few minutes could cross the size of the available
+system memory.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo yum install glibc-langpack-en.x86_64
-sudo localectl set-locale LANG=en_US.UTF-8</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_trivy_scanning_jars">Trivy - Scanning JARs</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Trivy is a useful open source vulnerability scanner. It can be easily
-installed by following
-<a href="https://trivy.dev/latest/getting-started/installation/">official instructions</a>.
-To install on a RHEL type of distribution (e.g. Oracle Linux 9), configure the
-package manager:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>cat &lt;&lt; EOF | sudo tee -a /etc/yum.repos.d/trivy.repo
-[trivy]
-name=Trivy repository
-baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/
-gpgcheck=1
-enabled=1
-gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
-EOF</pre>
-</div>
-</div>
 <div class="paragraph">
-<p>Followed by:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo yum update
-sudo yum install trivy</pre>
-</div>
+<p>Input files consisted of newline separated JSON encoded arrays. CPU profiling
+revealed that the program was spending a lot of time in decoding JSON records.
+A crucial insight was that the program did not care about the fields in a
+record except for the timestamp that was at the beginning. Therefore, decoding
+the complete record using a JSON package was not necessary. Fields were comma
+separated and so it was possible to quickly extract the timestamp by reading
+till the first comma character.</p>
 </div>
 <div class="paragraph">
-<p>To install on Ubuntu 22.04, configure APT:</p>
+<p>Lesson 1: Decoding JSON is expensive.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo apt-get install gnupg2
-curl -s https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg
-echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list</pre>
-</div>
-</div>
 <div class="paragraph">
-<p>Followed by:</p>
+<p>The program&#8217;s more than expected memory usage was related to a
+<code>[]json.RawMessage</code> variable that temporarily stored every record in a loop
+iterating through an input file.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo apt-get update
-sudo apt-get install trivy</pre>
-</div>
-</div>
 <div class="paragraph">
-<p>To scan a single JAR:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>trivy rootfs &lt;path/to/jar&gt;</pre>
+<p>Lesson 2: Go&#8217;s runtime does not release memory to the OS immediately. Be
+mindful of unintended memory allocation inside for loops.</p>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_yum_prevent_removal_of_dependencies">Yum - Prevent Removal of Dependencies</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Let us say there is a RPM package that we have created and it has sevaral
-dependencies (hundreds of MBs) and no other package on the system needs those
-dependencies. In such a situation, every time the package is erased by Yum,
-all the dependencies get removed too. However, during rapid cycles of
-development and testing removal and installation might have to be done several
-times. It saves time if the dependencies are not removed. To do this with Yum,
-make use of the <code>--noautoremove</code> command-line switch.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo yum erase --noautoremove &lt;rpm&gt;</pre>
-</div>
+<p>The runtime environment&#8217;s retaining memory manifested also through other
+constructs in the program. It had to read all the records without needing to
+understand any field apart from the timestamp. This was done by maintaining a
+slice of struct that had a timestamp of type <code>int64</code> and the raw record of type
+<code>[]byte</code>. The growth of the slice was left to the runtime using the <code>append()</code>
+built-in function. Since the slice started with a length of 1 and could grow
+till millions of entries, a lot of reallocation and copying was expected.
+Memory held in old backing arrays could take time before being released to the
+OS.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_packages_available_version">Packages - Available Version</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Sometimes I want to know the available version of a package prior to
-installing it. For instance, if the most recent Java 21 update might happens
-to be 21.0.6 (<a href="https://www.java.com/releases/">releases</a>) then I want to know if
-this version can be installed on my system through the default package
-manager. To check for available package version on Ubuntu 22.04 one can do:</p>
+<p>Lesson 3: Prefer preallocating to avoid repeated allocations and memory
+retention.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>apt-cache madison openjdk-21-jdk</pre>
-</div>
-</div>
 <div class="paragraph">
-<p>An alternative command that also reports if the package is installed is:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>apt-cache policy openjdk-21-jdk</pre>
+<p>Preallocation and careful inspection of loops to avoid new allocations brought
+down the memory used by the program, which was now proportional to the input
+size. But the performance did not increase even though there was parallelism.
+The program&#8217;s processing consisted of two phases. Phase 1 was about writing
+records into various directories, each keeping a minute interval of records.
+Phase 2 was about reading all records from files in each directory, sorting
+them and writing to a single output file. The act of combining files for a
+directory was independent of another. There were goroutines for doing this in
+parallel. However, performance did not increase even if an attempt was made to
+merge files from more directories in parallel.</p>
 </div>
-</div>
 <div class="paragraph">
-<p>To do the same thing on a RHEL-like system (e.g. Oracle Linux 9), do:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>yum list java-21-openjdk.x86_64</pre>
+<p>Let us say phase 2 for 10 million records needs 6 GB of memory and takes 5
+minutes to complete. These 5 minutes are broken down into these parts: (1) 70%
+time for loading records into memory, (2) 1% time for sorting and (3) 29% time
+for writing into a compressed format of size 600 MB. All of the three steps
+have to be completed before it is possible to load the next batch of records
+into memory. However, if we split the input into two equal parts, we can
+create two output files each of size 300 MB in half the time while making
+better use of CPU that was already available.</p>
 </div>
-</div>
 <div class="paragraph">
-<p>Yum&#8217;s <code>list</code> command needs a full package name. For instance, the argument
-<code>man</code> does not list anything while <code>man-db</code> does so.</p>
-</div>
-</div>
+<p>Lesson 4: When data is too large for memory break it into chunks and process
+each independently. This not only reduces the use of memory but also increases
+performance. We were already doing this by dividing the records into 1-minute
+directories. The insight was that the same ideas could be pursued even
+further.</p>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-07-03 14:54:04 UTC
+Last updated 2025-07-03 14:59:18 UTC
 </div>
 </div>
 </body>

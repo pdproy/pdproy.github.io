@@ -1,7 +1,8 @@
 = Personal Tips & Tricks
+Pradeep Roy
 
-My working environment is mostly CentOS 7. Thus, unless specified otherwise, it
-can be assumed that the commands are to be run on this OS.
+My working environment is mostly Ubuntu 22.04 or Oracle Linux 9. Earlier, it
+used to be CentOS 7.
 
 == OpenSSH - Generating Keys
 
@@ -30,6 +31,21 @@ Port 2022
 Such a configuration generally shortens the command-line and can even be
 necessary when using `lftp` to connect to hosts that support public key
 authentication only (not password).
+
+== APT - Proxy
+
+To make APT use a HTTP/HTTPS proxy create a file named `95proxy` inside the
+`/etc/apt/apt.conf.d/` directory. The number 95 ensures that the config file
+is read late possibly not getting over-ridden by a setting that might have got
+loaded later.
+
+----
+> cat /etc/apt/apt.conf.d/95proxy
+Acquire::http::Proxy "http://172.18.40.8:8888/";
+Acquire::https::Proxy "http://172.18.40.8:8888/";
+----
+
+These options are defined in the `apt-transport-http(1)` man page.
 
 == Tmux - Status Line
 
@@ -229,6 +245,23 @@ That's it! For details see https://tpaschalis.github.io/vim-go-setup/[this] blog
 I have kind of started liking the Go Project
 https://github.com/golang-standards/project-layout[layout].
 
+== Go - Linters
+
+https://golangci-lint.run/[Golangci-lint] is a front-end to dozens of Go
+linters. The use of linters helps in avoiding coding pitfalls. It can be
+installed by running:
+
+----
+$ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b <dir>
+----
+
+Where `<dir>` is the directory into which the executable will be downloaded.
+Example:
+
+----
+$ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b ~/.local/bin/
+----
+
 == Go - Private Repository
 
 Using a private repository in a Go involves the execution of multiple steps.
@@ -309,6 +342,39 @@ $ python get-pip.py
 
 This helped me get Pip 20.3.4.
 
+== Python - requirements.txt
+
+Dependencies of a Python codebase are often specified in a `requirements.txt`
+file. An automated way to create this file is through the use of
+https://github.com/bndr/pipreqs[pipreqs] that can be installed on Ubuntu 22.04
+by running the following commands:
+
+----
+sudo apt install python3-pip
+sudo pip3 install pipreqs
+----
+
+Oracle Linux 9 users can do:
+
+----
+sudo yum install python3-pip
+sudo pip3 install pipreqs
+----
+
+Example usage:
+
+----
+cd path/to/project
+pipreqs .
+----
+
+Some readers might have noticed that I wrote `pip3` instead of `pip`.
+In environments that have only one from Python 3 or Python 2 the command `pip`
+is likely to refer to the correct Python installation. However, this might not
+work in mixed systems that have both Python versions installed. Therefore, it
+is appropriate to specifically write `pip3` when working with Python 3
+packages and likewise for `pip` and Python 2.
+
 == C/C++ - Reformat
 
 https://astyle.sourceforge.net/astyle.html[Astyle] can be used to ensure
@@ -377,39 +443,6 @@ $ g++ -g -O0 -fsanitize=address main.cc
 
 Running the generated executable would report the error along with the source
 line number.
-
-== Python - requirements.txt
-
-Dependencies of a Python codebase are often specified in a `requirements.txt`
-file. An automated way to create this file is through the use of
-https://github.com/bndr/pipreqs[pipreqs] that can be installed on Ubuntu 22.04
-by running the following commands:
-
-----
-sudo apt install python3-pip
-sudo pip3 install pipreqs
-----
-
-Oracle Linux 9 users can do:
-
-----
-sudo yum install python3-pip
-sudo pip3 install pipreqs
-----
-
-Example usage:
-
-----
-cd path/to/project
-pipreqs .
-----
-
-Some readers might have noticed that I wrote `pip3` instead of `pip`.
-In environments that have only one from Python 3 or Python 2 the command `pip`
-is likely to refer to the correct Python installation. However, this might not
-work in mixed systems that have both Python versions installed. Therefore, it
-is appropriate to specifically write `pip3` when working with Python 3
-packages and likewise for `pip` and Python 2.
 
 == Shell - Linter
 
@@ -520,6 +553,26 @@ sudo yum install glibc-langpack-en.x86_64
 sudo localectl set-locale LANG=en_US.UTF-8
 ----
 
+== Maven - Downloading JAR
+
+Maven has a cool feature to download a dependency (JAR) into the local
+repository. Given the following XML config:
+
+----
+<groupId>com.github.siom79.japicmp</groupId>
+<artifactId>japicmp</artifactId>
+<version>0.23.1</version>
+----
+
+One can download the `japicmp` JAR by running:
+
+----
+mvn dependency:get \
+  -DgroupId=com.github.siom79.japicmp \
+  -DartifactId=japicmp \
+  -Dversion=0.23.1
+----
+
 == Trivy - Scanning JARs
 
 Trivy is a useful open source vulnerability scanner. It can be easily
@@ -567,6 +620,32 @@ To scan a single JAR:
 trivy rootfs <path/to/jar>
 ----
 
+To scan a Docker images selecting high and critical vulnerabilities only:
+
+----
+trivy image --severity HIGH,CRITICAL <name:tag>
+----
+
+== Curl - IP Geolocation
+
+To get geo-location information of one's public IP address from the
+command-line use:
+
+----
+$ curl https://ipinfo.io
+{
+  "ip": "117.199.196.56",
+  "city": "Kolkata",
+  "region": "West Bengal",
+  "country": "IN",
+  "loc": "22.5626,88.3630",
+  "org": "AS9829 National Internet Backbone",
+  "postal": "700001",
+  "timezone": "Asia/Kolkata",
+  "readme": "https://ipinfo.io/missingauth"
+}
+----
+
 == Yum - Prevent Removal of Dependencies
 
 Let us say there is a RPM package that we have created and it has sevaral
@@ -584,7 +663,7 @@ sudo yum erase --noautoremove <rpm>
 == Packages - Available Version
 
 Sometimes I want to know the available version of a package prior to
-installing it. For instance, if the most recent Java 21 update might happens
+installing it. For instance, if the most recent Java 21 update happens
 to be 21.0.6 (https://www.java.com/releases/[releases]) then I want to know if
 this version can be installed on my system through the default package
 manager. To check for available package version on Ubuntu 22.04 one can do:
@@ -607,3 +686,47 @@ yum list java-21-openjdk.x86_64
 
 Yum's `list` command needs a full package name. For instance, the argument
 `man` does not list anything while `man-db` does so.
+
+== MuPDF - Repairing PDF Files
+
+This incident happend on Debian 12.7. One I was able to open a PDF file in
+Firefox 115.15.0 ESR but Evince 43.1 reported that the document was damaged
+and could not open it.
+
+Issues were reported by https://qpdf.readthedocs.io/en/stable/overview.html[qpdf]
+as well:
+
+----
+> qpdf --check receipt.pdf
+WARNING: receipt.pdf: file is damaged
+WARNING: receipt.pdf: can't find startxref
+WARNING: receipt.pdf: Attempting to reconstruct cross-reference table
+qpdf: receipt.pdf: unable to find trailer dictionary while recovering damaged file
+----
+
+The following command made it possible to create a repaired file:
+
+----
+mutool clean -gg receipt.pdf repaired.pdf
+----
+
+The https://mupdf.readthedocs.io/en/latest/tools/index.html[mutool] utility
+can be installed by running:
+
+----
+sudo apt-get install mupdf-tools
+----
+
+== WhatsApp - Android
+
+Android 10 introduced scoped storage
+(https://www.youtube.com/watch?v=UnJ3amzJM94[video]) that changed WhatsApp
+media directory from `/storage/emulated/0/WhatsApp` to
+`/storage/emulated/0/Android/media/com.whatsapp/WhatsApp`.
+
+"To give users more control over their files and to limit file clutter, apps
+that target Android 10 (API level 29) and higher are given scoped access into
+external storage, or scoped storage, by default. Such apps have access only to
+the app-specific directory on external storage, as well as specific types of
+media that the app has created."
+(https://developer.android.com/training/data-storage#scoped-storage[source])

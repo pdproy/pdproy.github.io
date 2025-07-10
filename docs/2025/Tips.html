@@ -5,6 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
+<meta name="author" content="Pradeep Roy">
 <title>Personal Tips &amp; Tricks</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
@@ -437,13 +438,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <body class="article">
 <div id="header">
 <h1>Personal Tips &amp; Tricks</h1>
+<div class="details">
+<span id="author" class="author">Pradeep Roy</span><br>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>My working environment is mostly CentOS 7. Thus, unless specified otherwise, it
-can be assumed that the commands are to be run on this OS.</p>
+<p>My working environment is mostly Ubuntu 22.04 or Oracle Linux 9. Earlier, it
+used to be CentOS 7.</p>
 </div>
 </div>
 </div>
@@ -483,6 +487,27 @@ Port 2022</pre>
 <p>Such a configuration generally shortens the command-line and can even be
 necessary when using <code>lftp</code> to connect to hosts that support public key
 authentication only (not password).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_apt_proxy">APT - Proxy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To make APT use a HTTP/HTTPS proxy create a file named <code>95proxy</code> inside the
+<code>/etc/apt/apt.conf.d/</code> directory. The number 95 ensures that the config file
+is read late possibly not getting over-ridden by a setting that might have got
+loaded later.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>&gt; cat /etc/apt/apt.conf.d/95proxy
+Acquire::http::Proxy "http://172.18.40.8:8888/";
+Acquire::https::Proxy "http://172.18.40.8:8888/";</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These options are defined in the <code>apt-transport-http(1)</code> man page.</p>
 </div>
 </div>
 </div>
@@ -772,6 +797,30 @@ $ sudo ln -s /usr/local/vim8/bin/vim /usr/local/bin/</pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_go_linters">Go - Linters</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://golangci-lint.run/">Golangci-lint</a> is a front-end to dozens of Go
+linters. The use of linters helps in avoiding coding pitfalls. It can be
+installed by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b &lt;dir&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where <code>&lt;dir&gt;</code> is the directory into which the executable will be downloaded.
+Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b ~/.local/bin/</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_go_private_repository">Go - Private Repository</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -887,6 +936,49 @@ $ python get-pip.py</pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_python_requirements_txt">Python - requirements.txt</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Dependencies of a Python codebase are often specified in a <code>requirements.txt</code>
+file. An automated way to create this file is through the use of
+<a href="https://github.com/bndr/pipreqs">pipreqs</a> that can be installed on Ubuntu 22.04
+by running the following commands:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo apt install python3-pip
+sudo pip3 install pipreqs</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Oracle Linux 9 users can do:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo yum install python3-pip
+sudo pip3 install pipreqs</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cd path/to/project
+pipreqs .</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Some readers might have noticed that I wrote <code>pip3</code> instead of <code>pip</code>.
+In environments that have only one from Python 3 or Python 2 the command <code>pip</code>
+is likely to refer to the correct Python installation. However, this might not
+work in mixed systems that have both Python versions installed. Therefore, it
+is appropriate to specifically write <code>pip3</code> when working with Python 3
+packages and likewise for <code>pip</code> and Python 2.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_cc_reformat">C/C++ - Reformat</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -978,49 +1070,6 @@ sanitizer enabled, do:</p>
 <div class="paragraph">
 <p>Running the generated executable would report the error along with the source
 line number.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_python_requirements_txt">Python - requirements.txt</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Dependencies of a Python codebase are often specified in a <code>requirements.txt</code>
-file. An automated way to create this file is through the use of
-<a href="https://github.com/bndr/pipreqs">pipreqs</a> that can be installed on Ubuntu 22.04
-by running the following commands:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo apt install python3-pip
-sudo pip3 install pipreqs</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Oracle Linux 9 users can do:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo yum install python3-pip
-sudo pip3 install pipreqs</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Example usage:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>cd path/to/project
-pipreqs .</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Some readers might have noticed that I wrote <code>pip3</code> instead of <code>pip</code>.
-In environments that have only one from Python 3 or Python 2 the command <code>pip</code>
-is likely to refer to the correct Python installation. However, this might not
-work in mixed systems that have both Python versions installed. Therefore, it
-is appropriate to specifically write <code>pip3</code> when working with Python 3
-packages and likewise for <code>pip</code> and Python 2.</p>
 </div>
 </div>
 </div>
@@ -1191,6 +1240,33 @@ sudo localectl set-locale LANG=en_US.UTF-8</pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_maven_downloading_jar">Maven - Downloading JAR</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Maven has a cool feature to download a dependency (JAR) into the local
+repository. Given the following XML config:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>&lt;groupId&gt;com.github.siom79.japicmp&lt;/groupId&gt;
+&lt;artifactId&gt;japicmp&lt;/artifactId&gt;
+&lt;version&gt;0.23.1&lt;/version&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>One can download the <code>japicmp</code> JAR by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mvn dependency:get \
+  -DgroupId=com.github.siom79.japicmp \
+  -DartifactId=japicmp \
+  -Dversion=0.23.1</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_trivy_scanning_jars">Trivy - Scanning JARs</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -1248,6 +1324,39 @@ sudo apt-get install trivy</pre>
 <pre>trivy rootfs &lt;path/to/jar&gt;</pre>
 </div>
 </div>
+<div class="paragraph">
+<p>To scan a Docker images selecting high and critical vulnerabilities only:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>trivy image --severity HIGH,CRITICAL &lt;name:tag&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_curl_ip_geolocation">Curl - IP Geolocation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To get geo-location information of one&#8217;s public IP address from the
+command-line use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ curl https://ipinfo.io
+{
+  "ip": "117.199.196.56",
+  "city": "Kolkata",
+  "region": "West Bengal",
+  "country": "IN",
+  "loc": "22.5626,88.3630",
+  "org": "AS9829 National Internet Backbone",
+  "postal": "700001",
+  "timezone": "Asia/Kolkata",
+  "readme": "https://ipinfo.io/missingauth"
+}</pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1274,7 +1383,7 @@ make use of the <code>--noautoremove</code> command-line switch.</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Sometimes I want to know the available version of a package prior to
-installing it. For instance, if the most recent Java 21 update might happens
+installing it. For instance, if the most recent Java 21 update happens
 to be 21.0.6 (<a href="https://www.java.com/releases/">releases</a>) then I want to know if
 this version can be installed on my system through the default package
 manager. To check for available package version on Ubuntu 22.04 one can do:</p>
@@ -1306,10 +1415,69 @@ manager. To check for available package version on Ubuntu 22.04 one can do:</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_mupdf_repairing_pdf_files">MuPDF - Repairing PDF Files</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This incident happend on Debian 12.7. One I was able to open a PDF file in
+Firefox 115.15.0 ESR but Evince 43.1 reported that the document was damaged
+and could not open it.</p>
+</div>
+<div class="paragraph">
+<p>Issues were reported by <a href="https://qpdf.readthedocs.io/en/stable/overview.html">qpdf</a>
+as well:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>&gt; qpdf --check receipt.pdf
+WARNING: receipt.pdf: file is damaged
+WARNING: receipt.pdf: can't find startxref
+WARNING: receipt.pdf: Attempting to reconstruct cross-reference table
+qpdf: receipt.pdf: unable to find trailer dictionary while recovering damaged file</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following command made it possible to create a repaired file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mutool clean -gg receipt.pdf repaired.pdf</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <a href="https://mupdf.readthedocs.io/en/latest/tools/index.html">mutool</a> utility
+can be installed by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo apt-get install mupdf-tools</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_whatsapp_android">WhatsApp - Android</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Android 10 introduced scoped storage
+(<a href="https://www.youtube.com/watch?v=UnJ3amzJM94">video</a>) that changed WhatsApp
+media directory from <code>/storage/emulated/0/WhatsApp</code> to
+<code>/storage/emulated/0/Android/media/com.whatsapp/WhatsApp</code>.</p>
+</div>
+<div class="paragraph">
+<p>"To give users more control over their files and to limit file clutter, apps
+that target Android 10 (API level 29) and higher are given scoped access into
+external storage, or scoped storage, by default. Such apps have access only to
+the app-specific directory on external storage, as well as specific types of
+media that the app has created."
+(<a href="https://developer.android.com/training/data-storage#scoped-storage">source</a>)</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-07-03 15:04:54 UTC
+Last updated 2025-07-09 19:50:27 UTC
 </div>
 </div>
 </body>

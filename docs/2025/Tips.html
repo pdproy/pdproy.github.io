@@ -434,6 +434,124 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge, pre.rouge .w {
+  color: #24292f;
+  background-color: #f6f8fa;
+}
+pre.rouge .k, pre.rouge .kd, pre.rouge .kn, pre.rouge .kp, pre.rouge .kr, pre.rouge .kt, pre.rouge .kv {
+  color: #cf222e;
+}
+pre.rouge .gr {
+  color: #f6f8fa;
+}
+pre.rouge .gd {
+  color: #82071e;
+  background-color: #ffebe9;
+}
+pre.rouge .nb {
+  color: #953800;
+}
+pre.rouge .nc {
+  color: #953800;
+}
+pre.rouge .no {
+  color: #953800;
+}
+pre.rouge .nn {
+  color: #953800;
+}
+pre.rouge .sr {
+  color: #116329;
+}
+pre.rouge .na {
+  color: #116329;
+}
+pre.rouge .nt {
+  color: #116329;
+}
+pre.rouge .gi {
+  color: #116329;
+  background-color: #dafbe1;
+}
+pre.rouge .ges {
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .kc {
+  color: #0550ae;
+}
+pre.rouge .l, pre.rouge .ld, pre.rouge .m, pre.rouge .mb, pre.rouge .mf, pre.rouge .mh, pre.rouge .mi, pre.rouge .il, pre.rouge .mo, pre.rouge .mx {
+  color: #0550ae;
+}
+pre.rouge .sb {
+  color: #0550ae;
+}
+pre.rouge .bp {
+  color: #0550ae;
+}
+pre.rouge .ne {
+  color: #0550ae;
+}
+pre.rouge .nl {
+  color: #0550ae;
+}
+pre.rouge .py {
+  color: #0550ae;
+}
+pre.rouge .nv, pre.rouge .vc, pre.rouge .vg, pre.rouge .vi, pre.rouge .vm {
+  color: #0550ae;
+}
+pre.rouge .o, pre.rouge .ow {
+  color: #0550ae;
+}
+pre.rouge .gh {
+  color: #0550ae;
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #0550ae;
+  font-weight: bold;
+}
+pre.rouge .s, pre.rouge .sa, pre.rouge .sc, pre.rouge .dl, pre.rouge .sd, pre.rouge .s2, pre.rouge .se, pre.rouge .sh, pre.rouge .sx, pre.rouge .s1, pre.rouge .ss {
+  color: #0a3069;
+}
+pre.rouge .nd {
+  color: #8250df;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #8250df;
+}
+pre.rouge .err {
+  color: #f6f8fa;
+  background-color: #82071e;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cm, pre.rouge .cp, pre.rouge .cpf, pre.rouge .c1, pre.rouge .cs {
+  color: #6e7781;
+}
+pre.rouge .gl {
+  color: #6e7781;
+}
+pre.rouge .gt {
+  color: #6e7781;
+}
+pre.rouge .ni {
+  color: #24292f;
+}
+pre.rouge .si {
+  color: #24292f;
+}
+pre.rouge .ge {
+  color: #24292f;
+  font-style: italic;
+}
+pre.rouge .gs {
+  color: #24292f;
+  font-weight: bold;
+}
+</style>
 </head>
 <body class="article">
 <div id="header">
@@ -459,7 +577,7 @@ used to be CentOS 7.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ ssh-keygen -t rsa -b 4096 -C &lt;hostname&gt;</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ssh-keygen <span class="nt">-t</span> rsa <span class="nt">-b</span> 4096 <span class="nt">-C</span> &lt;<span class="nb">hostname</span><span class="o">&gt;</span></code></pre>
 </div>
 </div>
 </div>
@@ -476,11 +594,11 @@ that are listening on non-standard ports. Example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>Host my-sftp-2022
-User sftpuser
-Hostname 192.168.1.5
-IdentityFile ~/.ssh/my-key.pem
-Port 2022</pre>
+<pre class="rouge highlight"><code data-lang="ssh"><span class="k">Host</span> my-sftp-2022
+<span class="k">User</span> sftpuser
+<span class="k">Hostname</span> <span class="m">192</span>.168.1.5
+<span class="k">IdentityFile</span> ~/.ssh/my-key.pem
+<span class="k">Port</span> <span class="m">2022</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -501,9 +619,9 @@ loaded later.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>&gt; cat /etc/apt/apt.conf.d/95proxy
-Acquire::http::Proxy "http://172.18.40.8:8888/";
-Acquire::https::Proxy "http://172.18.40.8:8888/";</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span><span class="nb">cat</span> /etc/apt/apt.conf.d/95proxy
+<span class="gp">Acquire::http::Proxy "http://172.18.40.8:8888/";</span><span class="w">
+</span><span class="gp">Acquire::https::Proxy "http://172.18.40.8:8888/";</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -521,7 +639,7 @@ current value by running:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>tmux show-option -g status-right</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>tmux show-option <span class="nt">-g</span> status-right</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -529,7 +647,7 @@ current value by running:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>tmux set -g status-right "%H:%M | %d-%b-%y"</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>tmux <span class="nb">set</span> <span class="nt">-g</span> status-right <span class="s2">"%H:%M | %d-%b-%y"</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -537,7 +655,7 @@ current value by running:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>tmux set-option -g status-right "#[fg=green]%H:%M #[fg=black]| #[fg=blue,bold]%d-%b-%y"</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>tmux set-option <span class="nt">-g</span> status-right <span class="s2">"#[fg=green]%H:%M #[fg=black]| #[fg=blue,bold]%d-%b-%y"</span></code></pre>
 </div>
 </div>
 </div>
@@ -555,7 +673,7 @@ user:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>05:29:05 AM     0      7144 224393.65      0.00 4629044 1943848   1.97  app</pre>
+<pre class="rouge highlight"><code data-lang="text">05:29:05 AM     0      7144 224393.65      0.00 4629044 1943848   1.97  app</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -563,7 +681,7 @@ user:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>04:14:22        0     34658 210790.37      0.00 4786596 2050684   2.08  app</pre>
+<pre class="rouge highlight"><code data-lang="text">04:14:22        0     34658 210790.37      0.00 4786596 2050684   2.08  app</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -577,12 +695,66 @@ timestamp in seconds since Epoch.</p>
 <h2 id="_asciidoc_pdf">AsciiDoc - PDF</h2>
 <div class="sectionbody">
 <div class="paragraph">
+<p>Converting Asciidoc files info PDF makes it possible to share content with
+anyone.</p>
+</div>
+<div class="sect2">
+<h3 id="_debian_12">Debian 12</h3>
+<div class="paragraph">
+<p>I have used Asciidoctor PDF 2.3.4 on Debian 12.7. It generates nicely
+formatted documents with no additional command-line switches.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>ruby-asciidoctor-pdf</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Rouge
+<a href="https://docs.asciidoctor.org/pdf-converter/latest/syntax-highlighting/">syntax
+highlighter</a> is nicely integrated with Asciidoctor PDF. It is not essential
+for PDF conversion but using it adds colour to source blocks.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>ruby-rouge</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>One can start using it by merely adding the following line in the document
+header:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">:source-highlighter: rouge</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To print the list of languages supported by Rogue:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>rougify list</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Convert AsciiDoc to PDF:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>asciidoctor-pdf &lt;file.adoc&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_centos_7">CentOS 7</h3>
+<div class="paragraph">
 <p>Install the packages necessary to convert AsciiDoc (usually <code>.adoc</code> file
 extension) file to PDF:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$  sudo yum install asciidoc dblatex</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum <span class="nb">install </span>asciidoc dblatex</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -590,15 +762,13 @@ extension) file to PDF:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ a2x --icons-dir /usr/share/asciidoc/images -f pdf  \
- --dblatex-opts "-P doc.publisher.show=0 -P latex.output.revhistory=0 \
- -Pdoc.layout=\"coverpage frontmatter mainmatter index \"" \
- --doctype=article README.adoc</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>a2x <span class="nt">--icons-dir</span> /usr/share/asciidoc/images <span class="nt">-f</span> pdf  <span class="nt">--dblatex-opts</span> <span class="s2">"-P doc.publisher.show=0 -P latex.output.revhistory=0 -Pdoc.layout=</span><span class="se">\"</span><span class="s2">coverpage frontmatter mainmatter index </span><span class="se">\"</span><span class="s2">"</span> <span class="nt">--doctype</span><span class="o">=</span>article README.adoc</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>This is useful when the table of contents needs to be disabled. Otherwise, the
 <code>-Pdoc.layout</code> switch is not required.</p>
+</div>
 </div>
 </div>
 </div>
@@ -612,7 +782,7 @@ Example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>link:path/to/file.pdf[file.pdf]</pre>
+<pre class="rouge highlight"><code data-lang="text">link:path/to/file.pdf[file.pdf]</code></pre>
 </div>
 </div>
 </div>
@@ -626,7 +796,7 @@ contents in markdown files. Essentially:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo npm install -g doctoc</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>npm <span class="nb">install</span> <span class="nt">-g</span> doctoc</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -634,7 +804,7 @@ contents in markdown files. Essentially:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ doctoc Tips.md</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>doctoc Tips.md</code></pre>
 </div>
 </div>
 </div>
@@ -667,8 +837,7 @@ source). Vim 8 is available from the GhettoForge Plus repo. Install it:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo yum install
-https://mirror.ghettoforge.org/distributions/gf/gf-release-latest.gf.el7.noarch.rpm</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum <span class="nb">install </span>https://mirror.ghettoforge.org/distributions/gf/gf-release-latest.gf.el7.noarch.rpm</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -676,7 +845,7 @@ https://mirror.ghettoforge.org/distributions/gf/gf-release-latest.gf.el7.noarch.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo vi /etc/yum.repos.d/gf.repo</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>vi /etc/yum.repos.d/gf.repo</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -686,8 +855,8 @@ gets removed in the process:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo yum autoremove vim-minimal
-$ sudo yum install vim-enhanced sudo</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum autoremove vim-minimal
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum <span class="nb">install </span>vim-enhanced <span class="nb">sudo</span></code></pre>
 </div>
 </div>
 </div>
@@ -703,8 +872,8 @@ resort to compiling from sources:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo yum groupinstall "Development Tools"
-$ sudo yum install ncurses ncurses-devel</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum groupinstall <span class="s2">"Development Tools"</span>
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum <span class="nb">install </span>ncurses ncurses-devel</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -713,14 +882,9 @@ $ sudo yum install ncurses ncurses-devel</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ git clone https://github.com/vim/vim.git
-$ cd vim
-$ ./configure --with-features=huge \
-    --enable-multibyte \
-    --enable-rubyinterp \
-    --enable-pythoninterp \
-    --enable-luainterp \
-    --prefix=/usr/local/vim8</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>git clone https://github.com/vim/vim.git
+<span class="gp">$</span><span class="w"> </span><span class="nb">cd </span>vim
+<span class="gp">$</span><span class="w"> </span>./configure <span class="nt">--with-features</span><span class="o">=</span>huge <span class="nt">--enable-multibyte</span> <span class="nt">--enable-rubyinterp</span> <span class="nt">--enable-pythoninterp</span> <span class="nt">--enable-luainterp</span> <span class="nt">--prefix</span><span class="o">=</span>/usr/local/vim8</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -729,8 +893,8 @@ switch: -rototypes" error message. So, I had to drop it.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sudo mkdir /usr/local/vim8
-sudo chown osboxes:osboxes /usr/local/vim8</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo mkdir</span> /usr/local/vim8
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo chown </span>osboxes:osboxes /usr/local/vim8</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -738,8 +902,8 @@ sudo chown osboxes:osboxes /usr/local/vim8</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ make
-$ make install</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>make
+<span class="gp">$</span><span class="w"> </span>make <span class="nb">install</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -749,8 +913,8 @@ required, then removing this one directory is enough.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo yum autoremove vim-enhanced
-$ sudo ln -s /usr/local/vim8/bin/vim /usr/local/bin/</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum autoremove vim-enhanced
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo ln</span> <span class="nt">-s</span> /usr/local/vim8/bin/vim /usr/local/bin/</code></pre>
 </div>
 </div>
 </div>
@@ -763,7 +927,7 @@ $ sudo ln -s /usr/local/vim8/bin/vim /usr/local/bin/</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -806,7 +970,7 @@ installed by running:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b &lt;dir&gt;</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-sSfL</span> https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh <span class="nt">-s</span> <span class="nt">--</span> <span class="nt">-b</span> &lt;<span class="nb">dir</span><span class="o">&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -815,7 +979,7 @@ Example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b ~/.local/bin/</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-sSfL</span> https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh <span class="nt">-s</span> <span class="nt">--</span> <span class="nt">-b</span> ~/.local/bin/</code></pre>
 </div>
 </div>
 </div>
@@ -825,11 +989,11 @@ Example:</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Using a private repository in a Go involves the execution of multiple steps.
-One, tell Git to use alternative SSH protocol to make <code>go get</code> commands work:</p>
+ONE, tell Git to use alternative SSH protocol to make <code>go get</code> commands work:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ git config --global url."git@gitlab.mycompany.com:".insteadOf "https://gitlab.mycompany.com/"</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>git config <span class="nt">--global</span> url.<span class="s2">"git@gitlab.mycompany.com:"</span>.insteadOf <span class="s2">"https://gitlab.mycompany.com/"</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -837,7 +1001,7 @@ One, tell Git to use alternative SSH protocol to make <code>go get</code> comman
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ go env -w GOPRIVATE=gitlab.mycompany.com</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>go <span class="nb">env</span> <span class="nt">-w</span> <span class="nv">GOPRIVATE</span><span class="o">=</span>gitlab.mycompany.com</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -848,7 +1012,7 @@ One, tell Git to use alternative SSH protocol to make <code>go get</code> comman
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>module gitlab.mycompany.com/group/subgroup/playground.git</pre>
+<pre class="rouge highlight"><code data-lang="text">module gitlab.mycompany.com/group/subgroup/playground.git</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -866,7 +1030,7 @@ Git coming from base CentOS:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo yum erase git perl-Git</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum erase git perl-Git</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -875,9 +1039,7 @@ repository:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ yum install \
-  https://repo.ius.io/ius-release-el7.rpm \
-  https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>yum <span class="nb">install </span>https://repo.ius.io/ius-release-el7.rpm https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -885,7 +1047,7 @@ repository:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo yum install git222</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum <span class="nb">install </span>git222</code></pre>
 </div>
 </div>
 </div>
@@ -900,7 +1062,7 @@ specific to a repo, change directory to it and then run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ git config user.email "own_email@domain"</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>git config user.email <span class="s2">"own_email@domain"</span></code></pre>
 </div>
 </div>
 </div>
@@ -910,9 +1072,9 @@ specific to a repo, change directory to it and then run:</p>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>$ git branch -m main master
-$ git push -u origin master
-$ git push origin --delete main</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>git branch <span class="nt">-m</span> main master
+<span class="gp">$</span><span class="w"> </span>git push <span class="nt">-u</span> origin master
+<span class="gp">$</span><span class="w"> </span>git push origin <span class="nt">--delete</span> main</code></pre>
 </div>
 </div>
 </div>
@@ -926,8 +1088,8 @@ distribution, do:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py
-$ python get-pip.py</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-O</span> https://bootstrap.pypa.io/pip/2.7/get-pip.py
+<span class="gp">$</span><span class="w"> </span>python get-pip.py</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -946,8 +1108,8 @@ by running the following commands:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sudo apt install python3-pip
-sudo pip3 install pipreqs</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt <span class="nb">install </span>python3-pip
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>pip3 <span class="nb">install </span>pipreqs</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -955,8 +1117,8 @@ sudo pip3 install pipreqs</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sudo yum install python3-pip
-sudo pip3 install pipreqs</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum <span class="nb">install </span>python3-pip
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>pip3 <span class="nb">install </span>pipreqs</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -964,17 +1126,17 @@ sudo pip3 install pipreqs</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>cd path/to/project
-pipreqs .</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">cd </span>path/to/project
+<span class="gp">$</span><span class="w"> </span>pipreqs .</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Some readers might have noticed that I wrote <code>pip3</code> instead of <code>pip</code>.
-In environments that have only one from Python 3 or Python 2 the command <code>pip</code>
-is likely to refer to the correct Python installation. However, this might not
-work in mixed systems that have both Python versions installed. Therefore, it
-is appropriate to specifically write <code>pip3</code> when working with Python 3
-packages and likewise for <code>pip</code> and Python 2.</p>
+<p>Some readers might have noticed that I wrote <code>pip3</code> instead of <code>pip</code>. In
+environments that have either Python 3 or Python 2 installed but not both, the
+command <code>pip</code> is likely to refer to the correct Python installation. However,
+this might not work in mixed systems that have both versions installed.
+Therefore, it is appropriate to specifically write <code>pip3</code> when working with
+Python 3 packages and likewise for <code>pip</code> and Python 2.</p>
 </div>
 </div>
 </div>
@@ -988,7 +1150,7 @@ consistent code indentation and formatting. The following works on Ubuntu
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sudo apt-get install astyle</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>astyle</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -996,7 +1158,7 @@ consistent code indentation and formatting. The following works on Ubuntu
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>LC_ALL="en_US.UTF-8" astyle -q -R --style=java -H '*.java' '*.c' '*.cc' '*.cpp' '*.h'</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nv">LC_ALL</span><span class="o">=</span><span class="s2">"en_US.UTF-8"</span> astyle <span class="nt">-q</span> <span class="nt">-R</span> <span class="nt">--style</span><span class="o">=</span>java <span class="nt">-H</span> <span class="s1">'*.java'</span> <span class="s1">'*.c'</span> <span class="s1">'*.cc'</span> <span class="s1">'*.cpp'</span> <span class="s1">'*.h'</span></code></pre>
 </div>
 </div>
 </div>
@@ -1010,7 +1172,7 @@ that worked for me on Oracle Linux 9:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ echo "/var/dumps/core.%e.%p" | sudo tee /proc/sys/kernel/core_pattern</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">echo</span> <span class="s2">"/var/dumps/core.%e.%p"</span> | <span class="nb">sudo tee</span> /proc/sys/kernel/core_pattern</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1019,7 +1181,7 @@ that worked for me on Oracle Linux 9:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo mkdir /var/dumps</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo mkdir</span> /var/dumps</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1027,7 +1189,7 @@ that worked for me on Oracle Linux 9:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ ulimit -c unlimited</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">ulimit</span> <span class="nt">-c</span> unlimited</code></pre>
 </div>
 </div>
 </div>
@@ -1042,7 +1204,7 @@ that worked for me on Oracle Linux 9:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo yum install libasan.x86_64</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum <span class="nb">install </span>libasan.x86_64</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1051,11 +1213,11 @@ that worked for me on Oracle Linux 9:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>int main()
-{
-  int *prt = new int;
-  return 0;
-}</pre>
+<pre class="rouge highlight"><code data-lang="c"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="o">*</span><span class="n">prt</span> <span class="o">=</span> <span class="n">new</span> <span class="kt">int</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1064,7 +1226,7 @@ sanitizer enabled, do:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ g++ -g -O0 -fsanitize=address main.cc</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>g++ <span class="nt">-g</span> <span class="nt">-O0</span> <span class="nt">-fsanitize</span><span class="o">=</span>address main.cc</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1084,7 +1246,7 @@ script linter is <code>shellcheck</code>. Install it on Ubuntu 22.04 by running<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo apt-get install shellcheck</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>shellcheck</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1092,7 +1254,7 @@ script linter is <code>shellcheck</code>. Install it on Ubuntu 22.04 by running<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ shellcheck -x &lt;script&gt;</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>shellcheck <span class="nt">-x</span> &lt;script&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -1107,7 +1269,7 @@ Install it by running:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo yum install lftp</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum <span class="nb">install </span>lftp</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1115,8 +1277,8 @@ Install it by running:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>machine &lt;hostname1&gt; login &lt;user1&gt; password &lt;pass1&gt;
-machine &lt;hostname2&gt;.login &lt;user2&gt; password &lt;pass2&gt;</pre>
+<pre class="rouge highlight"><code data-lang="text">machine &lt;hostname1&gt; login &lt;user1&gt; password &lt;pass1&gt;
+machine &lt;hostname2&gt;.login &lt;user2&gt; password &lt;pass2&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1125,7 +1287,7 @@ becomes very convenient:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ lftp sftp://&lt;user1&gt;@&lt;hostname1&gt;/upload</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>lftp sftp://&lt;user1&gt;@&lt;hostname1&gt;/upload</code></pre>
 </div>
 </div>
 </div>
@@ -1140,7 +1302,7 @@ following command finds files modified within the last 100 days:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ find . -type f -mtime -100</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>find <span class="nb">.</span> <span class="nt">-type</span> f <span class="nt">-mtime</span> <span class="nt">-100</span></code></pre>
 </div>
 </div>
 </div>
@@ -1158,7 +1320,7 @@ variable. This can be done by:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>find_package(Python3 REQUIRED COMPONENTS Interpreter Development)</pre>
+<pre class="rouge highlight"><code data-lang="cmake"><span class="nb">find_package</span><span class="p">(</span>Python3 REQUIRED COMPONENTS Interpreter Development<span class="p">)</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1180,8 +1342,8 @@ call depends on the <code>JAVA_HOME</code> environment variable being defined. E
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ echo $JAVA_HOME
-/usr/lib/jvm/java-21-openjdk-amd64</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">echo</span> <span class="nv">$JAVA_HOME</span>
+<span class="go">/usr/lib/jvm/java-21-openjdk-amd64</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1233,8 +1395,8 @@ it is not set to en_US-UTF-8, then installing it on Oracle Linux 9 involves:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sudo yum install glibc-langpack-en.x86_64
-sudo localectl set-locale LANG=en_US.UTF-8</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum <span class="nb">install </span>glibc-langpack-en.x86_64
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>localectl set-locale <span class="nv">LANG</span><span class="o">=</span>en_US.UTF-8</code></pre>
 </div>
 </div>
 </div>
@@ -1248,9 +1410,9 @@ repository. Given the following XML config:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>&lt;groupId&gt;com.github.siom79.japicmp&lt;/groupId&gt;
-&lt;artifactId&gt;japicmp&lt;/artifactId&gt;
-&lt;version&gt;0.23.1&lt;/version&gt;</pre>
+<pre class="rouge highlight"><code data-lang="xml"><span class="nt">&lt;groupId&gt;</span>com.github.siom79.japicmp<span class="nt">&lt;/groupId&gt;</span>
+<span class="nt">&lt;artifactId&gt;</span>japicmp<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;version&gt;</span>0.23.1<span class="nt">&lt;/version&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1258,10 +1420,7 @@ repository. Given the following XML config:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mvn dependency:get \
-  -DgroupId=com.github.siom79.japicmp \
-  -DartifactId=japicmp \
-  -Dversion=0.23.1</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>mvn dependency:get <span class="nt">-DgroupId</span><span class="o">=</span>com.github.siom79.japicmp <span class="nt">-DartifactId</span><span class="o">=</span>japicmp <span class="nt">-Dversion</span><span class="o">=</span>0.23.1</code></pre>
 </div>
 </div>
 </div>
@@ -1278,14 +1437,14 @@ package manager:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>cat &lt;&lt; EOF | sudo tee -a /etc/yum.repos.d/trivy.repo
+<pre class="rouge highlight"><code data-lang="text">cat &lt;&lt; EOF | sudo tee -a /etc/yum.repos.d/trivy.repo
 [trivy]
 name=Trivy repository
 baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/
 gpgcheck=1
 enabled=1
 gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
-EOF</pre>
+EOF</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1293,8 +1452,8 @@ EOF</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sudo yum update
-sudo yum install trivy</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum update
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum <span class="nb">install </span>trivy</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1302,9 +1461,9 @@ sudo yum install trivy</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sudo apt-get install gnupg2
-curl -s https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg
-echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>gnupg2
+<span class="gp">$</span><span class="w"> </span>curl <span class="nt">-s</span> https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg <span class="nt">--dearmor</span> | <span class="nb">sudo tee</span> /usr/share/keyrings/trivy.gpg
+<span class="gp">$</span><span class="w"> </span><span class="nb">echo</span> <span class="s2">"deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main"</span> | <span class="nb">sudo tee</span> <span class="nt">-a</span> /etc/apt/sources.list.d/trivy.list</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1312,8 +1471,8 @@ echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sudo apt-get update
-sudo apt-get install trivy</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get update
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>trivy</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1321,7 +1480,7 @@ sudo apt-get install trivy</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>trivy rootfs &lt;path/to/jar&gt;</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>trivy rootfs &lt;path/to/jar&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1329,7 +1488,7 @@ sudo apt-get install trivy</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>trivy image --severity HIGH,CRITICAL &lt;name:tag&gt;</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>trivy image <span class="nt">--severity</span> HIGH,CRITICAL &lt;name:tag&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -1343,8 +1502,8 @@ command-line use:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ curl https://ipinfo.io
-{
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl https://ipinfo.io
+<span class="go">{
   "ip": "117.199.196.56",
   "city": "Kolkata",
   "region": "West Bengal",
@@ -1354,7 +1513,7 @@ command-line use:</p>
   "postal": "700001",
   "timezone": "Asia/Kolkata",
   "readme": "https://ipinfo.io/missingauth"
-}</pre>
+}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1373,7 +1532,7 @@ make use of the <code>--noautoremove</code> command-line switch.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sudo yum erase --noautoremove &lt;rpm&gt;</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum erase <span class="nt">--noautoremove</span> &lt;rpm&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -1390,7 +1549,7 @@ manager. To check for available package version on Ubuntu 22.04 one can do:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>apt-cache madison openjdk-21-jdk</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>apt-cache madison openjdk-21-jdk</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1398,7 +1557,7 @@ manager. To check for available package version on Ubuntu 22.04 one can do:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>apt-cache policy openjdk-21-jdk</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>apt-cache policy openjdk-21-jdk</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1406,7 +1565,7 @@ manager. To check for available package version on Ubuntu 22.04 one can do:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>yum list java-21-openjdk.x86_64</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>yum list java-21-openjdk.x86_64</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1419,7 +1578,7 @@ manager. To check for available package version on Ubuntu 22.04 one can do:</p>
 <h2 id="_mupdf_repairing_pdf_files">MuPDF - Repairing PDF Files</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This incident happend on Debian 12.7. One I was able to open a PDF file in
+<p>This incident happend on Debian 12.7. I was able to open a PDF file in
 Firefox 115.15.0 ESR but Evince 43.1 reported that the document was damaged
 and could not open it.</p>
 </div>
@@ -1429,11 +1588,11 @@ as well:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>&gt; qpdf --check receipt.pdf
-WARNING: receipt.pdf: file is damaged
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>qpdf <span class="nt">--check</span> receipt.pdf
+<span class="go">WARNING: receipt.pdf: file is damaged
 WARNING: receipt.pdf: can't find startxref
 WARNING: receipt.pdf: Attempting to reconstruct cross-reference table
-qpdf: receipt.pdf: unable to find trailer dictionary while recovering damaged file</pre>
+qpdf: receipt.pdf: unable to find trailer dictionary while recovering damaged file</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1441,7 +1600,7 @@ qpdf: receipt.pdf: unable to find trailer dictionary while recovering damaged fi
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mutool clean -gg receipt.pdf repaired.pdf</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>mutool clean <span class="nt">-gg</span> receipt.pdf repaired.pdf</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1450,8 +1609,80 @@ can be installed by running:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sudo apt-get install mupdf-tools</pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>mupdf-tools</code></pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_krutidev010_pdf">KrutiDev010 - PDF</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I downloaded a PDF file from the web-site of a financial entity and wanted
+to share it with someone. But for sake of safety I did not want to include
+identification numbers.  This meant editing the PDF document.</p>
+</div>
+<div class="paragraph">
+<p>LibreOffice 7.4.7.2 on Debian 12.7 was unable to render Hindi fonts correctly
+that were used in the document. But the document could be viewed cleanly on
+Evince 43.1. The solution was to extract the font data from the PDF file and
+rebuild the system&#8217;s font cache.</p>
+</div>
+<div class="paragraph">
+<p>Listing the fonts in a PDF file can be done using the <code>pdffonts</code> command that
+is made available on Debian 12.7 by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>poppler-utils</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>pdffonts &lt;file&gt;</code> command printed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">name                         type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+Helvetica                    Type 1            WinAnsi          no  no  no       3  0
+NXQTTJ+KrutiDev010           CID TrueType      Identity-H       yes yes yes      5  0
+XGITZB+Calibri               CID TrueType      Identity-H       yes yes yes      6  0
+Times-Roman                  Type 1            WinAnsi          no  no  no      14  0</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The important line as the one containing <code>NXQTTJ+KrutiDev010</code>. It has to be
+used when generating the font file using fontforge:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt <span class="nb">install </span>fontforge
+<span class="gp">$</span><span class="w"> </span>fontforge &lt;file&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A necessary step for LibreOffice to work is setting the "Fontname" field to
+"KrutiDev010" after navigating from Element &#8594; Font Info. Copy the generated
+file to the fonts directory and rebuild the cache:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">mkdir</span> <span class="nt">-p</span> ~/.local/share/fonts
+<span class="gp">$</span><span class="w"> </span><span class="nb">cp </span>KrutiDev010.ttf ~/.local/share/fonts
+<span class="gp">$</span><span class="w"> </span>ft-cache <span class="nt">-f</span> <span class="nt">-v</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Verification step:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>fc-list | <span class="nb">grep </span>Kruti
+<span class="go">/home/user/.local/share/fonts/KrutiDev010.ttf: KrutiDev010:style=Regular</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice the second column of <code>KrutiDev010:style=Regular</code> in the output.</p>
 </div>
 </div>
 </div>
@@ -1477,7 +1708,7 @@ media that the app has created."
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-07-09 19:50:27 UTC
+Last updated 2025-08-09 14:36:38 UTC
 </div>
 </div>
 </body>

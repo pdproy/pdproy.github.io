@@ -1,5 +1,7 @@
 = Personal Tips & Tricks
 Pradeep Roy
+:source-highlighter: rouge
+:source-language: console
 
 My working environment is mostly Ubuntu 22.04 or Oracle Linux 9. Earlier, it
 used to be CentOS 7.
@@ -20,6 +22,7 @@ tip. This file makes it possible to separately specify port number, user name,
 identity file for hosts. I generally find it useful when connecting to servers
 that are listening on non-standard ports. Example:
 
+[,ssh]
 ----
 Host my-sftp-2022
 User sftpuser
@@ -54,19 +57,19 @@ the bottom is controlled by the `status-right` option.  One can view the
 current value by running:
 
 ----
-tmux show-option -g status-right
+$ tmux show-option -g status-right
 ----
 
 To temporarily set the status:
 
 ----
-tmux set -g status-right "%H:%M | %d-%b-%y"
+$ tmux set -g status-right "%H:%M | %d-%b-%y"
 ----
 
 With colours:
 
 ----
-tmux set-option -g status-right "#[fg=green]%H:%M #[fg=black]| #[fg=blue,bold]%d-%b-%y"
+$ tmux set-option -g status-right "#[fg=green]%H:%M #[fg=black]| #[fg=blue,bold]%d-%b-%y"
 ----
 
 == Sysstat - pidstat timestamp
@@ -77,12 +80,14 @@ user:
 
 Sample 1 (memory value is at position 8):
 
+[,text]
 ----
 05:29:05 AM     0      7144 224393.65      0.00 4629044 1943848   1.97  app
 ----
 
 Sample 2 (memory value is at position 7):
 
+[,text]
 ----
 04:14:22        0     34658 210790.37      0.00 4786596 2050684   2.08  app
 ----
@@ -93,20 +98,60 @@ timestamp in seconds since Epoch.
 
 == AsciiDoc - PDF
 
+Converting Asciidoc files info PDF makes it possible to share content with
+anyone.
+
+=== Debian 12
+
+I have used Asciidoctor PDF 2.3.4 on Debian 12.7. It generates nicely
+formatted documents with no additional command-line switches.
+
+----
+$ sudo apt-get install ruby-asciidoctor-pdf
+----
+
+The Rouge
+https://docs.asciidoctor.org/pdf-converter/latest/syntax-highlighting/[syntax
+highlighter] is nicely integrated with Asciidoctor PDF. It is not essential
+for PDF conversion but using it adds colour to source blocks.
+
+----
+$ sudo apt-get install ruby-rouge
+----
+
+One can start using it by merely adding the following line in the document
+header:
+
+[,text]
+----
+:source-highlighter: rouge
+----
+
+To print the list of languages supported by Rogue:
+
+----
+$ rougify list
+----
+
+Convert AsciiDoc to PDF:
+
+----
+$ asciidoctor-pdf <file.adoc>
+----
+
+=== CentOS 7
+
 Install the packages necessary to convert AsciiDoc (usually `.adoc` file
 extension) file to PDF:
 
 ----
-$  sudo yum install asciidoc dblatex
+$ sudo yum install asciidoc dblatex
 ----
 
 A command-line that I have used:
 
 ----
-$ a2x --icons-dir /usr/share/asciidoc/images -f pdf  \
- --dblatex-opts "-P doc.publisher.show=0 -P latex.output.revhistory=0 \
- -Pdoc.layout=\"coverpage frontmatter mainmatter index \"" \
- --doctype=article README.adoc
+$ a2x --icons-dir /usr/share/asciidoc/images -f pdf  --dblatex-opts "-P doc.publisher.show=0 -P latex.output.revhistory=0 -Pdoc.layout=\"coverpage frontmatter mainmatter index \"" --doctype=article README.adoc
 ----
 
 This is useful when the table of contents needs to be disabled. Otherwise, the
@@ -118,6 +163,7 @@ To generate hyperlinks to a file inside a Git repo use the `link` macro
 (https://docs.asciidoctor.org/asciidoc/latest/macros/link-macro/[source]).
 Example:
 
+[,text]
 ----
 link:path/to/file.pdf[file.pdf]
 ----
@@ -154,8 +200,7 @@ It is always easiest to install from binary packages (than compiling from
 source). Vim 8 is available from the GhettoForge Plus repo. Install it:
 
 ----
-$ sudo yum install
-https://mirror.ghettoforge.org/distributions/gf/gf-release-latest.gf.el7.noarch.rpm
+$ sudo yum install https://mirror.ghettoforge.org/distributions/gf/gf-release-latest.gf.el7.noarch.rpm
 ----
 
 The repo has to be manually enabled:
@@ -183,7 +228,6 @@ resort to compiling from sources:
 ----
 $ sudo yum groupinstall "Development Tools"
 $ sudo yum install ncurses ncurses-devel
-
 ----
 
 As of this writing the tip of the master branch was `4b4b1b8` tagged as
@@ -192,20 +236,15 @@ As of this writing the tip of the master branch was `4b4b1b8` tagged as
 ----
 $ git clone https://github.com/vim/vim.git
 $ cd vim
-$ ./configure --with-features=huge \
-    --enable-multibyte \
-    --enable-rubyinterp \
-    --enable-pythoninterp \
-    --enable-luainterp \
-    --prefix=/usr/local/vim8
+$ ./configure --with-features=huge --enable-multibyte --enable-rubyinterp --enable-pythoninterp --enable-luainterp --prefix=/usr/local/vim8
 ----
 
 Enabling Perl did not work for me. The compilation failed with an "Unrecognized
 switch: -rototypes" error message. So, I had to drop it.
 
 ----
-sudo mkdir /usr/local/vim8
-sudo chown osboxes:osboxes /usr/local/vim8
+$ sudo mkdir /usr/local/vim8
+$ sudo chown osboxes:osboxes /usr/local/vim8
 ----
 
 Finally, compile and install:
@@ -229,7 +268,7 @@ $ sudo ln -s /usr/local/vim8/bin/vim /usr/local/bin/
 After installing Vim 8, just do:
 
 ----
-git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go
+$ git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go
 ----
 
 Commits that have worked in the past:
@@ -265,7 +304,7 @@ $ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/insta
 == Go - Private Repository
 
 Using a private repository in a Go involves the execution of multiple steps.
-One, tell Git to use alternative SSH protocol to make `go get` commands work:
+ONE, tell Git to use alternative SSH protocol to make `go get` commands work:
 
 ----
 $ git config --global url."git@gitlab.mycompany.com:".insteadOf "https://gitlab.mycompany.com/"
@@ -281,6 +320,7 @@ Do, `go help private` for more information.
 
 THREE, ensure that the package's module uses the `.git` extension in its `go.mod`:
 
+[,text]
 ----
 module gitlab.mycompany.com/group/subgroup/playground.git
 ----
@@ -301,9 +341,7 @@ Then, install the Inline with Upstream Stable (https://ius.io/[IUS]) Yum
 repository:
 
 ----
-$ yum install \
-  https://repo.ius.io/ius-release-el7.rpm \
-  https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+$ yum install https://repo.ius.io/ius-release-el7.rpm https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 ----
 
 Install Git 2:
@@ -350,30 +388,30 @@ https://github.com/bndr/pipreqs[pipreqs] that can be installed on Ubuntu 22.04
 by running the following commands:
 
 ----
-sudo apt install python3-pip
-sudo pip3 install pipreqs
+$ sudo apt install python3-pip
+$ sudo pip3 install pipreqs
 ----
 
 Oracle Linux 9 users can do:
 
 ----
-sudo yum install python3-pip
-sudo pip3 install pipreqs
+$ sudo yum install python3-pip
+$ sudo pip3 install pipreqs
 ----
 
 Example usage:
 
 ----
-cd path/to/project
-pipreqs .
+$ cd path/to/project
+$ pipreqs .
 ----
 
-Some readers might have noticed that I wrote `pip3` instead of `pip`.
-In environments that have only one from Python 3 or Python 2 the command `pip`
-is likely to refer to the correct Python installation. However, this might not
-work in mixed systems that have both Python versions installed. Therefore, it
-is appropriate to specifically write `pip3` when working with Python 3
-packages and likewise for `pip` and Python 2.
+Some readers might have noticed that I wrote `pip3` instead of `pip`. In
+environments that have either Python 3 or Python 2 installed but not both, the
+command `pip` is likely to refer to the correct Python installation. However,
+this might not work in mixed systems that have both versions installed.
+Therefore, it is appropriate to specifically write `pip3` when working with
+Python 3 packages and likewise for `pip` and Python 2.
 
 == C/C++ - Reformat
 
@@ -382,13 +420,13 @@ consistent code indentation and formatting. The following works on Ubuntu
 22.04:
 
 ----
-sudo apt-get install astyle
+$ sudo apt-get install astyle
 ----
 
 Example command-line
 
 ----
-LC_ALL="en_US.UTF-8" astyle -q -R --style=java -H '*.java' '*.c' '*.cc' '*.cpp' '*.h'
+$ LC_ALL="en_US.UTF-8" astyle -q -R --style=java -H '*.java' '*.c' '*.cc' '*.cpp' '*.h'
 ----
 
 == C/C++ - Core Dumps
@@ -426,6 +464,7 @@ $ sudo yum install libasan.x86_64
 Example program with a memory leak
 (https://stackoverflow.com/questions/47201087/gcc-how-to-use-address-sanitizer[source]):
 
+[,c]
 ----
 int main()
 {
@@ -473,6 +512,7 @@ $ sudo yum install lftp
 
 The command reads login information from `/.netrc`. Example contents:
 
+[,text]
 ----
 machine <hostname1> login <user1> password <pass1>
 machine <hostname2>.login <user2> password <pass2>
@@ -504,6 +544,7 @@ be `/usr/lib/python3/dist-packages` on Ubuntu and
 distribution. CMake can auto-detect the value and make it available through a
 variable. This can be done by:
 
+[,cmake]
 ----
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 ----
@@ -549,8 +590,8 @@ en_US.UTF-8. To display the currently set locale use the `locale` command. If
 it is not set to en_US-UTF-8, then installing it on Oracle Linux 9 involves:
 
 ----
-sudo yum install glibc-langpack-en.x86_64
-sudo localectl set-locale LANG=en_US.UTF-8
+$ sudo yum install glibc-langpack-en.x86_64
+$ sudo localectl set-locale LANG=en_US.UTF-8
 ----
 
 == Maven - Downloading JAR
@@ -558,6 +599,7 @@ sudo localectl set-locale LANG=en_US.UTF-8
 Maven has a cool feature to download a dependency (JAR) into the local
 repository. Given the following XML config:
 
+[,xml]
 ----
 <groupId>com.github.siom79.japicmp</groupId>
 <artifactId>japicmp</artifactId>
@@ -567,10 +609,7 @@ repository. Given the following XML config:
 One can download the `japicmp` JAR by running:
 
 ----
-mvn dependency:get \
-  -DgroupId=com.github.siom79.japicmp \
-  -DartifactId=japicmp \
-  -Dversion=0.23.1
+$ mvn dependency:get -DgroupId=com.github.siom79.japicmp -DartifactId=japicmp -Dversion=0.23.1
 ----
 
 == Trivy - Scanning JARs
@@ -581,6 +620,7 @@ https://trivy.dev/latest/getting-started/installation/[official instructions].
 To install on a RHEL type of distribution (e.g. Oracle Linux 9), configure the
 package manager:
 
+[,text]
 ----
 cat << EOF | sudo tee -a /etc/yum.repos.d/trivy.repo
 [trivy]
@@ -595,35 +635,35 @@ EOF
 Followed by:
 
 ----
-sudo yum update
-sudo yum install trivy
+$ sudo yum update
+$ sudo yum install trivy
 ----
 
 To install on Ubuntu 22.04, configure APT:
 
 ----
-sudo apt-get install gnupg2
-curl -s https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg
-echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+$ sudo apt-get install gnupg2
+$ curl -s https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg
+$ echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
 ----
 
 Followed by:
 
 ----
-sudo apt-get update
-sudo apt-get install trivy
+$ sudo apt-get update
+$ sudo apt-get install trivy
 ----
 
 To scan a single JAR:
 
 ----
-trivy rootfs <path/to/jar>
+$ trivy rootfs <path/to/jar>
 ----
 
 To scan a Docker images selecting high and critical vulnerabilities only:
 
 ----
-trivy image --severity HIGH,CRITICAL <name:tag>
+$ trivy image --severity HIGH,CRITICAL <name:tag>
 ----
 
 == Curl - IP Geolocation
@@ -657,7 +697,7 @@ times. It saves time if the dependencies are not removed. To do this with Yum,
 make use of the `--noautoremove` command-line switch.
 
 ----
-sudo yum erase --noautoremove <rpm>
+$ sudo yum erase --noautoremove <rpm>
 ----
 
 == Packages - Available Version
@@ -669,19 +709,19 @@ this version can be installed on my system through the default package
 manager. To check for available package version on Ubuntu 22.04 one can do:
 
 ----
-apt-cache madison openjdk-21-jdk
+$ apt-cache madison openjdk-21-jdk
 ----
 
 An alternative command that also reports if the package is installed is:
 
 ----
-apt-cache policy openjdk-21-jdk
+$ apt-cache policy openjdk-21-jdk
 ----
 
 To do the same thing on a RHEL-like system (e.g. Oracle Linux 9), do:
 
 ----
-yum list java-21-openjdk.x86_64
+$ yum list java-21-openjdk.x86_64
 ----
 
 Yum's `list` command needs a full package name. For instance, the argument
@@ -689,7 +729,7 @@ Yum's `list` command needs a full package name. For instance, the argument
 
 == MuPDF - Repairing PDF Files
 
-This incident happend on Debian 12.7. One I was able to open a PDF file in
+This incident happend on Debian 12.7. I was able to open a PDF file in
 Firefox 115.15.0 ESR but Evince 43.1 reported that the document was damaged
 and could not open it.
 
@@ -697,7 +737,7 @@ Issues were reported by https://qpdf.readthedocs.io/en/stable/overview.html[qpdf
 as well:
 
 ----
-> qpdf --check receipt.pdf
+$ qpdf --check receipt.pdf
 WARNING: receipt.pdf: file is damaged
 WARNING: receipt.pdf: can't find startxref
 WARNING: receipt.pdf: Attempting to reconstruct cross-reference table
@@ -707,15 +747,71 @@ qpdf: receipt.pdf: unable to find trailer dictionary while recovering damaged fi
 The following command made it possible to create a repaired file:
 
 ----
-mutool clean -gg receipt.pdf repaired.pdf
+$ mutool clean -gg receipt.pdf repaired.pdf
 ----
 
 The https://mupdf.readthedocs.io/en/latest/tools/index.html[mutool] utility
 can be installed by running:
 
 ----
-sudo apt-get install mupdf-tools
+$ sudo apt-get install mupdf-tools
 ----
+
+== KrutiDev010 - PDF
+
+I downloaded a PDF file from the web-site of a financial entity and wanted
+to share it with someone. But for sake of safety I did not want to include
+identification numbers.  This meant editing the PDF document.
+
+LibreOffice 7.4.7.2 on Debian 12.7 was unable to render Hindi fonts correctly
+that were used in the document. But the document could be viewed cleanly on
+Evince 43.1. The solution was to extract the font data from the PDF file and
+rebuild the system's font cache.
+
+Listing the fonts in a PDF file can be done using the `pdffonts` command that
+is made available on Debian 12.7 by running:
+
+----
+$ sudo apt-get install poppler-utils
+----
+
+The `pdffonts <file>` command printed:
+
+----
+name                         type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+Helvetica                    Type 1            WinAnsi          no  no  no       3  0
+NXQTTJ+KrutiDev010           CID TrueType      Identity-H       yes yes yes      5  0
+XGITZB+Calibri               CID TrueType      Identity-H       yes yes yes      6  0
+Times-Roman                  Type 1            WinAnsi          no  no  no      14  0
+----
+
+The important line as the one containing `NXQTTJ+KrutiDev010`. It has to be
+used when generating the font file using fontforge:
+
+----
+$ sudo apt install fontforge
+$ fontforge <file>
+----
+
+A necessary step for LibreOffice to work is setting the "Fontname" field to
+"KrutiDev010" after navigating from Element -> Font Info. Copy the generated
+file to the fonts directory and rebuild the cache:
+
+----
+$ mkdir -p ~/.local/share/fonts
+$ cp KrutiDev010.ttf ~/.local/share/fonts
+$ ft-cache -f -v
+----
+
+Verification step:
+
+----
+$ fc-list | grep Kruti
+/home/user/.local/share/fonts/KrutiDev010.ttf: KrutiDev010:style=Regular
+----
+
+Notice the second column of `KrutiDev010:style=Regular` in the output.
 
 == WhatsApp - Android
 

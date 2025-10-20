@@ -1,0 +1,60 @@
+= Go Concurrency - Statement Order
+Pradeep Roy
+
+An interesting bug related to statement order from October 2025.
+
+We had a piece of code that called a function in a goroutine. We made use of
+`sync.WaitGroup` and the related `Add()` and `Done()` calls as one would
+expect. The essential portion of the code looked like the following:
+
+[,go]
+----
+var wg sync.WaitGroup
+wg.Add(1)
+
+go {
+    response = foo(&wg)
+}
+
+wg.Wait()
+log.Println(response)
+----
+
+The `WaitGroup.Done()` call was inside the `foo()` function using the usual
+`defer` keyword.
+
+[,go]
+----
+func foo(wg *sync.WaitGroup) ResponseType {
+    defer wg.Done()
+    // other statements
+}
+----
+
+But there was a problem. The function's return value was used in the main
+goroutine.
+
+The Go language https://go.dev/ref/spec#Return_statements[specification]
+states that functions defered by a function F are executed before F returns to
+its caller. This means that the main goroutine's `WaitGroup.Wait()` can
+potentially return and get unblocked before the returned values are copied to
+the variable `response`. This means the value in `response` depends on order
+of execution, which is not our intention. We always want it to contain the
+value computed by the function.
+
+The solution was to avoid passing the `sync.WaitGroup` param into the function
+and use `defer` outside of the call:
+
+[,go]
+----
+var wg sync.WaitGroup
+wg.Add(1)
+
+go {
+    response = foo()
+    wg.Done()
+}
+
+wg.Wait()
+log.Println(response)
+----

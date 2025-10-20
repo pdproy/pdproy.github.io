@@ -5,7 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<title>Personal Tips &amp; Tricks</title>
+<meta name="author" content="Pradeep Roy">
+<title>Go Concurrency - Statement Order</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,361 +437,72 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Personal Tips &amp; Tricks</h1>
+<h1>Go Concurrency - Statement Order</h1>
+<div class="details">
+<span id="author" class="author">Pradeep Roy</span><br>
+</div>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_platform">Platform</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>My working environment is mostly CentOS 7. Thus, unless specified otherwise, it
-can be assumed that the commands are to be run on this OS.</p>
+<p>An interesting bug related to statement order from October 2025.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_tips_tricks">Tips &amp; Tricks</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_openssh_generating_keys">OpenSSH - Generating Keys</h3>
 <div class="paragraph">
-<p>Generating authentication keys for OpenSSH:</p>
+<p>We had a piece of code that called a function in a goroutine. We made use of
+<code>sync.WaitGroup</code> and the related <code>Add()</code> and <code>Done()</code> calls as one would
+expect. The essential portion of the code looked like the following:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ ssh-keygen -t rsa -b 4096 -C &lt;hostname&gt;</pre>
+<pre>var wg sync.WaitGroup
+wg.Add(1)
+
+go {
+    response = foo(&amp;wg)
+}
+
+wg.Wait()
+log.Println(response)</pre>
 </div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_sysstat_pidstat_timestamp">Sysstat - pidstat timestamp</h3>
 <div class="paragraph">
-<p>This issue occurred on 7.9.2009 with sysstat 10.1.5-20.el7_9. <code>pidstat</code>
-printed the opening timestamp in a different format depending on the logged-in
-user:</p>
+<p>The <code>WaitGroup.Done()</code> call was inside the <code>foo()</code> function using the usual
+<code>defer</code> keyword.</p>
 </div>
 <div class="paragraph">
-<p>Sample 1 (memory value is at position 8):</p>
+<p>But there is a problem. The function&#8217;s return value is used in the main
+goroutine.</p>
+</div>
+<div class="paragraph">
+<p>The Go language <a href="https://go.dev/ref/spec#Return_statements">specification</a>
+states that functions defered by a function F are executed before F returns to
+its caller. This means that the main thread&#8217;s <code>WaitGroup.Wait()</code> can
+potentially return unblock the main thread before the returned values are
+copied to the variable <code>response</code>. This means the value in <code>response</code> depends
+on the order of execution, which is not our intention. We want it to contain
+the value computed by the function.</p>
+</div>
+<div class="paragraph">
+<p>The solution was to avoid passing the <code>sync.WaitGroup</code> param into the function
+and use <code>defer</code> outside of the call:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>05:29:05 AM     0      7144 224393.65      0.00 4629044 1943848   1.97  app</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Sample 2 (memory value is at position 7):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>04:14:22        0     34658 210790.37      0.00 4786596 2050684   2.08  app</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>We were not able to resolve by using the <code>S_TIME_FORMAT</code> environment variable.
-We resolved it by using the <code>-h</code> switch that made <code>pidstat</code> print the
-timestamp in seconds since Epoch.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_asciidoc_pdf">AsciiDoc - PDF</h3>
-<div class="paragraph">
-<p>Install the packages necessary to convert AsciiDoc (usually <code>.adoc</code> file
-extension) file to PDF:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$  sudo yum install asciidoc dblatex</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>A command-line that I have used:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ a2x --icons-dir /usr/share/asciidoc/images -f pdf  \
- --dblatex-opts "-P doc.publisher.show=0 -P latex.output.revhistory=0 \
- -Pdoc.layout=\"coverpage frontmatter mainmatter index \"" \
- --doctype=article README.adoc</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This is useful when the table of contents needs to be disabled. Otherwise, the
-<code>-Pdoc.layout</code> switch is not required.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_markdown_generate_table_of_contents">Markdown - Generate Table of Contents</h3>
-<div class="paragraph">
-<p><a href="https://github.com/thlorenz/doctoc">Doctoc</a> can be used to generate table of
-contents in markdown files. Essentially:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo npm install -g doctoc</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The table of contents of this file has been generated using <code>doctoc</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ doctoc Tips.md</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_markdown_cli_preview">Markdown - CLI Preview</h3>
-<div class="paragraph">
-<p><a href="https://github.com/charmbracelet/glow">Glow</a> makes it possible to preview
-Markdown files on the terminal. Download an install a suitable binary package
-from the <a href="https://github.com/charmbracelet/glow/releases">releases page</a></p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_markdown_table_genrator">Markdown - Table Genrator</h3>
-<div class="paragraph">
-<p>The <a href="https://www.tablesgenerator.com/markdown_tables">tables generator</a>
-site can be used to generate markdown for tables.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_vim_installing_vim_8_on_centos_7">Vim - Installing Vim 8 on CentOS 7</h3>
-<div class="paragraph">
-<p>It is always easiest to install from binary packages (than compiling from
-source). Vim 8 is available from the GhettoForge Plus repo. Install it:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install
-https://mirror.ghettoforge.org/distributions/gf/gf-release-latest.gf.el7.noarch.rpm</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The repo has to be manually enabled:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo vi /etc/yum.repos.d/gf.repo</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The package conflicts with the one coming from base CentOS and so has to be
-removed. Do keep a backup of <code>sudo</code> config (e.g. <code>/etc/sudoers</code>) because it
-gets removed in the process:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum autoremove vim-minimal
-$ sudo yum install vim-enhanced sudo</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_vim_building_vim_8_on_centos_7">Vim - Building Vim 8 on CentOS 7</h3>
-<div class="paragraph">
-<p>The main reason why I wanted to upgrade to Vim 8 on CentOS 7 was the
-<a href="https://github.com/fatih/vim-go">vim-go</a> plugin. It did not find the version
-that came from GhettoForge new enough and kept complaining. Therefore, I had to
-resort to compiling from sources:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum groupinstall "Development Tools"
-$ sudo yum install ncurses ncurses-devel</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As of this writing the tip of the master branch was <code>4b4b1b8</code> tagged as
-<code>v8.2.3426</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ git clone https://github.com/vim/vim.git
-$ cd vim
-$ ./configure --with-features=huge \
-    --enable-multibyte \
-    --enable-rubyinterp \
-    --enable-pythoninterp \
-    --enable-luainterp \
-    --prefix=/usr/local/vim8</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Enabling Perl did not work for me. The compilation failed with an "Unrecognized
-switch: -rototypes" error message. So, I had to drop it.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo mkdir /usr/local/vim8
-sudo chown osboxes:osboxes /usr/local/vim8</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Finally, compile and install:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ make
-$ make install</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Notice how the install step was run as non-root. This ensures that we don&#8217;t
-modify system-wide locations any more than expected. If uninstallation is
-required, then removing this one directory is enough.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum autoremove vim-enhanced
-$ sudo ln -s /usr/local/vim8/bin/vim /usr/local/bin/</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_go_setting_up_vim">Go - Setting up Vim</h3>
-<div class="paragraph">
-<p>After installing Vim 8, just do:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Commits that have worked in the past:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>2024-01-14</strong> Go 1.18.10 (<a href="https://github.com/fatih/vim-go/commit/e2e7ad7c">commit</a>)</p>
-</li>
-<li>
-<p><strong>2023-06-21</strong> Go 1.18.10 (<a href="https://github.com/fatih/vim-go/commit/397a9c57">commit</a>)</p>
-</li>
-<li>
-<p><strong>2023-05-29</strong> Go 1.18.10 (<a href="https://github.com/fatih/vim-go/commit/2a874910">commit</a>)</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>That&#8217;s it! For details see <a href="https://tpaschalis.github.io/vim-go-setup/">this</a> blog.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_go_directory_layout">Go - Directory Layout</h3>
-<div class="paragraph">
-<p>I have kind of started liking the Go Project
-<a href="https://github.com/golang-standards/project-layout">layout</a>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_git_git_2_on_centos_7">Git - Git 2 on CentOS 7</h3>
-<div class="paragraph">
-<p>Installing the newer Git 2 on CentOS 7 is required to avoid <code>git fetch-pack</code>
-errors (<a href="https://github.com/golang/go/issues/38373">38373</a>). First, uninstall
-Git coming from base CentOS:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum erase git perl-Git</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then, install the Inline with Upstream Stable (<a href="https://ius.io/">IUS</a>) Yum
-repository:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ yum install \
-  https://repo.ius.io/ius-release-el7.rpm \
-  https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Install Git 2:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install git222</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_git_email_id_per_repo">Git - Email id per Repo</h3>
-<div class="paragraph">
-<p>Sometimes there is a need to use separate author emails IDs in Git commits
-residing in differente repos (e.g.  work and personal). To setup an email ID
-specific to a repo, change directory to it and then run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ git config user.email "own_email@domain"</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_git_renaming_branches">Git - Renaming branches</h3>
-<div class="listingblock">
-<div class="content">
-<pre>$ git branch -m main master
-$ git push -u origin master
-$ git push origin --delete main</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_python_pip_on_python_2_7">Python - Pip on Python 2.7</h3>
-<div class="paragraph">
-<p>To install a newer version of Pip on CentOS 7 than the one coming with the
-distribution, do:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py
-$ python get-pip.py</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This helped me get Pip 20.3.4.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_cli_lftp">CLI - lftp</h3>
-<div class="paragraph">
-<p><code>lftp</code> is a useful command. The interaction with a FTP server is faster and
-more Bash-like. It also has an option to download complete directory trees.
-Install it by running:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install lftp</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The command reads login information from <code>/.netrc</code>. Example contents:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>machine &lt;hostname1&gt; login &lt;user1&gt; password &lt;pass1&gt;
-machine &lt;hostname2&gt;.login &lt;user2&gt; password &lt;pass2&gt;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then logging to a server and directly switching to a directory
-becomes very convenient:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ lftp sftp://&lt;user1&gt;@&lt;hostname1&gt;/upload</pre>
-</div>
-</div>
-</div>
+<pre>var wg sync.WaitGroup
+wg.Add(1)
+
+go {
+    response = foo()
+    wg.Done()
+}
+
+wg.Wait()
+log.Println(response)</pre>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-08-09 14:36:54 UTC
+Last updated 2025-10-20 12:30:05 UTC
 </div>
 </div>
 </body>

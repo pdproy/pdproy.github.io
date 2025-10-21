@@ -453,7 +453,7 @@ expect. The essential portion of the code looked like the following:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>var wg sync.WaitGroup
+<pre class="highlight"><code class="language-go" data-lang="go">var wg sync.WaitGroup
 wg.Add(1)
 
 go {
@@ -461,25 +461,33 @@ go {
 }
 
 wg.Wait()
-log.Println(response)</pre>
+log.Println(response)</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The <code>WaitGroup.Done()</code> call was inside the <code>foo()</code> function using the usual
 <code>defer</code> keyword.</p>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-go" data-lang="go">func foo(wg *sync.WaitGroup) ResponseType {
+    defer wg.Done()
+    // other statements
+}</code></pre>
+</div>
+</div>
 <div class="paragraph">
-<p>But there is a problem. The function&#8217;s return value is used in the main
+<p>But there was a problem. The function&#8217;s return value was used in the main
 goroutine.</p>
 </div>
 <div class="paragraph">
 <p>The Go language <a href="https://go.dev/ref/spec#Return_statements">specification</a>
 states that functions defered by a function F are executed before F returns to
-its caller. This means that the main thread&#8217;s <code>WaitGroup.Wait()</code> can
-potentially return unblock the main thread before the returned values are
-copied to the variable <code>response</code>. This means the value in <code>response</code> depends
-on the order of execution, which is not our intention. We want it to contain
-the value computed by the function.</p>
+its caller. This means that the main goroutine&#8217;s <code>WaitGroup.Wait()</code> can
+potentially return and get unblocked before the returned values are copied to
+the variable <code>response</code>. This means the value in <code>response</code> depends on order
+of execution, which is not our intention. We always want it to contain the
+value computed by the function.</p>
 </div>
 <div class="paragraph">
 <p>The solution was to avoid passing the <code>sync.WaitGroup</code> param into the function
@@ -487,7 +495,7 @@ and use <code>defer</code> outside of the call:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>var wg sync.WaitGroup
+<pre class="highlight"><code class="language-go" data-lang="go">var wg sync.WaitGroup
 wg.Add(1)
 
 go {
@@ -496,13 +504,13 @@ go {
 }
 
 wg.Wait()
-log.Println(response)</pre>
+log.Println(response)</code></pre>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-10-20 12:30:05 UTC
+Last updated 2025-10-21 07:03:07 UTC
 </div>
 </div>
 </body>

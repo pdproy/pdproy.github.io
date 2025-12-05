@@ -1,0 +1,110 @@
+= Car
+
+This article contains my notes around a four wheeler. I have not made any
+particular attempt to provide information in a logical manner or explain terms
+before first use.
+
+== Tata Punch
+
+Why?
+
+- Good visibility. Large front glasses.
+- High sitting position. I find it better if the normal viewing position is
+  towards the road and surroundings rather than towards the horizon. Another
+  benefit of higher sitting position is that feels comfortable like sitting on
+  a chair.
+- Good headroom. Interestingly, Tata Nexon is larger but feels less spacious
+  inside.
+- Small size. Most of the driving will be in the city.
+- Doors open wide. Easy to get in and get out.
+- It makes many safety features like anti break locking system (ABS) and
+  electronic breakforce distribution (EBD), corner stability control (CSC),
+  electronic stability program (ESP), rear parking sensors and reverse parking
+  camera available to the budget buyer.
+- Popular. This is an indicator that it is delivering something that
+  the society regards as important.
+- Moderate (not flashy) interiors
+
+== Variants
+
+Additional features in Adventure variant in comparison to Tata Punch Pure:
+
+- Body colored ORVM
+- Full wheel cap
+- Rear power windows
+- Rear AC vent
+- Piano boack gear knob finish
+- Rear parcel tray
+- Center console storage
+- Wheel arch carpet
+- Central locking with remote
+- Grand console with armrest
+- Electrically adjustible ORVMS
+- Follow-me home headlamps
+- Steering mounted infotainment and telephone
+- Vanity mirror
+- Anti-glair interior rear view mirror
+- 3.5" screen, microphone and 4 speakers
+
+Additional features in Adventure plus variant in comparison to Tata Punch
+Adventure:
+
+- Reverse parking camera
+- Android CarPlay and Apple Auto
+- 7" Harman screen, 2 tweeters What3Words, navigation
+
+Tata Punch does not seem to have an Accomplished only variant. Additional
+features in Accomplished plus in comparison to Adventure plus:
+
+- One shot auto down driver window
+- Front armrest
+- Projector headlamps
+- LED tail lamps LED lamps are brighter and consume less energy
+- LED DRLs
+- Shark fin antenna
+- 10.25" screen
+- Hyper stylized wheels
+- Collapsible grab handles
+- Fully automatic temperature control (FATC) air conditioner
+- Passive entry passive start (PEPS) Passive entry is the functionality to
+  open the car when the key is near and the door handle is touched. It is a
+  convenience feature that might be particularly useful for women drivers who
+  typically don't have pockets in their dresses. However, attackers can
+  amplify the key signal from a distance. It will be useful to know if
+  key-less entry can be disabled. Passive start is about starting the engine
+  using a push button.
+- Glove box with lamp and cooling unit This can be useful if there are items
+  that need to be kept at a lower temperature (e.g. chocolates).
+- Push button start stop with smart key
+- Fast C-type USB in front
+- Xpress cool This feature cools the cabin quickly. It might be useful in
+  situations where a rapid lowering of the cabin temperature is desirable.
+- Rear USB A-type power outlet
+- Rear wiper washer
+- Rear defogger
+- Cruise control This lets the car maintain constant speed. It is useful
+  during long drives on clear roads.
+- Steering mounted telephone and cruise control
+
+== Price
+
+On-road price comparison as on 23-Nov-2025:
+
+[options="header"]
+|===
+| Variant           | Price
+| Adventure+        | 7,75,000
+| Adventure+ AMT    | 8,35,000
+| Accomplished+     | 8,65,000
+| Accomplished+ AMT | 9,25,000
+
+== Comparison Table
+
+[options="header"]
+|===
+| Car           | Length | Width | Height | Boot | Clearance | Wheel Base
+| Tata Punch    | 3827   | 1742  | 1615   | 366  | 187       | 2445
+| Tata Nexon    | 3995   | 1804  | 1620   | 382  | 208       | 2498
+| Hyundai Exter | 3815   | 1710  | 1631   | 391  | 185       | 2450
+| Zen Estilo    | 3600   | 1495  | 1595   | 212  | 165       | 2360
+|===

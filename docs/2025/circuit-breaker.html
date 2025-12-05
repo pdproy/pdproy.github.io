@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<meta name="author" content="Pradeep Roy">
-<title>Go Concurrency - Statement Order</title>
+<title>Circuit Breaker</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -437,80 +436,129 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Go Concurrency - Statement Order</h1>
-<div class="details">
-<span id="author" class="author">Pradeep Roy</span><br>
-</div>
+<h1>Circuit Breaker</h1>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
-<p>An interesting bug related to statement order from October 2025.</p>
-</div>
-<div class="paragraph">
-<p>We had a piece of code that called a function in a goroutine. We made use of
-<code>sync.WaitGroup</code> and the related <code>Add()</code> and <code>Done()</code> calls as one would
-expect. The essential portion of the code looked like the following:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-go" data-lang="go">var wg sync.WaitGroup
-wg.Add(1)
-
-go {
-    response = foo(&amp;wg)
-}
-
-wg.Wait()
-log.Println(response)</code></pre>
-</div>
+<p>The Circuit Breaker is a pattern in software to automatically avoid calls to
+a remote service (e.g. database on a different machine) for a temporary
+period of time.  Related, is a complementary pattern known as retry that
+expects success while circuit breaker anticipates failure. There are many
+articles available online that provide a good introduction. In this article I
+will share the insights that I gained while implementing it in November 2025.</p>
 </div>
 <div class="paragraph">
-<p>The <code>WaitGroup.Done()</code> call was inside the <code>foo()</code> function using the usual
-<code>defer</code> keyword.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-go" data-lang="go">func foo(wg *sync.WaitGroup) ResponseType {
-    defer wg.Done()
-    // other statements
-}</code></pre>
-</div>
+<p>A circuit breaker software component sits between the core application and an
+remote service. It does not let requests pass to the remote service if it
+has reported many recent errors. It has three states:
+- <strong>Closed</strong> The circuit breaker allows requests to pass to the service.
+- <strong>Open</strong> The circuit breaker does not allow requests to pass.
+- <strong>Half Open</strong> The circuit breaker will allow a single trial request to pass.
+  If the request succeeds then it goes to closed, otherwise to open.</p>
 </div>
 <div class="paragraph">
-<p>But there was a problem. The function&#8217;s return value was used in the main
-goroutine.</p>
+<p>There are at least two config parameters that have to be supported by the
+circuit breaker:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Failure Threshold</strong> Number of consecutive failures that must occur for the
+circuit breaker to go from closed to open state. A value of 0 means that the
+circuit breaker feature will be disabled.</p>
+</li>
+<li>
+<p><strong>Reset Timeout</strong> Amount of time the circuit breaker will remain in the open
+state before automatically transitioning to the half-open state.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>The Go language <a href="https://go.dev/ref/spec#Return_statements">specification</a>
-states that functions defered by a function F are executed before F returns to
-its caller. This means that the main goroutine&#8217;s <code>WaitGroup.Wait()</code> can
-potentially return and get unblocked before the returned values are copied to
-the variable <code>response</code>. This means the value in <code>response</code> depends on order
-of execution, which is not our intention. We always want it to contain the
-value computed by the function.</p>
+<p>Core steps:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The circuit breaker starts in the closed state. In this state it allows
+incoming requests to go to the remote service.</p>
+</li>
+<li>
+<p>Errors from the remote service result in incrementing a failure count.
+Business errors are not failures. For instance, missing records or improper
+format are not errors from the circuit breaker&#8217;s perspective. I/O errors are
+the ones that need to be caught.</p>
+</li>
+<li>
+<p>The circuit breaker transitions to the open state when the failure count
+becomes more than the failure threshold. The failure count is reset to 0 on
+any successful request while in the closed state.</p>
+</li>
+<li>
+<p>It transitions to the half-open state after remaining in the open state till
+reset timeout (e.g. 5 seconds). A single trial request is allowed to pass in
+the half-open state. The result of this request determines if the circuit
+breaker will next transition to the closed or the open state.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>The solution was to avoid passing the <code>sync.WaitGroup</code> param into the function
-and use <code>defer</code> outside of the call:</p>
+<p>Key considerations:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-go" data-lang="go">var wg sync.WaitGroup
-wg.Add(1)
-
-go {
-    response = foo()
-    wg.Done()
-}
-
-wg.Wait()
-log.Println(response)</code></pre>
+<div class="ulist">
+<ul>
+<li>
+<p>Which piece of code should be wrapped behind the circuit breaker? It can be
+all calls to an remote service or only those that are called frequently.</p>
+</li>
+<li>
+<p>Will the circuit breaker code be called concurrently? This is very likely to
+be yes, which means synchronization mechanism will be required while
+updating internal data like current state, number of failed requests.</p>
+</li>
+<li>
+<p>Avoid duplicate trial runs. If this is not done then a large number of
+requests can get fired to the remote service at the same time in the
+half-open state.</p>
+</li>
+<li>
+<p>Is it fine to fail all requests that arrive while a trial run is taking
+place? If requests wait while the trial run is taking place then they might
+get the opportunity to execute very soon if the trial run were to succeed.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_further_study">Further Study</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://go.dev/blog/go1.13-errors">Working with Errors in Go 1.13</a>, Damien
+Neil and Jonathan Amsterdam, 2019</p>
+</li>
+<li>
+<p><a href="https://go.dev/blog/errors-are-values">Errors are values</a>, Rob Pike, 2015</p>
+</li>
+<li>
+<p><a href="https://martinfowler.com/bliki/CircuitBreaker.html">Circuit Breaker</a>, Martin
+Fowler, 2014</p>
+</li>
+<li>
+<p><a href="https://github.com/Shopify/toxiproxy">toxiproxy</a>: A TCP proxy to simulate
+network and system conditions for chaos and resiliency testing</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-10-21 07:49:14 UTC
+Last updated 2025-12-05 15:36:15 UTC
 </div>
 </div>
 </body>

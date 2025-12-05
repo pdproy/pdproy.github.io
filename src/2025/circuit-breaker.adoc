@@ -1,0 +1,66 @@
+= Circuit Breaker
+Pradeep Roy
+
+The Circuit Breaker is a pattern in software to automatically avoid calls to
+a remote service (e.g. database on a different machine) for a temporary
+period of time.  Related, is a complementary pattern known as retry that
+expects success while circuit breaker anticipates failure. There are many
+articles available online that provide a good introduction. In this article I
+will share the insights that I gained while implementing it in November 2025.
+
+A circuit breaker software component sits between the core application and an
+remote service. It does not let requests pass to the remote service if it
+has reported many recent errors. It has three states:
+- *Closed* The circuit breaker allows requests to pass to the service.
+- *Open* The circuit breaker does not allow requests to pass.
+- *Half Open* The circuit breaker will allow a single trial request to pass.
+  If the request succeeds then it goes to closed, otherwise to open.
+
+There are at least two config parameters that have to be supported by the
+circuit breaker:
+
+- *Failure Threshold* Number of consecutive failures that must occur for the
+  circuit breaker to go from closed to open state. A value of 0 means that the
+  circuit breaker feature will be disabled.
+- *Reset Timeout* Amount of time the circuit breaker will remain in the open
+  state before automatically transitioning to the half-open state.
+
+Core steps:
+
+- The circuit breaker starts in the closed state. In this state it allows
+  incoming requests to go to the remote service.
+- Errors from the remote service result in incrementing a failure count.
+  Business errors are not failures. For instance, missing records or improper
+  format are not errors from the circuit breaker's perspective. I/O errors are
+  the ones that need to be caught.
+- The circuit breaker transitions to the open state when the failure count
+  becomes more than the failure threshold. The failure count is reset to 0 on
+  any successful request while in the closed state.
+- It transitions to the half-open state after remaining in the open state till
+  reset timeout (e.g. 5 seconds). A single trial request is allowed to pass in
+  the half-open state. The result of this request determines if the circuit
+  breaker will next transition to the closed or the open state.
+
+Key considerations:
+
+- Which piece of code should be wrapped behind the circuit breaker? It can be
+  all calls to an remote service or only those that are called frequently.
+- Will the circuit breaker code be called concurrently? This is very likely to
+  be yes, which means synchronization mechanism will be required while
+  updating internal data like current state, number of failed requests.
+- Avoid duplicate trial runs. If this is not done then a large number of
+  requests can get fired to the remote service at the same time in the
+  half-open state.
+- Is it fine to fail all requests that arrive while a trial run is taking
+  place? If requests wait while the trial run is taking place then they might
+  get the opportunity to execute very soon if the trial run were to succeed.
+
+== Further Study
+
+- https://go.dev/blog/go1.13-errors[Working with Errors in Go 1.13], Damien
+  Neil and Jonathan Amsterdam, 2019
+- https://go.dev/blog/errors-are-values[Errors are values], Rob Pike, 2015
+- https://martinfowler.com/bliki/CircuitBreaker.html[Circuit Breaker], Martin
+  Fowler, 2014
+- https://github.com/Shopify/toxiproxy[toxiproxy]: A TCP proxy to simulate
+  network and system conditions for chaos and resiliency testing

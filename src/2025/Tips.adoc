@@ -263,6 +263,16 @@ $ sudo yum autoremove vim-enhanced
 $ sudo ln -s /usr/local/vim8/bin/vim /usr/local/bin/
 ----
 
+== Go - Installing
+
+Installing Go on a Linux distribution running on an Intel 64-bit processor is
+very easy.
+
+----
+$ curl -sSL -O https://golang.org/dl/go1.24.9.linux-amd64.tar.gz
+$ sudo tar -C /usr/local -xf go1.24.9.linux-amd64.tar.gz
+----
+
 == Go - Setting up Vim
 
 After installing Vim 8, just do:
@@ -291,15 +301,12 @@ linters. The use of linters helps in avoiding coding pitfalls. It can be
 installed by running:
 
 ----
-$ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b <dir>
+$ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b ~/.local/bin/ v2.5.0
 ----
 
-Where `<dir>` is the directory into which the executable will be downloaded.
-Example:
-
-----
-$ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b ~/.local/bin/
-----
+To find the specific version, visit the
+https://github.com/golangci/golangci-lint/releases[releases] page. Not
+providing a version results in downloading the latest release.
 
 == Go - Private Repository
 
@@ -366,6 +373,13 @@ $ git config user.email "own_email@domain"
 $ git branch -m main master
 $ git push -u origin master
 $ git push origin --delete main
+----
+
+Observe the use of `--delete` to delete a remote branche. An alternative form
+is:
+
+----
+$ git push origin :<branch_name>
 ----
 
 == Python - Pip on Python 2.7
@@ -534,6 +548,38 @@ following command finds files modified within the last 100 days:
 ----
 $ find . -type f -mtime -100
 ----
+
+== Shell - Fractional Exponent
+
+I often make use of the `bc` command for calculations. It generally cannot
+deal with a fractional exponent when computing powers (e.g. `2^0.5`). This
+limitation can be circumvented using the `-l` switch that asks `bc` to make
+certain useful functions available. Two functions of interest are:
+
+- *l(x)* The natural logarithm of x
+- *e(x)* The exponential function of raising e to the value x
+
+These two functions don't have a problem with fractional arguments. This
+allows us to compute `a^b` by using `e(b * l(a))`. Example:
+
+----
+$ bc -q -l
+e(0.5 * l(2))
+1.41421356237309504878
+----
+
+This capability is necessary when finding CAGR (Compound Annual Growth Rate)
+values. Let us say some quantity had the value 31497 on 03-Oct-2017 and 85836
+on 26-Sep-2024. The number of days between these two dates is 2549 or 6.9835
+years.
+
+----
+$ bc -q -l
+e((1 / 6.9835) * l(85836 / 31497))
+1.15437523416471384176
+----
+
+This means a CAGR value of 15.43%.
 
 == CMake - Python
 

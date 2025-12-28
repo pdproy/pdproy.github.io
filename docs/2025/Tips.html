@@ -920,6 +920,21 @@ required, then removing this one directory is enough.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_go_installing">Go - Installing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Installing Go on a Linux distribution running on an Intel 64-bit processor is
+very easy.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-sSL</span> <span class="nt">-O</span> https://golang.org/dl/go1.24.9.linux-amd64.tar.gz
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo tar</span> <span class="nt">-C</span> /usr/local <span class="nt">-xf</span> go1.24.9.linux-amd64.tar.gz</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_go_setting_up_vim">Go - Setting up Vim</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -970,17 +985,13 @@ installed by running:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-sSfL</span> https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh <span class="nt">-s</span> <span class="nt">--</span> <span class="nt">-b</span> &lt;<span class="nb">dir</span><span class="o">&gt;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-sSfL</span> https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh <span class="nt">-s</span> <span class="nt">--</span> <span class="nt">-b</span> ~/.local/bin/ v2.5.0</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Where <code>&lt;dir&gt;</code> is the directory into which the executable will be downloaded.
-Example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-sSfL</span> https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh <span class="nt">-s</span> <span class="nt">--</span> <span class="nt">-b</span> ~/.local/bin/</code></pre>
-</div>
+<p>To find the specific version, visit the
+<a href="https://github.com/golangci/golangci-lint/releases">releases</a> page. Not
+providing a version results in downloading the latest release.</p>
 </div>
 </div>
 </div>
@@ -1075,6 +1086,15 @@ specific to a repo, change directory to it and then run:</p>
 <pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>git branch <span class="nt">-m</span> main master
 <span class="gp">$</span><span class="w"> </span>git push <span class="nt">-u</span> origin master
 <span class="gp">$</span><span class="w"> </span>git push origin <span class="nt">--delete</span> main</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Observe the use of <code>--delete</code> to delete a remote branche. An alternative form
+is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>git push origin :&lt;branch_name&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -1304,6 +1324,54 @@ following command finds files modified within the last 100 days:</p>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>find <span class="nb">.</span> <span class="nt">-type</span> f <span class="nt">-mtime</span> <span class="nt">-100</span></code></pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_shell_fractional_exponent">Shell - Fractional Exponent</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I often make use of the <code>bc</code> command for calculations. It generally cannot
+deal with a fractional exponent when computing powers (e.g. <code>2^0.5</code>). This
+limitation can be circumvented using the <code>-l</code> switch that asks <code>bc</code> to make
+certain useful functions available. Two functions of interest are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>l(x)</strong> The natural logarithm of x</p>
+</li>
+<li>
+<p><strong>e(x)</strong> The exponential function of raising e to the value x</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These two functions don&#8217;t have a problem with fractional arguments. This
+allows us to compute <code>a^b</code> by using <code>e(b * l(a))</code>. Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>bc <span class="nt">-q</span> <span class="nt">-l</span>
+<span class="go">e(0.5 * l(2))
+1.41421356237309504878</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This capability is necessary when finding CAGR (Compound Annual Growth Rate)
+values. Let us say some quantity had the value 31497 on 03-Oct-2017 and 85836
+on 26-Sep-2024. The number of days between these two dates is 2549 or 6.9835
+years.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>bc <span class="nt">-q</span> <span class="nt">-l</span>
+<span class="go">e((1 / 6.9835) * l(85836 / 31497))
+1.15437523416471384176</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This means a CAGR value of 15.43%.</p>
 </div>
 </div>
 </div>
@@ -1708,7 +1776,7 @@ media that the app has created."
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-12-05 17:26:12 UTC
+Last updated 2025-12-28 08:19:40 UTC
 </div>
 </div>
 </body>

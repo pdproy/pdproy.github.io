@@ -1,5 +1,9 @@
 = Index
 
+== 2026
+
+- link:2026/change.adoc[Change and Improvement]
+
 == 2025
 
 - link:2025/circuit-breaker.adoc[Circuit Breaker]

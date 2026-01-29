@@ -8,7 +8,7 @@ before first use.
 
 Why?
 
-- Good visibility. Large front glasses.
+- Good visibility
 - High sitting position. I find it better if the normal viewing position is
   towards the road and surroundings rather than towards the horizon. Another
   benefit of higher sitting position is that feels comfortable like sitting on
@@ -25,9 +25,19 @@ Why?
   the society regards as important.
 - Moderate (not flashy) interiors
 
+Why not?
+
+- It is possible that Tata's service centres don't offer the same kind of
+  smooth experience as that of Maruti. The number of service centre visits is
+  just around 1-2 per year. One can decide to remain stoic during those
+  visits.
+
 == Variants
 
-Additional features in Adventure variant in comparison to Tata Punch Pure:
+Punch from Tata Motors has many variants like Pure, Adventure, Adventure+ and
+Accomplished+.
+
+Additional features in *Adventure* variant in comparison to Tata Punch Pure:
 
 - Body colored ORVM
 - Full wheel cap
@@ -46,7 +56,7 @@ Additional features in Adventure variant in comparison to Tata Punch Pure:
 - Anti-glair interior rear view mirror
 - 3.5" screen, microphone and 4 speakers
 
-Additional features in Adventure plus variant in comparison to Tata Punch
+Additional features in *Adventure+* variant in comparison to Tata Punch
 Adventure:
 
 - Reverse parking camera
@@ -54,7 +64,7 @@ Adventure:
 - 7" Harman screen, 2 tweeters What3Words, navigation
 
 Tata Punch does not seem to have an Accomplished only variant. Additional
-features in Accomplished plus in comparison to Adventure plus:
+features in *Accomplished+* in comparison to Adventure+:
 
 - One shot auto down driver window
 - Front armrest
@@ -97,6 +107,7 @@ On-road price comparison as on 23-Nov-2025:
 | Adventure+ AMT    | 8,35,000
 | Accomplished+     | 8,65,000
 | Accomplished+ AMT | 9,25,000
+|===
 
 == Comparison Table
 
@@ -108,3 +119,8 @@ On-road price comparison as on 23-Nov-2025:
 | Hyundai Exter | 3815   | 1710  | 1631   | 391  | 185       | 2450
 | Zen Estilo    | 3600   | 1495  | 1595   | 212  | 165       | 2360
 |===
+
+== Conclusion
+
+Accomplished+ AMT seems to be suitable. AMT would make driving easier in the
+city.

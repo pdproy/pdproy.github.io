@@ -1,0 +1,181 @@
+= Car
+
+This article contains my notes around a four wheeler. I have not made any
+particular attempt to provide information in a logical manner or explain terms
+before first use.
+
+== Terms
+
+This section contains brief descriptions of some features commonly available
+in cars these days. It is for minimum understanding and is likely to be
+inaccurate and incomplete.
+
+- *Automatic Headlamps* This is about automatic detection of low light and
+  turning on of headlamps (and possibly other lights).
+- *Cruise Control*
+- *Automatic boot lid* Also called *electric tailgate opening*, this is about
+  pressing a button to open or close the rear boot.
+- *Wireless connectivity* This is used in reference to Android Auto and Apple
+  CarPlay. It is about the smartphone connecting to the car without the use of
+  cables - through bluetooth and Wi-Fi.
+- *Tweeters* These are speakers designed to reproduce high-frequency sound.
+- Passive entry passive start (PEPS) Passive entry is the functionality to
+  open the car when the key is near and the door handle is touched. It is a
+  convenience feature that might be particularly useful for women drivers who
+  typically don't have pockets in their dresses. However, attackers can
+  amplify the key signal from a distance. It will be useful to know if
+  key-less entry can be disabled. Passive start is about starting the engine
+  using a push button.
+
+== Tata Tigor
+
+Why?
+
+- Good visibility
+- It is narrower than other similar cars like Maruti Dzire, Maruti Swift and
+  Honda Amaze. This is expected to make parking easier. Most of the driving
+  will be in the city.
+- Decent headroom
+- It makes many safety features like anti break locking system (ABS) and
+  electronic breakforce distribution (EBD), corner stability control (CSC),
+  electronic stability program (ESP), rear parking sensors and reverse parking
+  camera available to the budget buyer.
+- Comfortable rear sitting experience
+- Moderate (not flashy) interiors
+- People appear to report good mileage of 15-16 kmpl even in the city
+- Higher ground clearance of 170 mm
+- Large boot space of over 400 litres
+
+Why not?
+
+- It is possible that Tata's service centres don't offer the same kind of
+  smooth experience as that of Maruti. The number of service centre visits is
+  just around 1-2 per year. One can decide to remain stoic during those
+  visits.
+- One will have to adapt to the lower sitting position of a sedan.
+
+== Variants
+
+Tigor from Tata Motors has many variants like XM, XT, XZ, XZ+. Additional
+features in *XT* variant in comparison to Tata Tigor XM:
+
+- Steel wheels with dual tone full wheel cover
+- Adjustable driver seat
+- Central Locking
+- Follow me home headlamps
+- All four power windows
+- Steering mounted controls
+- USB power outlet
+- Day/Night IRVM
+- Rear defogger
+- 3.5" Next-Gen infotainment system by Harman
+- Microphone
+- Four speakers
+
+Additional features in *XZ* variant in comparison to Tata Tigor XT:
+
+- Body colored exterior door handles
+- Black tape on B pillar
+- LED headlamps
+- LED DRLs
+- Piano black ORVM finish
+- ORVM with turn indicators
+- Dual tone hyper-style wheels
+- Rear seat armrest
+- Electrically adjustable ORVMS
+- Front armrest
+- One shot auto down driver window
+- Corner Stability Control (CSC)
+- Hill Hold Control
+- Reverse parking camera
+- Speed dependent auto door locks
+- Apple CarPlay and Android Auto
+- FM/AM, Bluetooth, USB
+- Image and video playback
+- 7.0" infotainment system by Harman
+- SMS notifications and read-outs
+- Speed dependent volume control
+- 2 Tweeters
+
+Additional features in *XZ+* variant in comparison to Tata Tigor XZ:
+
+- Shark fin antenna
+- Chrome lined exterior door handles
+- Black upper and lower grille with chrome finishing inserts in the upper
+  grille
+- Front fog lamps
+- Leather wrapped steering wheel
+- Leather finish on gear knob
+- Chrome finish on interior door handle
+- Advanced fully digital instrument cluster
+- Knitted fabric on roof headliner
+- Fully automatic temperature control (FATC)
+- Electrically foldable ORVMs
+- Automatic headlamps
+- Cruise control
+- Electric tailgate opening
+- Cooled glove box
+- Push button start stop with smart key
+- Rain sensing wipers
+- 45 W C-type charger
+- Driver and co-driver vanity mirror
+- HD reverse parking digital camera
+- 10.2" floating touch-screen infotainment system
+- 4 tweeters
+
+Additional features in *XZ+ Lux* variant in comparison to Tata Tigor XZ+:
+
+- Sonic silver alloy wheels
+- A + C type charger
+- Tyre pressure monitoring system
+- 10.2" floating touch-screen infotainment system from Harman
+
+== Price
+
+On-road price comparison as on 15-Feb-2026:
+
+[options="header"]
+|===
+| Variant  | Ex-Showroom | RTO    | Insurance | Others | Total
+| XM       | 5,48,990    | 26,810 | 28,932    | 500    | 6,05,232
+| XT       | 6,21,990    | 29,730 | 30,815    | 500    | 6,83,035
+| XZ       | 6,76,990    | 52,239 | 32,234    | 500    | 7,61,963
+| XZA      | 7,27,290    | 55,760 | 33,532    | 500    | 8,17,082
+| XZ+      | 7,31,890    | 56,082 | 33,650    | 500    | 8,22,122
+| XZ+ Lux  | 7,77,690    | 59,288 | 34,832    | 500    | 8,72,310
+|===
+
+== Comparison Table
+
+[options="header"]
+|===
+| Car           | Length | Width | Height | Boot | Clearance | Wheel Base
+| Maruti Swift  | 3860   | 1735  | 1520   | 265  | 163       | 2450
+| Maruti Dzire  | 3995   | 1735  | 1525   | 382  | 163       | 2450
+| Honda Amaze   | 3995   | 1733  | 1500   | 416  | 172       | 2470
+| Tata Tigor    | 3995   | 1677  | 1532   | 419  | 170       | 2450
+| Tata Tiago    | 3767   | 1677  | 1535   | 242  | 170       | 2400
+| Tata Punch    | 3876   | 1742  | 1615   | 366  | 193       | 2445
+| Tata Nexon    | 3995   | 1804  | 1620   | 382  | 208       | 2498
+| Hyundai Exter | 3815   | 1710  | 1631   | 391  | 185       | 2450
+| Zen Estilo    | 3600   | 1495  | 1595   | 212  | 165       | 2360
+|===
+
+== Cost of Ownership
+
+The cost of owning a car for 15 years can be approximated as follows:
+
+- *Car* This is fixed and has to be paid in the beginning: 8,50,000
+- *Maintenance* Maintenance tends to be lower in the initial 5 years and then
+  goes up. Assuming it to be 10,000 per year: 1,50,000
+- *Insurance* Insurance is highest at the time of buying and then keeps
+  decreasing as the car becomes old. Assuming an average of 15,000 per year:
+  2,25,000
+- *Petrol* Petrol expenditure involves usage (kilometers) and cost. Assuming
+  total cost to be 7,000/month: 12,60,00
+- *Total* The total cost of ownership gets computed as Rs 24,85,000 or Rs
+  14,000/month or Rs 455/day.
+
+== Conclusion
+
+TBD

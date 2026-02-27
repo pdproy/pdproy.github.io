@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<meta name="author" content="Pradeep Roy">
-<title>Go Concurrency - Statement Order</title>
+<title>Change and Improvement</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -439,80 +438,81 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Go Concurrency - Statement Order</h1>
-<div class="details">
-<span id="author" class="author">Pradeep Roy</span><br>
-</div>
+<h1>Change and Improvement</h1>
 </div>
 <div id="content">
 <div class="paragraph">
-<p>An interesting bug related to statement order from October 2025.</p>
+<p>It is very difficult for us humans to notice our own flaws. We generally have
+a compulsive need to justify our failures on external entities and our
+negative traits as being irrelevant. However, we are good at finding
+weaknesses in others. Perhaps this is the best defense.</p>
 </div>
 <div class="paragraph">
-<p>We had a piece of code that called a function in a goroutine. We made use of
-<code>sync.WaitGroup</code> and the related <code>Add()</code> and <code>Done()</code> calls as one would
-expect. The essential portion of the code looked like the following:</p>
+<p>Some examples of weaknesses are:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-go" data-lang="go">var wg sync.WaitGroup
-wg.Add(1)
-
-go {
-    response = foo(&amp;wg)
-}
-
-wg.Wait()
-log.Println(response)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>WaitGroup.Done()</code> call was inside the <code>foo()</code> function using the usual
-<code>defer</code> keyword.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-go" data-lang="go">func foo(wg *sync.WaitGroup) ResponseType {
-    defer wg.Done()
-    // other statements
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>But there was a problem. The function&#8217;s return value was used in the main
-goroutine.</p>
-</div>
-<div class="paragraph">
-<p>The Go language <a href="https://go.dev/ref/spec#Return_statements">specification</a>
-states that functions defered by a function F are executed before F returns to
-its caller. This means that the main goroutine&#8217;s <code>WaitGroup.Wait()</code> can
-potentially return and get unblocked before the returned values are copied to
-the variable <code>response</code>. This means the value in <code>response</code> depends on order
-of execution, which is not our intention. We always want it to contain the
-value computed by the function.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>procrastination, distraction</p>
+</li>
+<li>
+<p>smoking, substance abuse</p>
+</li>
+<li>
+<p>unhealthy eating, obesity</p>
+</li>
+<li>
+<p>anger</p>
+</li>
+<li>
+<p>unrealistic positivity</p>
+</li>
+<li>
+<p>wanting to be always be right</p>
+</li>
+<li>
+<p>closed-mindedness</p>
+</li>
+<li>
+<p>low accountability</p>
+</li>
+<li>
+<p>strategic detachment</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>The solution was to avoid passing the <code>sync.WaitGroup</code> param into the function
-and use <code>defer</code> outside of the call:</p>
+<p>People in one&#8217;s professional and personal circles might have other motivations
+(e.g. fearing displeasure or worse wanting to flatter) or may lack the skill
+to spot areas of improvements. These are challenges to getting help from
+others. Yet, seeking help from others, particularly someone who has been paid
+(e.g. doctor) is a good idea.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-go" data-lang="go">var wg sync.WaitGroup
-wg.Add(1)
-
-go {
-    response = foo()
-    wg.Done()
-}
-
-wg.Wait()
-log.Println(response)</code></pre>
+<div class="paragraph">
+<p>Regardless of the availability of constructive criticism, lasting change
+requires self-motivation. This depends on accepting that a causal association
+exists between undesirable outcome and a particular behavior. Acceptance
+becomes difficult when the impact of an action is not immediate. For instance,
+smoking is dangerous and can even be regarded as comical when living in a city
+that has severely poor air quality. Yet this behavior is fairly prevalent
+particularly among youngsters.</p>
 </div>
+<div class="paragraph">
+<p>Pain (e.g. fine for breaking traffic rules) appears to be an effective change
+agent although we would like this to not be true. It would have been better if
+we all voluntarily did the right thing. Pain is an indicator that we are not
+headed in the right direction.</p>
+</div>
+<div class="paragraph">
+<p>We all have about 8-12 working hours in a day. This is not much. Assuming a
+life expectancy of 80 years and the fact that the initial 25 years of life are
+spent as per the guidance of elders and institutions, we have less than 25
+years to spend as per our best understanding.</p>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-10-21 13:19:14 +0530
+Last updated 2026-01-26 13:17:53 +0530
 </div>
 </div>
 </body>

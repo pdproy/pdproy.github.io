@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<meta name="author" content="Pradeep Roy">
-<title>Go Concurrency - Statement Order</title>
+<title>Car</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -439,80 +438,349 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Go Concurrency - Statement Order</h1>
-<div class="details">
-<span id="author" class="author">Pradeep Roy</span><br>
-</div>
+<h1>Car</h1>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
-<p>An interesting bug related to statement order from October 2025.</p>
+<p>This article contains my notes around a four wheeler. I have not made any
+particular attempt to provide information in a logical manner or explain terms
+before first use.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tata_punch">Tata Punch</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Why?</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Good visibility</p>
+</li>
+<li>
+<p>High sitting position. I find it better if the normal viewing position is
+towards the road and surroundings rather than towards the horizon. Another
+benefit of higher sitting position is that feels comfortable like sitting on
+a chair.</p>
+</li>
+<li>
+<p>Good headroom. Interestingly, Tata Nexon is larger but feels less spacious
+inside.</p>
+</li>
+<li>
+<p>Small size. Most of the driving will be in the city.</p>
+</li>
+<li>
+<p>Doors open wide. Easy to get in and get out.</p>
+</li>
+<li>
+<p>It makes many safety features like anti break locking system (ABS) and
+electronic breakforce distribution (EBD), corner stability control (CSC),
+electronic stability program (ESP), rear parking sensors and reverse parking
+camera available to the budget buyer.</p>
+</li>
+<li>
+<p>Popular. This is an indicator that it is delivering something that
+the society regards as important.</p>
+</li>
+<li>
+<p>Moderate (not flashy) interiors</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>We had a piece of code that called a function in a goroutine. We made use of
-<code>sync.WaitGroup</code> and the related <code>Add()</code> and <code>Done()</code> calls as one would
-expect. The essential portion of the code looked like the following:</p>
+<p>Why not?</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-go" data-lang="go">var wg sync.WaitGroup
-wg.Add(1)
-
-go {
-    response = foo(&amp;wg)
-}
-
-wg.Wait()
-log.Println(response)</code></pre>
+<div class="ulist">
+<ul>
+<li>
+<p>It is possible that Tata&#8217;s service centres don&#8217;t offer the same kind of
+smooth experience as that of Maruti. The number of service centre visits is
+just around 1-2 per year. One can decide to remain stoic during those
+visits.</p>
+</li>
+</ul>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_variants">Variants</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Punch from Tata Motors has many variants like Pure, Adventure, Adventure+ and
+Accomplished+.</p>
 </div>
 <div class="paragraph">
-<p>The <code>WaitGroup.Done()</code> call was inside the <code>foo()</code> function using the usual
-<code>defer</code> keyword.</p>
+<p>Additional features in <strong>Adventure</strong> variant in comparison to Tata Punch Pure:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-go" data-lang="go">func foo(wg *sync.WaitGroup) ResponseType {
-    defer wg.Done()
-    // other statements
-}</code></pre>
-</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Body colored ORVM</p>
+</li>
+<li>
+<p>Full wheel cap</p>
+</li>
+<li>
+<p>Rear power windows</p>
+</li>
+<li>
+<p>Rear AC vent</p>
+</li>
+<li>
+<p>Piano boack gear knob finish</p>
+</li>
+<li>
+<p>Rear parcel tray</p>
+</li>
+<li>
+<p>Center console storage</p>
+</li>
+<li>
+<p>Wheel arch carpet</p>
+</li>
+<li>
+<p>Central locking with remote</p>
+</li>
+<li>
+<p>Grand console with armrest</p>
+</li>
+<li>
+<p>Electrically adjustible ORVMS</p>
+</li>
+<li>
+<p>Follow-me home headlamps</p>
+</li>
+<li>
+<p>Steering mounted infotainment and telephone</p>
+</li>
+<li>
+<p>Vanity mirror</p>
+</li>
+<li>
+<p>Anti-glair interior rear view mirror</p>
+</li>
+<li>
+<p>3.5" screen, microphone and 4 speakers</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>But there was a problem. The function&#8217;s return value was used in the main
-goroutine.</p>
+<p>Additional features in <strong>Adventure+</strong> variant in comparison to Tata Punch
+Adventure:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Reverse parking camera</p>
+</li>
+<li>
+<p>Android CarPlay and Apple Auto</p>
+</li>
+<li>
+<p>7" Harman screen, 2 tweeters What3Words, navigation</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>The Go language <a href="https://go.dev/ref/spec#Return_statements">specification</a>
-states that functions defered by a function F are executed before F returns to
-its caller. This means that the main goroutine&#8217;s <code>WaitGroup.Wait()</code> can
-potentially return and get unblocked before the returned values are copied to
-the variable <code>response</code>. This means the value in <code>response</code> depends on order
-of execution, which is not our intention. We always want it to contain the
-value computed by the function.</p>
+<p>Tata Punch does not seem to have an Accomplished only variant. Additional
+features in <strong>Accomplished+</strong> in comparison to Adventure+:</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>One shot auto down driver window</p>
+</li>
+<li>
+<p>Front armrest</p>
+</li>
+<li>
+<p>Projector headlamps</p>
+</li>
+<li>
+<p>LED tail lamps LED lamps are brighter and consume less energy</p>
+</li>
+<li>
+<p>LED DRLs</p>
+</li>
+<li>
+<p>Shark fin antenna</p>
+</li>
+<li>
+<p>10.25" screen</p>
+</li>
+<li>
+<p>Hyper stylized wheels</p>
+</li>
+<li>
+<p>Collapsible grab handles</p>
+</li>
+<li>
+<p>Fully automatic temperature control (FATC) air conditioner</p>
+</li>
+<li>
+<p>Passive entry passive start (PEPS) Passive entry is the functionality to
+open the car when the key is near and the door handle is touched. It is a
+convenience feature that might be particularly useful for women drivers who
+typically don&#8217;t have pockets in their dresses. However, attackers can
+amplify the key signal from a distance. It will be useful to know if
+key-less entry can be disabled. Passive start is about starting the engine
+using a push button.</p>
+</li>
+<li>
+<p>Glove box with lamp and cooling unit This can be useful if there are items
+that need to be kept at a lower temperature (e.g. chocolates).</p>
+</li>
+<li>
+<p>Push button start stop with smart key</p>
+</li>
+<li>
+<p>Fast C-type USB in front</p>
+</li>
+<li>
+<p>Xpress cool This feature cools the cabin quickly. It might be useful in
+situations where a rapid lowering of the cabin temperature is desirable.</p>
+</li>
+<li>
+<p>Rear USB A-type power outlet</p>
+</li>
+<li>
+<p>Rear wiper washer</p>
+</li>
+<li>
+<p>Rear defogger</p>
+</li>
+<li>
+<p>Cruise control This lets the car maintain constant speed. It is useful
+during long drives on clear roads.</p>
+</li>
+<li>
+<p>Steering mounted telephone and cruise control</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_price">Price</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>The solution was to avoid passing the <code>sync.WaitGroup</code> param into the function
-and use <code>defer</code> outside of the call:</p>
+<p>On-road price comparison as on 23-Nov-2025:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-go" data-lang="go">var wg sync.WaitGroup
-wg.Add(1)
-
-go {
-    response = foo()
-    wg.Done()
-}
-
-wg.Wait()
-log.Println(response)</code></pre>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Variant</th>
+<th class="tableblock halign-left valign-top">Price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Adventure+</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7,75,000</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Adventure+ AMT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8,35,000</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Accomplished+</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8,65,000</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Accomplished+ AMT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">9,25,000</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_comparison_table">Comparison Table</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2858%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Car</th>
+<th class="tableblock halign-left valign-top">Length</th>
+<th class="tableblock halign-left valign-top">Width</th>
+<th class="tableblock halign-left valign-top">Height</th>
+<th class="tableblock halign-left valign-top">Boot</th>
+<th class="tableblock halign-left valign-top">Clearance</th>
+<th class="tableblock halign-left valign-top">Wheel Base</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tata Punch</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3827</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1742</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1615</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">366</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">187</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2445</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tata Nexon</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3995</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1804</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1620</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">382</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">208</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2498</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hyundai Exter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3815</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1710</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1631</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">391</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">185</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2450</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Zen Estilo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3600</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1495</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1595</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">212</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">165</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2360</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Accomplished+ AMT seems to be suitable. AMT would make driving easier in the
+city.</p>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-10-21 13:19:14 +0530
+Last updated 2026-01-31 17:51:33 +0530
 </div>
 </div>
 </body>

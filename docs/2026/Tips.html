@@ -961,6 +961,43 @@ gets removed in the process:</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_csv_miller">CSV - Miller</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I was searching for a tool that could improve the viewing experience of CSV
+files. For instance, I wanted to have values for the same column aligned
+together. This is exactly the kind of work that can be done by
+<a href="https://miller.readthedocs.io/en/6.17.0/">Miller</a>. It is a very useful tool to
+query and reformat data from text files in various formats.</p>
+</div>
+<div class="paragraph">
+<p>It can be installed on Ubuntu 22.04 by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>miller</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>mlr <span class="nt">-C</span> <span class="nt">--key-color</span> mediumturquoise <span class="nt">--value-color</span> silver <span class="nt">--icsv</span> <span class="nt">--opprint</span> <span class="nb">cut</span> <span class="nt">-f</span> <span class="s1">'Date,Close'</span> &lt;file&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Miller has a large number of features and is also well documented. For
+information, look at its man page:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>man 1 miller</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_vim_building_vim_8_on_centos_7">Vim - Building Vim 8 on CentOS 7</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -1030,6 +1067,11 @@ very easy.</p>
 <pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-sSL</span> <span class="nt">-O</span> https://golang.org/dl/go1.24.9.linux-amd64.tar.gz
 <span class="gp">$</span><span class="w"> </span><span class="nb">sudo tar</span> <span class="nt">-C</span> /usr/local <span class="nt">-xf</span> go1.24.9.linux-amd64.tar.gz</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Finally, do ensure that <code>/usr/local/go/bin</code> is in the <code>PATH</code> environment
+variable. I am not writing an exact command because this might depend on user
+preference.</p>
 </div>
 </div>
 </div>
@@ -1875,7 +1917,7 @@ media that the app has created."
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-01-26 13:18:19 +0530
+Last updated 2026-02-28 00:17:21 +0530
 </div>
 </div>
 </body>

@@ -2,14 +2,15 @@
 
 == 2026
 
+- link:2026/Tips.adoc[Tips & Tricks]
 - link:2026/change.adoc[Change and Improvement]
 
 == 2025
 
+- link:2025/Tips.adoc[Tips & Tricks]
 - link:2025/circuit-breaker.adoc[Circuit Breaker]
 - link:2025/go-concurrency-statement-order.adoc[Go Concurrency - Statement Order]
 - link:2025/go-performance.adoc[Lessons on Go performance and memory usage]
-- link:2025/Tips.adoc[Tips & Tricks]
 
 == 2024
 

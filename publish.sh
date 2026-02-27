@@ -2,11 +2,14 @@
 
 set -e
 
+# BACKEND decided whether AsciiDoctor that is installed locally will be used
+# or one from the container.
+BACKEND="local"
+
 CSS_URL="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css"
 SRC_DIR="src"
 OUTPUT_DIR="output"
 DOCS_DIR="docs"
-
 
 info() {
     echo "== $*"
@@ -24,14 +27,41 @@ git_checkout() {
     git checkout -q "$1"
 }
 
+generate_html_local() {
+    asciidoctor ${SRC_DIR}/*.adoc ${SRC_DIR}/*/*.adoc
+}
+
+generate_html_docker() {
+    docker run -u $(id -u):$(id -g) --rm -v .:/documents \
+        asciidoctor/docker-asciidoctor \
+        asciidoctor ${SRC_DIR}/*.adoc ${SRC_DIR}/*/*.adoc
+}
+
+generate_html() {
+    if [[ "${BACKEND}" = "docker" ]]; then
+        generate_html_docker
+    else
+        generate_html_local
+    fi
+}
+
+usage() {
+    cat <<EOF
+Usage: ${0##*/} [OPTIONS]
+Convert AsciiDoc to HTML and publish site.
+
+Options:
+  -b, --backend[=MODE]    User BACKEND for conversion. Possible values: local (default), docker
+  -h, --help              Display this help and exit
+EOF
+}
+
 main() {
     git_checkout "dev"
 
     info "Converting AsciiDoc files to HTML..."
     mkdir -p ${OUTPUT_DIR}
-    docker run   -u $(id -u):$(id -g) --rm -v .:/documents \
-        asciidoctor/docker-asciidoctor \
-        asciidoctor ${SRC_DIR}/*.adoc ${SRC_DIR}/*/*.adoc
+    generate_html
 
     rsync -a ${SRC_DIR}/ ${OUTPUT_DIR}/
     find ${OUTPUT_DIR} -type f ! -name '*.html' -delete
@@ -54,5 +84,24 @@ main() {
     info "Switching back to dev branch"
     git_checkout "dev"
 }
+
+while (($#)); do
+    case $1 in
+    -b=* | --backend=*)
+        BACKEND="${1#*=}"
+        ;;
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    -*)
+        die "Unknown option $1"
+        ;;
+    *)
+        break
+        ;;
+    esac
+    shift
+done
 
 main

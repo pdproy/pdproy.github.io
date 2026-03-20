@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
 <meta name="author" content="Pradeep Roy">
-<title>Personal Tips &amp; Tricks</title>
+<title>Personal Tips &amp; Tricks (2026)</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -654,7 +654,7 @@ pre.rouge {
 </head>
 <body class="article">
 <div id="header">
-<h1>Personal Tips &amp; Tricks</h1>
+<h1>Personal Tips &amp; Tricks (2026)</h1>
 <div class="details">
 <span id="author" class="author">Pradeep Roy</span><br>
 </div>
@@ -1237,6 +1237,100 @@ is:</p>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>git push origin :&lt;branch_name&gt;</code></pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_python_neovim">Python - Neovim</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I have been using <a href="https://www.vim.org/about.php">Vim</a> since a long time and it
+has been a practice to use C-] and C-t to navigate source code. It started
+with <code>ctags</code> for C/C++ and smoothly transitioned to
+<a href="https://github.com/fatih/vim-go">vim-go</a> for Go.</p>
+</div>
+<div class="paragraph">
+<p>Now (2026) I wanted the same user experience with Python. The ensuing steps
+are about configuring Neovim for navigating through Python sources. These have
+been tested on Debian 12. I could have explored Vim but thought of trying
+something else so that the existing editor settings did not get disturbed.
+Another reason for choosing Neovim was that it had an built-in Language Server
+Protocol (LSP) client.</p>
+</div>
+<div class="paragraph">
+<p>Install <a href="https://microsoft.github.io/pyright/">Pyright</a> - static code analyzer
+and language server for Python.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>npm <span class="nb">install</span> <span class="nt">-g</span> pyright</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This installed Pyright 1.1.408. Install Neovim:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>neovim</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This installed Neovim 0.7.2. Install plugin for Neovim LSP client
+configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">mkdir</span> <span class="nt">-p</span> ~/.config/nvim/pack/core/start <span class="o">&amp;&amp;</span> git clone https://github.com/neovim/nvim-lspconfig ~/.config/nvim/pack/core/start/nvim-lspconfig</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create Neovim config file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>vim ~/.config/nvim/init.lua</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Paste the following contents:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">lspconfig</span> <span class="o">=</span> <span class="nb">pcall</span><span class="p">(</span><span class="nb">require</span><span class="p">,</span> <span class="s2">"lspconfig"</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span> <span class="k">then</span>
+  <span class="k">return</span>
+<span class="k">end</span>
+
+<span class="n">lspconfig</span><span class="p">.</span><span class="n">pyright</span><span class="p">.</span><span class="n">setup</span><span class="p">({</span>
+<span class="p">})</span>
+
+<span class="n">vim</span><span class="p">.</span><span class="n">keymap</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"gd"</span><span class="p">,</span> <span class="n">vim</span><span class="p">.</span><span class="n">lsp</span><span class="p">.</span><span class="n">buf</span><span class="p">.</span><span class="n">definition</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+<span class="n">vim</span><span class="p">.</span><span class="n">keymap</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"K"</span><span class="p">,</span> <span class="n">vim</span><span class="p">.</span><span class="n">lsp</span><span class="p">.</span><span class="n">buf</span><span class="p">.</span><span class="n">hover</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+<span class="n">vim</span><span class="p">.</span><span class="n">keymap</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"gr"</span><span class="p">,</span> <span class="n">vim</span><span class="p">.</span><span class="n">lsp</span><span class="p">.</span><span class="n">buf</span><span class="p">.</span><span class="n">references</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+<span class="n">vim</span><span class="p">.</span><span class="n">keymap</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"&lt;C-]&gt;"</span><span class="p">,</span> <span class="n">vim</span><span class="p">.</span><span class="n">lsp</span><span class="p">.</span><span class="n">buf</span><span class="p">.</span><span class="n">definition</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+<span class="n">vim</span><span class="p">.</span><span class="n">keymap</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"&lt;C-t&gt;"</span><span class="p">,</span> <span class="s2">"&lt;C-o&gt;"</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+
+<span class="n">vim</span><span class="p">.</span><span class="n">diagnostic</span><span class="p">.</span><span class="n">config</span><span class="p">({</span>
+  <span class="n">virtual_text</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="n">underline</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="n">signs</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="n">update_in_insert</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+<span class="p">})</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The setup did not work due to nvim-lspconfig incompatibility with Neovim.
+Presumably, the plugin was much newer than the editor. Through, hit-and-trial
+a working tag from December 2023 was found:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">cd</span> ~/.config/nvim/pack/core/start/nvim-lspconfig
+<span class="gp">$</span><span class="w"> </span>git checkout v0.1.7</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These steps made it possible to jump to symbol definitions in Python code.</p>
 </div>
 </div>
 </div>
@@ -1917,7 +2011,7 @@ media that the app has created."
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-02-28 00:39:18 +0530
+Last updated 2026-03-20 17:36:24 +0530
 </div>
 </div>
 </body>

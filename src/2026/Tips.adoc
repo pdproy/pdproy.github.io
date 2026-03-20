@@ -1,4 +1,4 @@
-= Personal Tips & Tricks
+= Personal Tips & Tricks (2026)
 Pradeep Roy
 :source-highlighter: rouge
 :source-language: console
@@ -412,6 +412,83 @@ is:
 ----
 $ git push origin :<branch_name>
 ----
+
+== Python - Neovim
+
+I have been using https://www.vim.org/about.php[Vim] since a long time and it
+has been a practice to use C-] and C-t to navigate source code. It started
+with `ctags` for C/C++ and smoothly transitioned to
+https://github.com/fatih/vim-go[vim-go] for Go.
+
+Now (2026) I wanted the same user experience with Python. The ensuing steps
+are about configuring Neovim for navigating through Python sources. These have
+been tested on Debian 12. I could have explored Vim but thought of trying
+something else so that the existing editor settings did not get disturbed.
+Another reason for choosing Neovim was that it had an built-in Language Server
+Protocol (LSP) client.
+
+Install https://microsoft.github.io/pyright/[Pyright] - static code analyzer
+and language server for Python.
+
+----
+$ sudo npm install -g pyright
+----
+
+This installed Pyright 1.1.408. Install Neovim:
+
+----
+$ sudo apt-get install neovim
+----
+
+This installed Neovim 0.7.2. Install plugin for Neovim LSP client
+configuration:
+
+----
+$ mkdir -p ~/.config/nvim/pack/core/start && git clone https://github.com/neovim/nvim-lspconfig ~/.config/nvim/pack/core/start/nvim-lspconfig
+----
+
+Create Neovim config file:
+
+----
+$ vim ~/.config/nvim/init.lua
+----
+
+Paste the following contents:
+
+[,lua]
+----
+local ok, lspconfig = pcall(require, "lspconfig")
+if not ok then
+  return
+end
+
+lspconfig.pyright.setup({
+})
+
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { silent = true })
+vim.keymap.set("n", "K", vim.lsp.buf.hover, { silent = true })
+vim.keymap.set("n", "gr", vim.lsp.buf.references, { silent = true })
+vim.keymap.set("n", "<C-]>", vim.lsp.buf.definition, { silent = true })
+vim.keymap.set("n", "<C-t>", "<C-o>", { silent = true })
+
+vim.diagnostic.config({
+  virtual_text = true,
+  underline = true,
+  signs = true,
+  update_in_insert = false,
+})
+----
+
+The setup did not work due to nvim-lspconfig incompatibility with Neovim.
+Presumably, the plugin was much newer than the editor. Through, hit-and-trial
+a working tag from December 2023 was found:
+
+----
+$ cd ~/.config/nvim/pack/core/start/nvim-lspconfig
+$ git checkout v0.1.7
+----
+
+These steps made it possible to jump to symbol definitions in Python code.
 
 == Python - Pip on Python 2.7
 

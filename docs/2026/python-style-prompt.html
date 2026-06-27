@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>Index</title>
+<title>Python Coding Guidelines Prompt</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,55 +438,270 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Index</h1>
+<h1>Python Coding Guidelines Prompt</h1>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Follow Python coding guidelines described in this document.</p>
+</div>
+</div>
+</div>
 <div class="sect1">
-<h2 id="_2026">2026</h2>
+<h2 id="_motivation">Motivation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Coming from a C/C++ and Go background, we value ease of understanding, which
+is facilitated by explicit types. Prefer straightforward Python over clever
+Python. Code should be safe to change without surprising side-effects.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_general">General</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p><a href="2026/python-style-prompt.html">Python Style Guidelines</a></p>
+<p>Use Python 3.12 syntax</p>
 </li>
 <li>
-<p><a href="2026/Tips.html">Tips &amp; Tricks</a></p>
+<p>Add docstrings to every new or changed function and method</p>
 </li>
 <li>
-<p><a href="2026/change.html">Change and Improvement</a></p>
+<p>Use <code>@dataclass</code> for structured records/config objects when appropriate</p>
+</li>
+<li>
+<p>Keep module constants in uppercase near the top of the file</p>
+</li>
+<li>
+<p>Preserve existing behavior unless the requested change requires otherwise.</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_2025">2025</h2>
+<h2 id="_type_annotations">Type Annotations</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p><a href="2025/Tips.html">Tips &amp; Tricks</a></p>
+<p>Add type annotations to every new or changed function and method, including
+return types</p>
 </li>
 <li>
-<p><a href="2025/circuit-breaker.html">Circuit Breaker</a></p>
+<p>Use Python&#8217;s built-in type annotation syntax. Prefer <code>list[str]</code>, <code>dict[str,
+str]</code>, <code>tuple[str, &#8230;&#8203;]</code> and <code>str | None</code> over importing aliases such as
+<code>List</code>, <code>Dict</code>, <code>Tuple</code>, or <code>Optional</code> from <code>typing</code>.</p>
 </li>
 <li>
-<p><a href="2025/go-concurrency-statement-order.html">Go Concurrency - Statement Order</a></p>
-</li>
-<li>
-<p><a href="2025/go-performance.html">Lessons on Go performance and memory usage</a></p>
+<p>Only import from <code>typing</code> when there is no built-in language equivalent
+needed for the task, such as <code>Callable</code>, <code>Protocol</code>, or advanced type
+helpers.</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_2024">2024</h2>
+<h2 id="_functions">Functions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Prefer small, explicit functions with clear names over clever abstractions.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Name functions after concrete actions (e.g. parse_duration_mins,
+build_txn_batch, log_sql, validate)</p>
+</li>
+<li>
+<p>Choose verbs that match the actual operation. Use <code>parse_*</code> for functions
+that extract structured values from existing text; reserve <code>read_*</code> for
+functions that read from files, streams, subprocesses, or external sources.</p>
+</li>
+<li>
+<p>Data containers are plain dataclasses, not deep class hierarchies</p>
+</li>
+<li>
+<p>Control flow is explicit rather than hidden behind generic frameworks. Don’t
+introduce a generic framework when a direct function is enough</p>
+</li>
+<li>
+<p>Validation and transformation logic is written plainly, even when verbose</p>
+</li>
+<li>
+<p>Abstractions exist where they represent real boundaries (e.g. RecordSource,
+RecordSink, formatter classes, config dataclasses)</p>
+</li>
+<li>
+<p>Don’t hide important behavior behind overly abstract names.</p>
+</li>
+<li>
+<p>Avoid names that make simple text formatting or path selection sound more
+abstract than it is.</p>
+</li>
+<li>
+<p>Split code when it improves readability, but don’t create abstraction layers
+just for style</p>
+</li>
+<li>
+<p>Maintain straightforward style unless there is a clear reason to generalize</p>
+</li>
+<li>
+<p>Order function parameters as per their relative dependence. A dependent
+parameter should come after the one that it depends upon.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_maintainability">Maintainability</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p><a href="2024/Tips.html">Tips &amp; Tricks</a></p>
+<p>Keep changes scoped to the relevant module.</p>
+</li>
+<li>
+<p>Follow existing local patterns before introducing a new abstraction.</p>
+</li>
+<li>
+<p>Add comments only where they explain non-obvious reasoning or safety
+constraints.</p>
+</li>
+<li>
+<p>Do not rename or restructure unrelated code while making a focused change.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_portability">Portability</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Use explicit file encoding for new file reads/writes where practical.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_logging_and_errors">Logging and Errors</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Use f-strings for normal string formatting, including most log messages. Use
+logging&#8217;s <code>%s</code> argument style only for debug or hot-path logs where lazy
+formatting matters.</p>
+</li>
+<li>
+<p>Avoid colon-heavy log messages. Prefer prose such as:
+<code>logging.error("Concern direction specified in %s that is not a measure",
+name)</code> rather than: <code>logging.error("profile field '%s': concern_direction is
+only valid", name)</code></p>
+</li>
+<li>
+<p>For fatal configuration or validation errors in CLI code, log or print the
+error and exit with <code>sys.exit(1)</code>.</p>
+</li>
+<li>
+<p>Keep normal logs grep-friendly and operationally useful.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_config_validation">Config Validation</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Validate config values according to their documented contract. Do not
+silently coerce or rewrite config values to make them fit. A contract
+answers questions such as the following:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Is the property required or optional?</p>
+</li>
+<li>
+<p>What type should it have?</p>
+</li>
+<li>
+<p>What is the default if it is absent?</p>
+</li>
+<li>
+<p>Is the value used exactly as provided or transformed?</p>
+</li>
+<li>
+<p>If it is a path, is it relative to the current working directory, the
+config file, the project root or should be made absolute?</p>
+</li>
+<li>
+<p>What happens if the value is invalid?</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Catch errors to notify the user about values that are invalid from the
+perspective of the application.</p>
+</li>
+<li>
+<p>Do not make relative paths absolute, expand <code>~</code> or normalize the value
+unless that behavior is explicitly part of the property&#8217;s contract.</p>
+</li>
+<li>
+<p>If a config property is required, fail clearly when it is missing.</p>
+</li>
+<li>
+<p>If a config property is optional, apply the documented default when it is
+absent.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_security">Security</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Be careful with SQL construction. Parameterize values. If identifiers must
+be interpolated, validate them first.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_static_analysis">Static Analysis</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Run <code>flake8</code> from the project root before finishing changes. This will
+ensure that static checks are recursively run on Python files.</p>
+</li>
+<li>
+<p>Resolve flake8 issues except accepted legacy exceptions: C901 complexity
+issues and E501 line-length issues</p>
+</li>
+<li>
+<p>Run the relevant unit tests in <code>test_*.py</code>.</p>
+</li>
+<li>
+<p>If tests or checks cannot be run, report exactly what was not run and why</p>
 </li>
 </ul>
 </div>
@@ -495,7 +710,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-06-27 11:01:32 +0530
+Last updated 2026-06-27 10:59:22 +0530
 </div>
 </div>
 </body>

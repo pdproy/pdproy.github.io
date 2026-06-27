@@ -1,0 +1,111 @@
+= Python Coding Guidelines Prompt
+
+Follow Python coding guidelines described in this document.
+
+== Motivation
+
+Coming from a C/C++ and Go background, we value ease of understanding, which
+is facilitated by explicit types. Prefer straightforward Python over clever
+Python. Code should be safe to change without surprising side-effects.
+
+== General
+
+- Use Python 3.12 syntax
+- Add docstrings to every new or changed function and method
+- Use `@dataclass` for structured records/config objects when appropriate
+- Keep module constants in uppercase near the top of the file
+- Preserve existing behavior unless the requested change requires otherwise.
+
+== Type Annotations
+
+- Add type annotations to every new or changed function and method, including
+  return types
+- Use Python's built-in type annotation syntax. Prefer `list[str]`, `dict[str,
+  str]`, `tuple[str, ...]` and `str | None` over importing aliases such as
+  `List`, `Dict`, `Tuple`, or `Optional` from `typing`.
+- Only import from `typing` when there is no built-in language equivalent
+  needed for the task, such as `Callable`, `Protocol`, or advanced type
+  helpers.
+
+== Functions
+
+Prefer small, explicit functions with clear names over clever abstractions.
+
+- Name functions after concrete actions (e.g. parse_duration_mins,
+  build_txn_batch, log_sql, validate)
+- Choose verbs that match the actual operation. Use `parse_*` for functions
+  that extract structured values from existing text; reserve `read_*` for
+  functions that read from files, streams, subprocesses, or external sources.
+- Data containers are plain dataclasses, not deep class hierarchies
+- Control flow is explicit rather than hidden behind generic frameworks. Don’t
+  introduce a generic framework when a direct function is enough
+- Validation and transformation logic is written plainly, even when verbose
+- Abstractions exist where they represent real boundaries (e.g. RecordSource,
+  RecordSink, formatter classes, config dataclasses)
+- Don’t hide important behavior behind overly abstract names.
+- Avoid names that make simple text formatting or path selection sound more
+  abstract than it is.
+- Split code when it improves readability, but don’t create abstraction layers
+  just for style
+- Maintain straightforward style unless there is a clear reason to generalize
+- Order function parameters as per their relative dependence. A dependent
+  parameter should come after the one that it depends upon.
+
+== Maintainability
+
+- Keep changes scoped to the relevant module.
+- Follow existing local patterns before introducing a new abstraction.
+- Add comments only where they explain non-obvious reasoning or safety
+  constraints.
+- Do not rename or restructure unrelated code while making a focused change.
+
+== Portability
+
+- Use explicit file encoding for new file reads/writes where practical.
+
+== Logging and Errors
+
+- Use f-strings for normal string formatting, including most log messages. Use
+  logging's `%s` argument style only for debug or hot-path logs where lazy
+  formatting matters.
+- Avoid colon-heavy log messages. Prefer prose such as:
+  `logging.error("Concern direction specified in %s that is not a measure",
+  name)` rather than: `logging.error("profile field '%s': concern_direction is
+  only valid", name)`
+- For fatal configuration or validation errors in CLI code, log or print the
+  error and exit with `sys.exit(1)`.
+- Keep normal logs grep-friendly and operationally useful.
+
+== Config Validation
+
+* Validate config values according to their documented contract. Do not
+  silently coerce or rewrite config values to make them fit. A contract
+  answers questions such as the following:
+  - Is the property required or optional?
+  - What type should it have?
+  - What is the default if it is absent?
+  - Is the value used exactly as provided or transformed?
+  - If it is a path, is it relative to the current working directory, the
+    config file, the project root or should be made absolute?
+  - What happens if the value is invalid?
+* Catch errors to notify the user about values that are invalid from the
+  perspective of the application.
+* Do not make relative paths absolute, expand `~` or normalize the value
+  unless that behavior is explicitly part of the property's contract.
+* If a config property is required, fail clearly when it is missing.
+* If a config property is optional, apply the documented default when it is
+  absent.
+
+== Security
+
+- Be careful with SQL construction. Parameterize values. If identifiers must
+  be interpolated, validate them first.
+
+== Static Analysis
+
+- Run `flake8` from the project root before finishing changes. This will
+  ensure that static checks are recursively run on Python files.
+- Resolve flake8 issues except accepted legacy exceptions: C901 complexity
+  issues and E501 line-length issues
+- Run the relevant unit tests in `test_*.py`.
+- If tests or checks cannot be run, report exactly what was not run and why

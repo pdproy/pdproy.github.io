@@ -3,15 +3,24 @@ Pradeep Roy
 :source-highlighter: rouge
 :source-language: console
 
-My working environment is mostly Ubuntu 22.04 or Oracle Linux 9. Earlier, it
-used to be CentOS 7.
+These are a collection of mainly software usage tips that I have noted
+down over several years. My working environment is mostly Ubuntu 22.04 or
+Oracle Linux 9. Earlier, it used to be CentOS 7.
 
 == OpenSSH - Generating Keys
 
 Generating authentication keys for OpenSSH:
 
 ----
-$ ssh-keygen -t rsa -b 4096 -C <hostname>
+$ ssh-keygen -t rsa -b 4096 -C <comment>
+----
+
+The comment helps identify the key or its role. An easy first choice is the
+system's hostname. When multiple keys are required, the `-f` switch makes
+it possible to explicitly supply a pathname. Example:
+
+----
+$ ssh-keygen -t rsa -b 4096 -C ubuntu-wsl -f ~/.ssh/id_rsa_wsl
 ----
 
 == OpenSSH - Client Configuration
@@ -34,6 +43,81 @@ Port 2022
 Such a configuration generally shortens the command-line and can even be
 necessary when using `lftp` to connect to hosts that support public key
 authentication only (not password).
+
+== Rsync - Including Files
+
+When working with a lot of data, one is sometimes interested in statistics
+(e.g. inside CSV files). Rsync can be used to preserve the directory hierarchy
+and fetch certain files. Example:
+
+----
+$ rsync -av \
+    --include='*/' \
+    --include='*.csv' \
+    --exclude='*' \
+    user@host:/remote/path/ \
+    ./local/path/
+----
+
+The order matters because `rsync` uses the first matching rule:
+`--include='*/'` includes all directories, `--include='*.csv'` selects CSV
+files, and `--exclude='*'` prevents all other files from being copied. Without
+the final exclude, `rsync` would copy unmatched files because its default
+behavior is to transfer everything.
+
+== VirtualBox - Guest Additions
+
+I tried these on an Ubuntu 24.04 server guest with Windows 11 host and
+VirtualBox https://www.virtualbox.org/wiki/Changelog[7.2.6]. Installation of
+https://www.virtualbox.org/manual/topics/guestadditions.html[guest additions]
+improves performance and usability.
+
+Ensure that the guest additions ISO is mounted on the VM. I found the ISO in
+the `C:\Program Files\Oracle\VirtualBox` folder. The boot-up the machine.
+
+Check if the CD-ROM device was detected:
+
+----
+$ sudo blkid | grep sr0
+----
+
+I got an output that looked like the following
+
+----
+/dev/sr0: BLOCK_SIZE="2048" UUID="..." LABEL="VBox_GAs_7.2.6" TYPE="iso9660"
+----
+
+Mount it manually:
+
+----
+$ sudo mkdir /mnt/cdrom
+$ sudo mount -oro /dev/sr0 /mnt/cdrom
+----
+
+Prepare the guest system for building external kernel modules
+
+----
+$ sudo apt install build-essential dkms linux-headers-$(uname -r)
+----
+
+Start the guest additions installer:
+
+----
+$ cd /mnt/cdrom
+$ sudo ./VBoxLinuxAdditions.run
+----
+
+Reboot the VM. Validate:
+
+----
+$ sudo rcvboxadd status-kernel
+----
+
+Example output:
+
+----
+VirtualBox Guest Additions: kernel modules 7.2.6 r172322 are loaded
+----
 
 == APT - Proxy
 
@@ -421,11 +505,23 @@ with `ctags` for C/C++ and smoothly transitioned to
 https://github.com/fatih/vim-go[vim-go] for Go.
 
 Now (2026) I wanted the same user experience with Python. The ensuing steps
-are about configuring Neovim for navigating through Python sources. These have
-been tested on Debian 12. I could have explored Vim but thought of trying
-something else so that the existing editor settings did not get disturbed.
-Another reason for choosing Neovim was that it had an built-in Language Server
-Protocol (LSP) client.
+are about configuring Neovim for navigating through Python sources.  I could
+have explored Vim but thought of trying something else so that the existing
+editor settings did not get disturbed.  Another reason for choosing Neovim was
+that it had an built-in Language Server Protocol (LSP) client.
+
+These have been tested on Debian 12.
+
+=== Debian 12
+
+Various tools had these versions:
+
+- *npm* 9.2.0 This was from Ubuntu
+- *Pyright* 1.1.409 This was installed using npm
+- *Neovim* v0.12.2 This was installed using the `curl` command that downloaded
+  the latest amd64 binaries.
+- *lsp-config* Latest `master` branch with commit `229b7905` from 03-Jun-2026.
+  The closest tag was v2.9.0.
 
 Install https://microsoft.github.io/pyright/[Pyright] - static code analyzer
 and language server for Python.
@@ -434,14 +530,22 @@ and language server for Python.
 $ sudo npm install -g pyright
 ----
 
-This installed Pyright 1.1.408. Install Neovim:
+Install the latest Neovim release:
 
 ----
-$ sudo apt-get install neovim
+$ curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+$ sudo rm -rf /opt/nvim-linux-x86_64
+$ sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
 ----
 
-This installed Neovim 0.7.2. Install plugin for Neovim LSP client
-configuration:
+Ensure that the `nvim` executable is in a directory referenced by `PATH`.
+Example:
+
+----
+$ ln -s /opt/nvim-linux-x86_64/bin/nvim ~/.local/bin
+----
+
+Install plugin for Neovim LSP client configuration:
 
 ----
 $ mkdir -p ~/.config/nvim/pack/core/start && git clone https://github.com/neovim/nvim-lspconfig ~/.config/nvim/pack/core/start/nvim-lspconfig
@@ -486,6 +590,38 @@ a working tag from December 2023 was found:
 ----
 $ cd ~/.config/nvim/pack/core/start/nvim-lspconfig
 $ git checkout v0.1.7
+----
+
+=== Ubuntu 24.04
+
+Various tools had these versions:
+
+- *npm* 10.9.7 This was from Ubuntu
+- *Pyright* 1.1.408 This was installed using npm
+- *Neovim* v0.12.1 This was installed using the `curl` command that downloaded
+  the latest amd64 binaries.
+- *lsp-config* Latest `master` branch with commit `bedca8b4` from 06-Apr-2026.
+  The closest tag was v2.7.0.
+
+I had to change `init.lua` slightly:
+
+[,lua]
+----
+vim.lsp.config("pyright", {})
+vim.lsp.enable("pyright")
+
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { silent = true })
+vim.keymap.set("n", "K", vim.lsp.buf.hover, { silent = true })
+vim.keymap.set("n", "gr", vim.lsp.buf.references, { silent = true })
+vim.keymap.set("n", "<C-]>", vim.lsp.buf.definition, { silent = true })
+vim.keymap.set("n", "<C-t>", "<C-o>", { silent = true })
+
+vim.diagnostic.config({
+  virtual_text = true,
+  underline = true,
+  signs = true,
+  update_in_insert = false,
+})
 ----
 
 These steps made it possible to jump to symbol definitions in Python code.
@@ -854,7 +990,23 @@ make use of the `--noautoremove` command-line switch.
 $ sudo yum erase --noautoremove <rpm>
 ----
 
-== Packages - Available Version
+== Packages - Search (DNF)
+
+Once I was working inside a minimal Docker container to create a build
+environment. The `rpmbuild` command did not exist. A DNF command that can
+search for packages containing a specific file helped:
+
+----
+$ dnf provides rpmbuild
+----
+
+The output pointed to the package `rpm-build`:
+
+----
+$ dnf install rpm-build
+----
+
+== Packages - Available Version (APT)
 
 Sometimes I want to know the available version of a package prior to
 installing it. For instance, if the most recent Java 21 update happens
@@ -880,6 +1032,61 @@ $ yum list java-21-openjdk.x86_64
 
 Yum's `list` command needs a full package name. For instance, the argument
 `man` does not list anything while `man-db` does so.
+
+== Sumatra PDF - Viewing PDF Files
+
+Continuous and silent connectivity to the Internet became a reality for home
+computers in the late 2000s. Earlier, users needed to take deliberate action
+to connect to another computer. The situation has dramatically changed in the
+last 20 years. Now applications receive inputs over the Internet and talk to
+users (displaying ads) indiscriminately. This unwanted communication disrupts
+user attention and lowers the quality of the actual work that was supposed to
+be enabled by the application. Unfortunately, monetary payments are no longer
+a reliable protection from interruptions. Silence has been replaced by
+constant upselling.
+
+I installed a well-known PDF reader on Windows 10. The application designers
+decided that it was okay to split the screen into two parts. One was for the
+viewing of PDF files and the other was to display ads. Even when ads were not
+being flashed, I could not use the full screen to read documents.
+
+https://www.sumatrapdfreader.org/free-pdf-reader[Sumatra PDF] makes it
+possible to read PDF documents without distraction on Windows. It has the good
+behaviour of earlier applications. Install and forget. It lets the user focus
+on the end goal of gaining knowledge.
+
+== QPDF - Encrypting PDF files
+
+The `qpdf` command can be used to encrypt a PDF file. This also ensures that a
+password is required to open it. Install on a Debian-like system:
+
+----
+$ sudo apt-get install qpdf
+----
+
+Encrypt a file writing output to a separate file:
+
+----
+$ qpdf --encrypt <user_password> <owner_password> 256 -- <in.pdf> <out.pdf>
+----
+
+To view the encryption status of a file:
+
+----
+$ qpdf --show-encryption <out.pdf>
+----
+
+If one does not want a new file to be created:
+
+----
+$ qpdf --replace-input --encrypt <user_password> <owner_password> 256 -- <in.pdf>
+----
+
+For more details:
+
+----
+$ qpdf --help=encryption | less
+----
 
 == MuPDF - Repairing PDF Files
 
@@ -980,3 +1187,23 @@ external storage, or scoped storage, by default. Such apps have access only to
 the app-specific directory on external storage, as well as specific types of
 media that the app has created."
 (https://developer.android.com/training/data-storage#scoped-storage[source])
+
+== WSL - Hostname
+
+This method worked on WSL 2.7.3.0 and Debian 12.12. To change the hostname
+inside WSL make use of
+https://learn.microsoft.com/en-us/windows/wsl/wsl-config#wslconf[wsl.conf].
+Example:
+
+----
+$ cat /etc/wsl.conf
+[network]
+hostname=pluto
+generateHosts=true
+----
+
+== Windows - Disk Cleanup
+
+I was able to try these teps on Windows 11 25H2. The disk cleanup program can
+be accessed by pressing Win + R and running `cleanmgr`. Once, it was able to
+reclaim at much as 10 GB from the C drive.

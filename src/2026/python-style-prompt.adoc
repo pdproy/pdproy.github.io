@@ -16,6 +16,34 @@ Python. Code should be safe to change without surprising side-effects.
 - Use `@dataclass` for structured records/config objects when appropriate
 - Keep module constants in uppercase near the top of the file
 - Preserve existing behavior unless the requested change requires otherwise.
+- Avoid using the term *"shape"* as a generic description in code,
+  documentation and technical discussions. Prefer terminology that precisely
+  conveys the intended concept. Use *structure* for internal organization,
+  *layout* for memory, file, or packet organization, *representation* for the
+  internal form of data, *interface* or *API* for externally visible behavior,
+  *schema* for database or serialized data definitions, *contract* for
+  behavioral guarantees, *design* or *architecture* for high-level
+  organization, and *format* when referring to serialized data. Favor
+  concrete, domain-specific terminology over broad abstractions whenever
+  possible, as it improves precision and readability, especially in systems
+  programming, and backend software.
+
+== Terminology
+
+- Reuse an identifier (e.g. variable, function, class, config property, CLI
+  option, table column name, table column label) or user-facing term across
+  layers only when it preserves the same semantic role. Use different names
+  when related values belong to different abstraction levels, answer different
+  questions, or represent different transformations of the same input.
+  Multiple similar looking terms with different meanings can be a source of
+  bugs and incorrect reviews.
+- Avoid the term `knob` in code, comments, docs and user-facing text.
+- Use `setting` for configurable behaviour or a resolved runtime value.
+- Use `config property` when referring specifically to a named field in a
+  config file.
+- Use `parameter` for function/API inputs
+- For paths derived from effective settings, prefer neutral identifiers such
+  as `dir/<id>` and define ID represents before first use.
 
 == Type Annotations
 
@@ -33,10 +61,21 @@ Python. Code should be safe to change without surprising side-effects.
 Prefer small, explicit functions with clear names over clever abstractions.
 
 - Name functions after concrete actions (e.g. parse_duration_mins,
-  build_txn_batch, log_sql, validate)
+  build_txn_batch, log_sql, validate).
+- Name functions after what they do, not where their result is used. For
+  example, prefer `format_*` for a function that returns formatted text; do
+  not use `log_*` unless the function actually writes to a log.
 - Choose verbs that match the actual operation. Use `parse_*` for functions
-  that extract structured values from existing text; reserve `read_*` for
-  functions that read from files, streams, subprocesses, or external sources.
+  that extract structured values from existing text
+- Use `load_*` when restoring a named application-level object or artifact
+  into memory, even if the implementation reads files internally. Conversely,
+  use `save_*` as a counterpart.
+- Use `read_*` for lower-level file, stream, subprocess, or external-source
+  operations where the function returns raw or lightly transformed data. Use
+  `write` for streams, logs, files, or lower-level output operations.
+- Avoid boolean parameters that switch a function between different schemas or
+  semantic modes. Prefer two clearly named functions, or a shared helper for
+  the common projection plus separate callers for the different contracts.
 - Data containers are plain dataclasses, not deep class hierarchies
 - Control flow is explicit rather than hidden behind generic frameworks. Don’t
   introduce a generic framework when a direct function is enough
@@ -64,6 +103,17 @@ Prefer small, explicit functions with clear names over clever abstractions.
 
 - Use explicit file encoding for new file reads/writes where practical.
 
+== Output Formatting
+
+- Keep internal numeric values at the precision needed for computation, but
+  format human-facing output at the precision needed for decisions.
+- Avoid printing fractional values when the fractional part does not affect
+  interpretation. For example, whole milliseconds are usually easier to scan
+  than fractional milliseconds in summaries, logs, and reports.
+- Keep machine-readable output and human-readable output separate. Human text
+  may be reworded for clarity, but structured output should have a stable
+  contract that downstream code can parse.
+
 == Logging and Errors
 
 - Use f-strings for normal string formatting, including most log messages. Use
@@ -76,6 +126,12 @@ Prefer small, explicit functions with clear names over clever abstractions.
 - For fatal configuration or validation errors in CLI code, log or print the
   error and exit with `sys.exit(1)`.
 - Keep normal logs grep-friendly and operationally useful.
+- Put normalization at the boundary that owns the contract. If a script emits
+  a structured format, it should emit values in the documented form. Consumers
+  should parse and validate that format, not silently repair producer output,
+  unless they are explicitly adapting an external or legacy format. Different
+  conventions for the same type of value across producers or call paths are an
+  avoidable source of confusion.
 
 == Config Validation
 
@@ -96,6 +152,11 @@ Prefer small, explicit functions with clear names over clever abstractions.
 * If a config property is required, fail clearly when it is missing.
 * If a config property is optional, apply the documented default when it is
   absent.
+* Avoid keeping the same configuration truth in two places. If a config file
+  names an entity whose behavior is defined elsewhere, consider moving the
+  behavior into the config when that makes the config the natural source of
+  truth. Discuss about doing cleanup in existing code because a release might
+  have gone to production.
 
 == Security
 

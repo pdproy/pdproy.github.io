@@ -482,6 +482,54 @@ Python. Code should be safe to change without surprising side-effects.</p>
 <li>
 <p>Preserve existing behavior unless the requested change requires otherwise.</p>
 </li>
+<li>
+<p>Avoid using the term <strong>"shape"</strong> as a generic description in code,
+documentation and technical discussions. Prefer terminology that precisely
+conveys the intended concept. Use <strong>structure</strong> for internal organization,
+<strong>layout</strong> for memory, file, or packet organization, <strong>representation</strong> for the
+internal form of data, <strong>interface</strong> or <strong>API</strong> for externally visible behavior,
+<strong>schema</strong> for database or serialized data definitions, <strong>contract</strong> for
+behavioral guarantees, <strong>design</strong> or <strong>architecture</strong> for high-level
+organization, and <strong>format</strong> when referring to serialized data. Favor
+concrete, domain-specific terminology over broad abstractions whenever
+possible, as it improves precision and readability, especially in systems
+programming, and backend software.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_terminology">Terminology</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Reuse an identifier (e.g. variable, function, class, config property, CLI
+option, table column name, table column label) or user-facing term across
+layers only when it preserves the same semantic role. Use different names
+when related values belong to different abstraction levels, answer different
+questions, or represent different transformations of the same input.
+Multiple similar looking terms with different meanings can be a source of
+bugs and incorrect reviews.</p>
+</li>
+<li>
+<p>Avoid the term <code>knob</code> in code, comments, docs and user-facing text.</p>
+</li>
+<li>
+<p>Use <code>setting</code> for configurable behaviour or a resolved runtime value.</p>
+</li>
+<li>
+<p>Use <code>config property</code> when referring specifically to a named field in a
+config file.</p>
+</li>
+<li>
+<p>Use <code>parameter</code> for function/API inputs</p>
+</li>
+<li>
+<p>For paths derived from effective settings, prefer neutral identifiers such
+as <code>dir/&lt;id&gt;</code> and define ID represents before first use.</p>
+</li>
 </ul>
 </div>
 </div>
@@ -519,12 +567,31 @@ helpers.</p>
 <ul>
 <li>
 <p>Name functions after concrete actions (e.g. parse_duration_mins,
-build_txn_batch, log_sql, validate)</p>
+build_txn_batch, log_sql, validate).</p>
+</li>
+<li>
+<p>Name functions after what they do, not where their result is used. For
+example, prefer <code>format_*</code> for a function that returns formatted text; do
+not use <code>log_*</code> unless the function actually writes to a log.</p>
 </li>
 <li>
 <p>Choose verbs that match the actual operation. Use <code>parse_*</code> for functions
-that extract structured values from existing text; reserve <code>read_*</code> for
-functions that read from files, streams, subprocesses, or external sources.</p>
+that extract structured values from existing text</p>
+</li>
+<li>
+<p>Use <code>load_*</code> when restoring a named application-level object or artifact
+into memory, even if the implementation reads files internally. Conversely,
+use <code>save_*</code> as a counterpart.</p>
+</li>
+<li>
+<p>Use <code>read_*</code> for lower-level file, stream, subprocess, or external-source
+operations where the function returns raw or lightly transformed data. Use
+<code>write</code> for streams, logs, files, or lower-level output operations.</p>
+</li>
+<li>
+<p>Avoid boolean parameters that switch a function between different schemas or
+semantic modes. Prefer two clearly named functions, or a shared helper for
+the common projection plus separate callers for the different contracts.</p>
 </li>
 <li>
 <p>Data containers are plain dataclasses, not deep class hierarchies</p>
@@ -597,6 +664,29 @@ constraints.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_output_formatting">Output Formatting</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Keep internal numeric values at the precision needed for computation, but
+format human-facing output at the precision needed for decisions.</p>
+</li>
+<li>
+<p>Avoid printing fractional values when the fractional part does not affect
+interpretation. For example, whole milliseconds are usually easier to scan
+than fractional milliseconds in summaries, logs, and reports.</p>
+</li>
+<li>
+<p>Keep machine-readable output and human-readable output separate. Human text
+may be reworded for clarity, but structured output should have a stable
+contract that downstream code can parse.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_logging_and_errors">Logging and Errors</h2>
 <div class="sectionbody">
 <div class="ulist">
@@ -618,6 +708,14 @@ error and exit with <code>sys.exit(1)</code>.</p>
 </li>
 <li>
 <p>Keep normal logs grep-friendly and operationally useful.</p>
+</li>
+<li>
+<p>Put normalization at the boundary that owns the contract. If a script emits
+a structured format, it should emit values in the documented form. Consumers
+should parse and validate that format, not silently repair producer output,
+unless they are explicitly adapting an external or legacy format. Different
+conventions for the same type of value across producers or call paths are an
+avoidable source of confusion.</p>
 </li>
 </ul>
 </div>
@@ -671,6 +769,13 @@ unless that behavior is explicitly part of the property&#8217;s contract.</p>
 <p>If a config property is optional, apply the documented default when it is
 absent.</p>
 </li>
+<li>
+<p>Avoid keeping the same configuration truth in two places. If a config file
+names an entity whose behavior is defined elsewhere, consider moving the
+behavior into the config when that makes the config the natural source of
+truth. Discuss about doing cleanup in existing code because a release might
+have gone to production.</p>
+</li>
 </ul>
 </div>
 </div>
@@ -714,7 +819,7 @@ issues and E501 line-length issues</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-06-27 11:02:31 +0530
+Last updated 2026-07-23 19:27:49 +0530
 </div>
 </div>
 </body>

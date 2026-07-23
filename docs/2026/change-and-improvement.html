@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<meta name="author" content="Pradeep Roy">
-<title>Circuit Breaker</title>
+<title>Change and Improvement</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -439,132 +438,81 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Circuit Breaker</h1>
-<div class="details">
-<span id="author" class="author">Pradeep Roy</span><br>
-</div>
+<h1>Change and Improvement</h1>
 </div>
 <div id="content">
-<div id="preamble">
-<div class="sectionbody">
 <div class="paragraph">
-<p>The Circuit Breaker is a pattern in software to automatically avoid calls to
-a remote service (e.g. database on a different machine) for a temporary
-period of time.  Related, is a complementary pattern known as retry that
-expects success while circuit breaker anticipates failure. There are many
-articles available online that provide a good introduction. In this article I
-will share the insights that I gained while implementing it in November 2025.</p>
+<p>It is very difficult for us humans to notice our own flaws. We generally have
+a compulsive need to justify our failures on external entities and our
+negative traits as being irrelevant. However, we are good at finding
+weaknesses in others. Perhaps this is the best defense.</p>
 </div>
 <div class="paragraph">
-<p>A circuit breaker software component sits between the core application and an
-remote service. It does not let requests pass to the remote service if it
-has reported many recent errors. It has three states:
-- <strong>Closed</strong> The circuit breaker allows requests to pass to the service.
-- <strong>Open</strong> The circuit breaker does not allow requests to pass.
-- <strong>Half Open</strong> The circuit breaker will allow a single trial request to pass.
-  If the request succeeds then it goes to closed, otherwise to open.</p>
-</div>
-<div class="paragraph">
-<p>There are at least two config parameters that have to be supported by the
-circuit breaker:</p>
+<p>Some examples of weaknesses are:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Failure Threshold</strong> Number of consecutive failures that must occur for the
-circuit breaker to go from closed to open state. A value of 0 means that the
-circuit breaker feature will be disabled.</p>
+<p>procrastination, distraction</p>
 </li>
 <li>
-<p><strong>Reset Timeout</strong> Amount of time the circuit breaker will remain in the open
-state before automatically transitioning to the half-open state.</p>
+<p>smoking, substance abuse</p>
+</li>
+<li>
+<p>unhealthy eating, obesity</p>
+</li>
+<li>
+<p>anger</p>
+</li>
+<li>
+<p>unrealistic positivity</p>
+</li>
+<li>
+<p>wanting to be always be right</p>
+</li>
+<li>
+<p>closed-mindedness</p>
+</li>
+<li>
+<p>low accountability</p>
+</li>
+<li>
+<p>strategic detachment</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Core steps:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>The circuit breaker starts in the closed state. In this state it allows
-incoming requests to go to the remote service.</p>
-</li>
-<li>
-<p>Errors from the remote service result in incrementing a failure count.
-Business errors are not failures. For instance, missing records or improper
-format are not errors from the circuit breaker&#8217;s perspective. I/O errors are
-the ones that need to be caught.</p>
-</li>
-<li>
-<p>The circuit breaker transitions to the open state when the failure count
-becomes more than the failure threshold. The failure count is reset to 0 on
-any successful request while in the closed state.</p>
-</li>
-<li>
-<p>It transitions to the half-open state after remaining in the open state till
-reset timeout (e.g. 5 seconds). A single trial request is allowed to pass in
-the half-open state. The result of this request determines if the circuit
-breaker will next transition to the closed or the open state.</p>
-</li>
-</ul>
+<p>People in one&#8217;s professional and personal circles might have other motivations
+(e.g. fearing displeasure or worse wanting to flatter) or may lack the skill
+to spot areas of improvements. These are challenges to getting help from
+others. Yet, seeking help from others, particularly someone who has been paid
+(e.g. doctor) is a good idea.</p>
 </div>
 <div class="paragraph">
-<p>Key considerations:</p>
+<p>Regardless of the availability of constructive criticism, lasting change
+requires self-motivation. This depends on accepting that a causal association
+exists between undesirable outcome and a particular behavior. Acceptance
+becomes difficult when the impact of an action is not immediate. For instance,
+smoking is dangerous and can even be regarded as comical when living in a city
+that has severely poor air quality. Yet this behavior is fairly prevalent
+particularly among youngsters.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Which piece of code should be wrapped behind the circuit breaker? It can be
-all calls to an remote service or only those that are called frequently.</p>
-</li>
-<li>
-<p>Will the circuit breaker code be called concurrently? This is very likely to
-be yes, which means synchronization mechanism will be required while
-updating internal data like current state, number of failed requests.</p>
-</li>
-<li>
-<p>Avoid duplicate trial runs. If this is not done then a large number of
-requests can get fired to the remote service at the same time in the
-half-open state.</p>
-</li>
-<li>
-<p>Is it fine to fail all requests that arrive while a trial run is taking
-place? If requests wait while the trial run is taking place then they might
-get the opportunity to execute very soon if the trial run were to succeed.</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>Pain (e.g. fine for breaking traffic rules) appears to be an effective change
+agent although we would like this to not be true. It would have been better if
+we all voluntarily did the right thing. Pain is an indicator that we are not
+headed in the right direction.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_further_study">Further Study</h2>
-<div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://go.dev/blog/go1.13-errors">Working with Errors in Go 1.13</a>, Damien
-Neil and Jonathan Amsterdam, 2019</p>
-</li>
-<li>
-<p><a href="https://go.dev/blog/errors-are-values">Errors are values</a>, Rob Pike, 2015</p>
-</li>
-<li>
-<p><a href="https://martinfowler.com/bliki/CircuitBreaker.html">Circuit Breaker</a>, Martin
-Fowler, 2014</p>
-</li>
-<li>
-<p><a href="https://github.com/Shopify/toxiproxy">toxiproxy</a>: A TCP proxy to simulate
-network and system conditions for chaos and resiliency testing</p>
-</li>
-</ul>
-</div>
-</div>
+<div class="paragraph">
+<p>We all have about 8-12 working hours in a day. This is not much. Assuming a
+life expectancy of 80 years and the fact that the initial 25 years of life are
+spent as per the guidance of elders and institutions, we have less than 25
+years to spend as per our best understanding.</p>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-06-27 11:02:55 +0530
+Last updated 2026-07-23 19:28:48 +0530
 </div>
 </div>
 </body>

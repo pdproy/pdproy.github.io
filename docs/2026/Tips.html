@@ -663,8 +663,9 @@ pre.rouge {
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>My working environment is mostly Ubuntu 22.04 or Oracle Linux 9. Earlier, it
-used to be CentOS 7.</p>
+<p>These are a collection of mainly software usage tips that I have noted
+down over several years. My working environment is mostly Ubuntu 22.04 or
+Oracle Linux 9. Earlier, it used to be CentOS 7.</p>
 </div>
 </div>
 </div>
@@ -676,7 +677,17 @@ used to be CentOS 7.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ssh-keygen <span class="nt">-t</span> rsa <span class="nt">-b</span> 4096 <span class="nt">-C</span> &lt;<span class="nb">hostname</span><span class="o">&gt;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ssh-keygen <span class="nt">-t</span> rsa <span class="nt">-b</span> 4096 <span class="nt">-C</span> &lt;comment&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The comment helps identify the key or its role. An easy first choice is the
+system&#8217;s hostname. When multiple keys are required, the <code>-f</code> switch makes
+it possible to explicitly supply a pathname. Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ssh-keygen <span class="nt">-t</span> rsa <span class="nt">-b</span> 4096 <span class="nt">-C</span> ubuntu-wsl <span class="nt">-f</span> ~/.ssh/id_rsa_wsl</code></pre>
 </div>
 </div>
 </div>
@@ -704,6 +715,106 @@ that are listening on non-standard ports. Example:</p>
 <p>Such a configuration generally shortens the command-line and can even be
 necessary when using <code>lftp</code> to connect to hosts that support public key
 authentication only (not password).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_rsync_including_files">Rsync - Including Files</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When working with a lot of data, one is sometimes interested in statistics
+(e.g. inside CSV files). Rsync can be used to preserve the directory hierarchy
+and fetch certain files. Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>rsync <span class="nt">-av</span> <span class="se">\</span>
+<span class="go">    --include='*/' \
+    --include='*.csv' \
+    --exclude='*' \
+    user@host:/remote/path/ \
+    ./local/path/</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The order matters because <code>rsync</code> uses the first matching rule:
+<code>--include='<strong>/'</code> includes all directories, <code>--include='</strong>.csv'</code> selects CSV
+files, and <code>--exclude='*'</code> prevents all other files from being copied. Without
+the final exclude, <code>rsync</code> would copy unmatched files because its default
+behavior is to transfer everything.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_virtualbox_guest_additions">VirtualBox - Guest Additions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I tried these on an Ubuntu 24.04 server guest with Windows 11 host and
+VirtualBox <a href="https://www.virtualbox.org/wiki/Changelog">7.2.6</a>. Installation of
+<a href="https://www.virtualbox.org/manual/topics/guestadditions.html">guest additions</a>
+improves performance and usability.</p>
+</div>
+<div class="paragraph">
+<p>Ensure that the guest additions ISO is mounted on the VM. I found the ISO in
+the <code>C:\Program Files\Oracle\VirtualBox</code> folder. The boot-up the machine.</p>
+</div>
+<div class="paragraph">
+<p>Check if the CD-ROM device was detected:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>blkid | <span class="nb">grep </span>sr0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>I got an output that looked like the following</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">/dev/sr0: BLOCK_SIZE="2048" UUID="..." LABEL="VBox_GAs_7.2.6" TYPE="iso9660"</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Mount it manually:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo mkdir</span> /mnt/cdrom
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>mount <span class="nt">-oro</span> /dev/sr0 /mnt/cdrom</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Prepare the guest system for building external kernel modules</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt <span class="nb">install </span>build-essential dkms linux-headers-<span class="si">$(</span><span class="nb">uname</span> <span class="nt">-r</span><span class="si">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Start the guest additions installer:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">cd</span> /mnt/cdrom
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo</span> ./VBoxLinuxAdditions.run</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Reboot the VM. Validate:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>rcvboxadd status-kernel</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">VirtualBox Guest Additions: kernel modules 7.2.6 r172322 are loaded</span></code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -1251,11 +1362,36 @@ with <code>ctags</code> for C/C++ and smoothly transitioned to
 </div>
 <div class="paragraph">
 <p>Now (2026) I wanted the same user experience with Python. The ensuing steps
-are about configuring Neovim for navigating through Python sources. These have
-been tested on Debian 12. I could have explored Vim but thought of trying
-something else so that the existing editor settings did not get disturbed.
-Another reason for choosing Neovim was that it had an built-in Language Server
-Protocol (LSP) client.</p>
+are about configuring Neovim for navigating through Python sources.  I could
+have explored Vim but thought of trying something else so that the existing
+editor settings did not get disturbed.  Another reason for choosing Neovim was
+that it had an built-in Language Server Protocol (LSP) client.</p>
+</div>
+<div class="paragraph">
+<p>These have been tested on Debian 12.</p>
+</div>
+<div class="sect2">
+<h3 id="_debian_12_2">Debian 12</h3>
+<div class="paragraph">
+<p>Various tools had these versions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>npm</strong> 9.2.0 This was from Ubuntu</p>
+</li>
+<li>
+<p><strong>Pyright</strong> 1.1.409 This was installed using npm</p>
+</li>
+<li>
+<p><strong>Neovim</strong> v0.12.2 This was installed using the <code>curl</code> command that downloaded
+the latest amd64 binaries.</p>
+</li>
+<li>
+<p><strong>lsp-config</strong> Latest <code>master</code> branch with commit <code>229b7905</code> from 03-Jun-2026.
+The closest tag was v2.9.0.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>Install <a href="https://microsoft.github.io/pyright/">Pyright</a> - static code analyzer
@@ -1267,16 +1403,26 @@ and language server for Python.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>This installed Pyright 1.1.408. Install Neovim:</p>
+<p>Install the latest Neovim release:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>neovim</code></pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-LO</span> https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo rm</span> <span class="nt">-rf</span> /opt/nvim-linux-x86_64
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo tar</span> <span class="nt">-C</span> /opt <span class="nt">-xzf</span> nvim-linux-x86_64.tar.gz</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This installed Neovim 0.7.2. Install plugin for Neovim LSP client
-configuration:</p>
+<p>Ensure that the <code>nvim</code> executable is in a directory referenced by <code>PATH</code>.
+Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">ln</span> <span class="nt">-s</span> /opt/nvim-linux-x86_64/bin/nvim ~/.local/bin</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Install plugin for Neovim LSP client configuration:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1329,8 +1475,55 @@ a working tag from December 2023 was found:</p>
 <span class="gp">$</span><span class="w"> </span>git checkout v0.1.7</code></pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_ubuntu_24_04">Ubuntu 24.04</h3>
+<div class="paragraph">
+<p>Various tools had these versions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>npm</strong> 10.9.7 This was from Ubuntu</p>
+</li>
+<li>
+<p><strong>Pyright</strong> 1.1.408 This was installed using npm</p>
+</li>
+<li>
+<p><strong>Neovim</strong> v0.12.1 This was installed using the <code>curl</code> command that downloaded
+the latest amd64 binaries.</p>
+</li>
+<li>
+<p><strong>lsp-config</strong> Latest <code>master</code> branch with commit <code>bedca8b4</code> from 06-Apr-2026.
+The closest tag was v2.7.0.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>I had to change <code>init.lua</code> slightly:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">vim</span><span class="p">.</span><span class="n">lsp</span><span class="p">.</span><span class="n">config</span><span class="p">(</span><span class="s2">"pyright"</span><span class="p">,</span> <span class="p">{})</span>
+<span class="n">vim</span><span class="p">.</span><span class="n">lsp</span><span class="p">.</span><span class="n">enable</span><span class="p">(</span><span class="s2">"pyright"</span><span class="p">)</span>
+
+<span class="n">vim</span><span class="p">.</span><span class="n">keymap</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"gd"</span><span class="p">,</span> <span class="n">vim</span><span class="p">.</span><span class="n">lsp</span><span class="p">.</span><span class="n">buf</span><span class="p">.</span><span class="n">definition</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+<span class="n">vim</span><span class="p">.</span><span class="n">keymap</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"K"</span><span class="p">,</span> <span class="n">vim</span><span class="p">.</span><span class="n">lsp</span><span class="p">.</span><span class="n">buf</span><span class="p">.</span><span class="n">hover</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+<span class="n">vim</span><span class="p">.</span><span class="n">keymap</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"gr"</span><span class="p">,</span> <span class="n">vim</span><span class="p">.</span><span class="n">lsp</span><span class="p">.</span><span class="n">buf</span><span class="p">.</span><span class="n">references</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+<span class="n">vim</span><span class="p">.</span><span class="n">keymap</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"&lt;C-]&gt;"</span><span class="p">,</span> <span class="n">vim</span><span class="p">.</span><span class="n">lsp</span><span class="p">.</span><span class="n">buf</span><span class="p">.</span><span class="n">definition</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+<span class="n">vim</span><span class="p">.</span><span class="n">keymap</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"&lt;C-t&gt;"</span><span class="p">,</span> <span class="s2">"&lt;C-o&gt;"</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+
+<span class="n">vim</span><span class="p">.</span><span class="n">diagnostic</span><span class="p">.</span><span class="n">config</span><span class="p">({</span>
+  <span class="n">virtual_text</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="n">underline</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="n">signs</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="n">update_in_insert</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+<span class="p">})</span></code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>These steps made it possible to jump to symbol definitions in Python code.</p>
+</div>
 </div>
 </div>
 </div>
@@ -1841,7 +2034,30 @@ make use of the <code>--noautoremove</code> command-line switch.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_packages_available_version">Packages - Available Version</h2>
+<h2 id="_packages_search_dnf">Packages - Search (DNF)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Once I was working inside a minimal Docker container to create a build
+environment. The <code>rpmbuild</code> command did not exist. A DNF command that can
+search for packages containing a specific file helped:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf provides rpmbuild</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output pointed to the package <code>rpm-build</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf <span class="nb">install </span>rpm-build</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_packages_available_version_apt">Packages - Available Version (APT)</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Sometimes I want to know the available version of a package prior to
@@ -1874,6 +2090,80 @@ manager. To check for available package version on Ubuntu 22.04 one can do:</p>
 <div class="paragraph">
 <p>Yum&#8217;s <code>list</code> command needs a full package name. For instance, the argument
 <code>man</code> does not list anything while <code>man-db</code> does so.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_sumatra_pdf_viewing_pdf_files">Sumatra PDF - Viewing PDF Files</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Continuous and silent connectivity to the Internet became a reality for home
+computers in the late 2000s. Earlier, users needed to take deliberate action
+to connect to another computer. The situation has dramatically changed in the
+last 20 years. Now applications receive inputs over the Internet and talk to
+users (displaying ads) indiscriminately. This unwanted communication disrupts
+user attention and lowers the quality of the actual work that was supposed to
+be enabled by the application. Unfortunately, monetary payments are no longer
+a reliable protection from interruptions. Silence has been replaced by
+constant upselling.</p>
+</div>
+<div class="paragraph">
+<p>I installed a well-known PDF reader on Windows 10. The application designers
+decided that it was okay to split the screen into two parts. One was for the
+viewing of PDF files and the other was to display ads. Even when ads were not
+being flashed, I could not use the full screen to read documents.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://www.sumatrapdfreader.org/free-pdf-reader">Sumatra PDF</a> makes it
+possible to read PDF documents without distraction on Windows. It has the good
+behaviour of earlier applications. Install and forget. It lets the user focus
+on the end goal of gaining knowledge.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_qpdf_encrypting_pdf_files">QPDF - Encrypting PDF files</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>qpdf</code> command can be used to encrypt a PDF file. This also ensures that a
+password is required to open it. Install on a Debian-like system:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>qpdf</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Encrypt a file writing output to a separate file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>qpdf <span class="nt">--encrypt</span> &lt;user_password&gt; &lt;owner_password&gt; 256 <span class="nt">--</span> &lt;<span class="k">in</span>.pdf&gt; &lt;out.pdf&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To view the encryption status of a file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>qpdf <span class="nt">--show-encryption</span> &lt;out.pdf&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If one does not want a new file to be created:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>qpdf <span class="nt">--replace-input</span> <span class="nt">--encrypt</span> &lt;user_password&gt; &lt;owner_password&gt; 256 <span class="nt">--</span> &lt;<span class="k">in</span>.pdf&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For more details:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>qpdf <span class="nt">--help</span><span class="o">=</span>encryption | less</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -2008,10 +2298,39 @@ media that the app has created."
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_wsl_hostname">WSL - Hostname</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This method worked on WSL 2.7.3.0 and Debian 12.12. To change the hostname
+inside WSL make use of
+<a href="https://learn.microsoft.com/en-us/windows/wsl/wsl-config#wslconf">wsl.conf</a>.
+Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">cat</span> /etc/wsl.conf
+<span class="go">[network]
+hostname=pluto
+generateHosts=true</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_windows_disk_cleanup">Windows - Disk Cleanup</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I was able to try these teps on Windows 11 25H2. The disk cleanup program can
+be accessed by pressing Win + R and running <code>cleanmgr</code>. Once, it was able to
+reclaim at much as 10 GB from the C drive.</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-06-27 11:02:07 +0530
+Last updated 2026-07-23 19:30:58 +0530
 </div>
 </div>
 </body>

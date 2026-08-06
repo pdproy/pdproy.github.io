@@ -10,17 +10,22 @@ CSS_URL="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/styl
 SRC_DIR="src"
 OUTPUT_DIR="output"
 DOCS_DIR="docs"
+FAVICON_FILE="favicon.png"
 
 info() {
     echo "== $*"
 }
 
 update_links() {
-    sed -i -e "s|\(link rel=\"stylesheet\" href=\)\".*\"|\1\"${CSS_URL}\"|" $1/*.html
-    sed -i -e 's|\(<a href=.*\)\.adoc"|\1.html"|' $1/*.html
+    for html_file in $1/*.html $1/*/*.html; do
+        sed -i -e "s|\(link rel=\"stylesheet\" href=\)\".*\"|\1\"${CSS_URL}\"|" "$html_file"
+        sed -i -e 's|\(<a href=.*\)\.adoc"|\1.html"|' "$html_file"
 
-    sed -i -e "s|\(link rel=\"stylesheet\" href=\)\".*\"|\1\"${CSS_URL}\"|" $1/*/*.html
-    sed -i -e 's|\(<a href=.*\)\.adoc"|\1.html"|' $1/*/*.html
+        if ! grep -q '<link rel="icon" href="/favicon.png" type="image/png">' "$html_file"; then
+            sed -i -e 's|</head>|<link rel="icon" href="/favicon.png" type="image/png">\
+</head>|' "$html_file"
+        fi
+    done
 }
 
 git_checkout() {
@@ -65,6 +70,7 @@ main() {
 
     rsync -a ${SRC_DIR}/ ${OUTPUT_DIR}/
     find ${OUTPUT_DIR} -type f ! -name '*.html' -delete
+    cp ${FAVICON_FILE} ${OUTPUT_DIR}/
 
     info "Switching to gh-pages branch"
     git_checkout "gh-pages"

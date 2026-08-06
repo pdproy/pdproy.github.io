@@ -4,6 +4,7 @@
 
 - link:2026/Tips.adoc[Tips & Tricks]
 - link:2026/python-style-prompt.adoc[Python Style Guidelines]
+- link:2026/readme-structure.adoc[README structure]
 - link:2026/go-style-prompt.adoc[Go Style Guidelines]
 - link:2026/change.adoc[Change and Improvement]
 

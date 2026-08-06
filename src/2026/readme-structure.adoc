@@ -1,0 +1,109 @@
+= README Structure
+Pradeep Roy
+
+README is a documentation file that is often placed at the top level directory
+of an application. It can have names like `README` or `README.md`. In
+all cases, it is a text file that provides information about the software.
+This article outlines the structure that I like to follow for README files.
+The suggestions given in this article are from my own experience of
+applications that take options from a configuration file, don't interact
+directly with the user and keep running in the background.
+[https://github.com/johnkerl/miller[Miller] is an application that interacts
+heavily with the user while https://tinyproxy.github.io/[Tinyproxy] is an
+application that keeps doing its work in the background.
+
+== Overview
+
+The overview section provides a short summary of the software.
+
+== Motivation
+
+The motivation section tries to answer why this software had to be written? In
+business environments this is a place to mention about a customer problem or
+an internal concern.
+
+== Key Terms
+
+Every technical document is likely to have terms that are repeatedly used in
+it. These are terms that are specific to a correct understanding of the
+application. It is a good practice to define those terms at the beginning.
+
+== Features
+
+This is the most important section. The orientation should be towards
+describing capabilities offered by the application and naturally mentioning
+related config properties. Some guidelines:
+
+- Features should drive the README; configuration properties support feature
+  descriptions.
+- Name feature sections after clear user capabilities, such as Assign Story
+  Points or Excluding Files.
+- Put purpose and rationale in the section body instead of overloading
+  headings.
+- Describe capabilities and observable behavior, not implementation
+  categories.
+- Do not duplicate the complete configuration reference from the commented
+  example file.
+- Cover all configurable behaviors, but group related properties under
+  cohesive features.
+- Use examples only where they clarify behavior or terminology.
+- Keep detailed operational material (e.g. SQL debugging queries) outside the
+  feature descriptions.
+
+=== Feature 1
+
+This is an overview of the first feature. Mention configuration file
+properties that control behaviour related to this feature.
+
+=== Feature 2
+
+This is an overview of the second feature. Mention configuration file
+properties that control behaviour related to this feature.
+
+== Installation
+
+- Write steps to download and install the application.
+- This section can contain instructions on fetching a Docker container or a
+  package (e.g. RPM, Deb).
+- Dependencies that need to be installed for the application to function
+  should also be mentioned.
+- Keep steps focussed on user-visible prerequisites. Omit internal
+  installation paths unless users need them for operation.
+- Mention about any directories that need to be in the `PATH` environment
+  variable post installation.
+
+== Configuration
+
+Run-time configuration of `app` is completely specified through a config
+file. Please look at comments in `/path/to/app/config.yml.example` to know
+about the properties.
+
+== Usage
+
+This section should contain the typical command-line that can be used to run
+the application. It can be as simple as:
+
+----
+$ /path/to/app/app -c config.yml
+----
+
+Give examples of different command-line switches (if supported).
+
+== Performance
+
+Talk about performance benchmarks that have been done.
+
+== Limitations
+
+This section can also be named *Known Issues*. Mention about assumptions that
+are made by the application. Some of the items in this section result come out
+as a result of interactions with other people who were not involved in its
+implementation.
+
+== TODO
+
+Provide a list of items that are likely to be undertaken in the future (if
+any). The list is maintained manually. Agents should preserve the information
+unless instructed otherwise. Order the list in a way that keeps
+well-understood tasks at the top. Exploratory work and future ideas should be
+at the bottom.

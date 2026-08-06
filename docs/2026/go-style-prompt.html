@@ -5,7 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>Personal Tips &amp; Tricks</title>
+<meta name="author" content="Pradeep Roy">
+<title>Go Coding Guidelines Prompt</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,361 +439,389 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Personal Tips &amp; Tricks</h1>
+<h1>Go Coding Guidelines Prompt</h1>
+<div class="details">
+<span id="author" class="author">Pradeep Roy</span><br>
+</div>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_platform">Platform</h2>
+<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>My working environment is mostly CentOS 7. Thus, unless specified otherwise, it
-can be assumed that the commands are to be run on this OS.</p>
+<p>Follow Go coding guidelines described in this document.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tips_tricks">Tips &amp; Tricks</h2>
+<h2 id="_motivation">Motivation</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_openssh_generating_keys">OpenSSH - Generating Keys</h3>
 <div class="paragraph">
-<p>Generating authentication keys for OpenSSH:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ ssh-keygen -t rsa -b 4096 -C &lt;hostname&gt;</pre>
+<p>We value ease of understanding and extensibility.</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_sysstat_pidstat_timestamp">Sysstat - pidstat timestamp</h3>
+<div class="sect1">
+<h2 id="_general">General</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Use idiomatic, modern Go syntax supported by the project&#8217;s Go version.</p>
+</li>
+<li>
+<p>Add comments to every new or changed exported type, interface, function,
+method, constant and variable.</p>
+</li>
+<li>
+<p>Add comments to every new or changed interface, even when it is unexported.</p>
+</li>
+<li>
+<p>Use structs for structured records/config objects when appropriate.</p>
+</li>
+<li>
+<p>Keep package constants near the top of the file.</p>
+</li>
+<li>
+<p>Preserve existing behavior unless the requested change requires otherwise.</p>
+</li>
+<li>
+<p>Avoid using the term <strong>"shape"</strong> as a generic description in code,
+documentation and technical discussions. Prefer terminology that precisely
+conveys the intended concept. Use <strong>structure</strong> for internal organization,
+<strong>layout</strong> for memory, file, or packet organization, <strong>representation</strong> for the
+internal form of data, <strong>interface</strong> or <strong>API</strong> for externally visible behavior,
+<strong>schema</strong> for database or serialized data definitions, <strong>contract</strong> for
+behavioral guarantees, <strong>design</strong> or <strong>architecture</strong> for high-level
+organization, and <strong>format</strong> when referring to serialized data. Favor
+concrete, domain-specific terminology over broad abstractions whenever
+possible, as it improves precision and readability, especially in systems
+programming, and backend software.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_terminology">Terminology</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Reuse an identifier (e.g. variable, function, type, config property, CLI
+option, table column header) or user-facing term across layers only when it
+preserves the same semantic role. Use different names when related
+values belong to different abstraction levels, answer different
+questions, or represent different transformations of the same input.
+Multiple similar looking terms with different meanings can be a source of
+bugs and incorrect reviews.</p>
+</li>
+<li>
+<p>Avoid the term <code>knob</code> in code, comments, docs and user-facing text.</p>
+</li>
+<li>
+<p>Use <code>setting</code> for configurable behaviour or a resolved runtime value.</p>
+</li>
+<li>
+<p>Use <code>config property</code> when referring specifically to a named field in a
+config file.</p>
+</li>
+<li>
+<p>Use <code>parameter</code> for function/API inputs.</p>
+</li>
+<li>
+<p>For paths derived from effective settings, prefer neutral identifiers such
+as <code>dir/&lt;id&gt;</code> and define what ID represents before first use.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_types">Types</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Use concrete types unless an interface represents a real boundary.</p>
+</li>
+<li>
+<p>Prefer small interfaces owned by the consumer package.</p>
+</li>
+<li>
+<p>Keep interfaces focused on behavior required by callers, not on every method
+a concrete type happens to provide.</p>
+</li>
+<li>
+<p>Avoid interface names that merely repeat the implementation name.</p>
+</li>
+<li>
+<p>Use pointer receivers when methods mutate the receiver, when copying would
+be expensive, or when receiver consistency requires it. Otherwise prefer
+value receivers for small immutable values.</p>
+</li>
+<li>
+<p>Keep zero values meaningful where practical. If the zero value is not valid,
+make validation explicit at construction or use sites.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_functions">Functions</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>This issue occurred on 7.9.2009 with sysstat 10.1.5-20.el7_9. <code>pidstat</code>
-printed the opening timestamp in a different format depending on the logged-in
-user:</p>
-</div>
-<div class="paragraph">
-<p>Sample 1 (memory value is at position 8):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>05:29:05 AM     0      7144 224393.65      0.00 4629044 1943848   1.97  app</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Sample 2 (memory value is at position 7):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>04:14:22        0     34658 210790.37      0.00 4786596 2050684   2.08  app</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>We were not able to resolve by using the <code>S_TIME_FORMAT</code> environment variable.
-We resolved it by using the <code>-h</code> switch that made <code>pidstat</code> print the
-timestamp in seconds since Epoch.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_asciidoc_pdf">AsciiDoc - PDF</h3>
-<div class="paragraph">
-<p>Install the packages necessary to convert AsciiDoc (usually <code>.adoc</code> file
-extension) file to PDF:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$  sudo yum install asciidoc dblatex</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>A command-line that I have used:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ a2x --icons-dir /usr/share/asciidoc/images -f pdf  \
- --dblatex-opts "-P doc.publisher.show=0 -P latex.output.revhistory=0 \
- -Pdoc.layout=\"coverpage frontmatter mainmatter index \"" \
- --doctype=article README.adoc</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This is useful when the table of contents needs to be disabled. Otherwise, the
-<code>-Pdoc.layout</code> switch is not required.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_markdown_generate_table_of_contents">Markdown - Generate Table of Contents</h3>
-<div class="paragraph">
-<p><a href="https://github.com/thlorenz/doctoc">Doctoc</a> can be used to generate table of
-contents in markdown files. Essentially:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo npm install -g doctoc</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The table of contents of this file has been generated using <code>doctoc</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ doctoc Tips.md</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_markdown_cli_preview">Markdown - CLI Preview</h3>
-<div class="paragraph">
-<p><a href="https://github.com/charmbracelet/glow">Glow</a> makes it possible to preview
-Markdown files on the terminal. Download an install a suitable binary package
-from the <a href="https://github.com/charmbracelet/glow/releases">releases page</a></p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_markdown_table_genrator">Markdown - Table Genrator</h3>
-<div class="paragraph">
-<p>The <a href="https://www.tablesgenerator.com/markdown_tables">tables generator</a>
-site can be used to generate markdown for tables.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_vim_installing_vim_8_on_centos_7">Vim - Installing Vim 8 on CentOS 7</h3>
-<div class="paragraph">
-<p>It is always easiest to install from binary packages (than compiling from
-source). Vim 8 is available from the GhettoForge Plus repo. Install it:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install
-https://mirror.ghettoforge.org/distributions/gf/gf-release-latest.gf.el7.noarch.rpm</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The repo has to be manually enabled:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo vi /etc/yum.repos.d/gf.repo</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The package conflicts with the one coming from base CentOS and so has to be
-removed. Do keep a backup of <code>sudo</code> config (e.g. <code>/etc/sudoers</code>) because it
-gets removed in the process:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum autoremove vim-minimal
-$ sudo yum install vim-enhanced sudo</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_vim_building_vim_8_on_centos_7">Vim - Building Vim 8 on CentOS 7</h3>
-<div class="paragraph">
-<p>The main reason why I wanted to upgrade to Vim 8 on CentOS 7 was the
-<a href="https://github.com/fatih/vim-go">vim-go</a> plugin. It did not find the version
-that came from GhettoForge new enough and kept complaining. Therefore, I had to
-resort to compiling from sources:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum groupinstall "Development Tools"
-$ sudo yum install ncurses ncurses-devel</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As of this writing the tip of the master branch was <code>4b4b1b8</code> tagged as
-<code>v8.2.3426</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ git clone https://github.com/vim/vim.git
-$ cd vim
-$ ./configure --with-features=huge \
-    --enable-multibyte \
-    --enable-rubyinterp \
-    --enable-pythoninterp \
-    --enable-luainterp \
-    --prefix=/usr/local/vim8</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Enabling Perl did not work for me. The compilation failed with an "Unrecognized
-switch: -rototypes" error message. So, I had to drop it.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo mkdir /usr/local/vim8
-sudo chown osboxes:osboxes /usr/local/vim8</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Finally, compile and install:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ make
-$ make install</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Notice how the install step was run as non-root. This ensures that we don&#8217;t
-modify system-wide locations any more than expected. If uninstallation is
-required, then removing this one directory is enough.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum autoremove vim-enhanced
-$ sudo ln -s /usr/local/vim8/bin/vim /usr/local/bin/</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_go_setting_up_vim">Go - Setting up Vim</h3>
-<div class="paragraph">
-<p>After installing Vim 8, just do:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Commits that have worked in the past:</p>
+<p>Prefer small, explicit functions with clear names over clever abstractions.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>2024-01-14</strong> Go 1.18.10 (<a href="https://github.com/fatih/vim-go/commit/e2e7ad7c">commit</a>)</p>
+<p>Name functions after concrete actions (e.g. <code>parseDurationMins</code>,
+<code>buildTxnBatch</code>, <code>logSQL</code>, <code>validate</code>).</p>
 </li>
 <li>
-<p><strong>2023-06-21</strong> Go 1.18.10 (<a href="https://github.com/fatih/vim-go/commit/397a9c57">commit</a>)</p>
+<p>Choose verbs that match the actual operation. Use <code>parse*</code> for functions
+that extract structured values from existing text; reserve <code>read*</code> for
+functions that read from files, streams, subprocesses, or external sources.</p>
 </li>
 <li>
-<p><strong>2023-05-29</strong> Go 1.18.10 (<a href="https://github.com/fatih/vim-go/commit/2a874910">commit</a>)</p>
+<p>Name functions after what they do, not where their result is used. For
+example, prefer <code>format*</code> for a function that returns formatted text; do
+not use <code>log*</code> unless the function actually writes to a log.</p>
+</li>
+<li>
+<p>Data containers are plain structs, not deep type hierarchies.</p>
+</li>
+<li>
+<p>Control flow is explicit rather than hidden behind generic frameworks. Don’t
+introduce a generic framework when a direct function is enough.</p>
+</li>
+<li>
+<p>Validation and transformation logic is written plainly, even when verbose.</p>
+</li>
+<li>
+<p>Abstractions exist where they represent real boundaries (e.g. <code>RecordSource</code>,
+<code>RecordSink</code>, formatter interfaces, config structs).</p>
+</li>
+<li>
+<p>Don’t hide important behavior behind overly abstract names.</p>
+</li>
+<li>
+<p>Avoid names that make simple text formatting or path selection sound more
+abstract than it is.</p>
+</li>
+<li>
+<p>Split code when it improves readability, but don’t create abstraction layers
+just for style.</p>
+</li>
+<li>
+<p>Maintain straightforward style unless there is a clear reason to generalize.</p>
+</li>
+<li>
+<p>Order function parameters as per their relative dependence. A dependent
+parameter should come after the one that it depends upon.</p>
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>That&#8217;s it! For details see <a href="https://tpaschalis.github.io/vim-go-setup/">this</a> blog.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_go_directory_layout">Go - Directory Layout</h3>
-<div class="paragraph">
-<p>I have kind of started liking the Go Project
-<a href="https://github.com/golang-standards/project-layout">layout</a>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_git_git_2_on_centos_7">Git - Git 2 on CentOS 7</h3>
-<div class="paragraph">
-<p>Installing the newer Git 2 on CentOS 7 is required to avoid <code>git fetch-pack</code>
-errors (<a href="https://github.com/golang/go/issues/38373">38373</a>). First, uninstall
-Git coming from base CentOS:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum erase git perl-Git</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then, install the Inline with Upstream Stable (<a href="https://ius.io/">IUS</a>) Yum
-repository:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ yum install \
-  https://repo.ius.io/ius-release-el7.rpm \
-  https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Install Git 2:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install git222</pre>
+<div class="sect1">
+<h2 id="_maintainability">Maintainability</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Keep changes scoped to the relevant package.</p>
+</li>
+<li>
+<p>Follow existing local patterns before introducing a new abstraction.</p>
+</li>
+<li>
+<p>Add comments only where they explain non-obvious reasoning or safety
+constraints, except for required Go documentation comments.</p>
+</li>
+<li>
+<p>Do not rename or restructure unrelated code while making a focused change.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_git_email_id_per_repo">Git - Email id per Repo</h3>
-<div class="paragraph">
-<p>Sometimes there is a need to use separate author emails IDs in Git commits
-residing in differente repos (e.g.  work and personal). To setup an email ID
-specific to a repo, change directory to it and then run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ git config user.email "own_email@domain"</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_git_renaming_branches">Git - Renaming branches</h3>
-<div class="listingblock">
-<div class="content">
-<pre>$ git branch -m main master
-$ git push -u origin master
-$ git push origin --delete main</pre>
+<div class="sect1">
+<h2 id="_portability">Portability</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Use portable standard library APIs for file paths, time handling and process
+interaction where practical.</p>
+</li>
+<li>
+<p>Prefer <code>filepath</code> for filesystem paths and <code>path</code> for slash-separated
+logical paths such as URLs or archive entries.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_python_pip_on_python_2_7">Python - Pip on Python 2.7</h3>
-<div class="paragraph">
-<p>To install a newer version of Pip on CentOS 7 than the one coming with the
-distribution, do:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py
-$ python get-pip.py</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This helped me get Pip 20.3.4.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_cli_lftp">CLI - lftp</h3>
-<div class="paragraph">
-<p><code>lftp</code> is a useful command. The interaction with a FTP server is faster and
-more Bash-like. It also has an option to download complete directory trees.
-Install it by running:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install lftp</pre>
+<div class="sect1">
+<h2 id="_output_formatting">Output Formatting</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Keep internal numeric values at the precision needed for computation, but
+format human-facing output at the precision needed for decisions.</p>
+</li>
+<li>
+<p>Avoid printing fractional values when the fractional part does not affect
+interpretation. For example, whole milliseconds are usually easier to scan
+than fractional milliseconds in summaries, logs, and reports.</p>
+</li>
+<li>
+<p>Keep machine-readable output and human-readable output separate. Human text
+may be reworded for clarity, but structured output should have a stable
+contract that downstream code can parse.</p>
+</li>
+</ul>
 </div>
 </div>
-<div class="paragraph">
-<p>The command reads login information from <code>/.netrc</code>. Example contents:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>machine &lt;hostname1&gt; login &lt;user1&gt; password &lt;pass1&gt;
-machine &lt;hostname2&gt;.login &lt;user2&gt; password &lt;pass2&gt;</pre>
+<div class="sect1">
+<h2 id="_logging_and_errors">Logging and Errors</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>fmt.Errorf</code> with <code>%w</code> when adding context to errors that callers may
+need to unwrap.</p>
+</li>
+<li>
+<p>Return errors from library/package code instead of logging and exiting.</p>
+</li>
+<li>
+<p>For fatal configuration or validation errors in CLI code, log or print the
+error and exit with a non-zero status.</p>
+</li>
+<li>
+<p>Avoid colon-heavy log messages. Prefer prose such as:
+<code>log.Printf("Concern direction specified in %s that is not a measure",
+name)</code> rather than: <code>log.Printf("profile field %q: concern_direction is
+only valid", name)</code>.</p>
+</li>
+<li>
+<p>Keep normal logs grep-friendly and operationally useful.</p>
+</li>
+<li>
+<p>Put normalization at the boundary that owns the contract. If a program emits
+a structured format, it should emit values in the documented form. Consumers
+should parse and validate that format, not silently repair producer output,
+unless they are explicitly adapting an external or legacy format. Different
+conventions for the same type of value across producers or call paths are an
+avoidable source of confusion.</p>
+</li>
+</ul>
 </div>
 </div>
-<div class="paragraph">
-<p>Then logging to a server and directly switching to a directory
-becomes very convenient:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>$ lftp sftp://&lt;user1&gt;@&lt;hostname1&gt;/upload</pre>
+<div class="sect1">
+<h2 id="_config_validation">Config Validation</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Validate config values according to their documented contract. Do not
+silently coerce or rewrite config values to make them fit. A contract
+answers questions such as the following:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Is the property required or optional?</p>
+</li>
+<li>
+<p>What type should it have?</p>
+</li>
+<li>
+<p>What is the default if it is absent?</p>
+</li>
+<li>
+<p>Is the value used exactly as provided or transformed?</p>
+</li>
+<li>
+<p>If it is a path, is it relative to the current working directory, the
+config file, the project root or should be made absolute?</p>
+</li>
+<li>
+<p>What happens if the value is invalid?</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Catch errors to notify the user about values that are invalid from the
+perspective of the application.</p>
+</li>
+<li>
+<p>Do not make relative paths absolute, expand <code>~</code> or normalize the value
+unless that behavior is explicitly part of the property&#8217;s contract.</p>
+</li>
+<li>
+<p>If a config property is required, fail clearly when it is missing.</p>
+</li>
+<li>
+<p>If a config property is optional, apply the documented default when it is
+absent.</p>
+</li>
+</ul>
 </div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_security">Security</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Be careful with SQL construction. Parameterize values. If identifiers must
+be interpolated, validate them first.</p>
+</li>
+<li>
+<p>Be careful when passing user-controlled values to subprocesses. Prefer
+argument slices over shell command strings.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_static_analysis">Static Analysis</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Run <code>gofmt</code> on changed Go files before finishing changes.</p>
+</li>
+<li>
+<p>Run <code>go test ./&#8230;&#8203;</code> from the project root before finishing changes.</p>
+</li>
+<li>
+<p>Run <code>go vet ./&#8230;&#8203;</code> when the change touches concurrency, formatting,
+reflection, unsafe code, build tags or exported APIs.</p>
+</li>
+<li>
+<p>If the project has additional linters, run the relevant configured checks.</p>
+</li>
+<li>
+<p>If tests or checks cannot be run, report exactly what was not run and why.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-07-23 19:32:03 +0530
+Last updated 2026-08-06 15:44:37 +0530
 </div>
 </div>
 </body>

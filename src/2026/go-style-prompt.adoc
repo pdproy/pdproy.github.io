@@ -1,0 +1,167 @@
+= Go Coding Guidelines Prompt
+Pradeep Roy
+
+Follow Go coding guidelines described in this document.
+
+== Motivation
+
+We value ease of understanding and extensibility.
+
+== General
+
+- Use idiomatic, modern Go syntax supported by the project's Go version.
+- Add comments to every new or changed exported type, interface, function,
+  method, constant and variable.
+- Add comments to every new or changed interface, even when it is unexported.
+- Use structs for structured records/config objects when appropriate.
+- Keep package constants near the top of the file.
+- Preserve existing behavior unless the requested change requires otherwise.
+- Avoid using the term *"shape"* as a generic description in code,
+  documentation and technical discussions. Prefer terminology that precisely
+  conveys the intended concept. Use *structure* for internal organization,
+  *layout* for memory, file, or packet organization, *representation* for the
+  internal form of data, *interface* or *API* for externally visible behavior,
+  *schema* for database or serialized data definitions, *contract* for
+  behavioral guarantees, *design* or *architecture* for high-level
+  organization, and *format* when referring to serialized data. Favor
+  concrete, domain-specific terminology over broad abstractions whenever
+  possible, as it improves precision and readability, especially in systems
+  programming, and backend software.
+
+== Terminology
+
+- Reuse an identifier (e.g. variable, function, type, config property, CLI
+  option, table column header) or user-facing term across layers only when it
+  preserves the same semantic role. Use different names when related
+  values belong to different abstraction levels, answer different
+  questions, or represent different transformations of the same input.
+  Multiple similar looking terms with different meanings can be a source of
+  bugs and incorrect reviews.
+- Avoid the term `knob` in code, comments, docs and user-facing text.
+- Use `setting` for configurable behaviour or a resolved runtime value.
+- Use `config property` when referring specifically to a named field in a
+  config file.
+- Use `parameter` for function/API inputs.
+- For paths derived from effective settings, prefer neutral identifiers such
+  as `dir/<id>` and define what ID represents before first use.
+
+== Types
+
+- Use concrete types unless an interface represents a real boundary.
+- Prefer small interfaces owned by the consumer package.
+- Keep interfaces focused on behavior required by callers, not on every method
+  a concrete type happens to provide.
+- Avoid interface names that merely repeat the implementation name.
+- Use pointer receivers when methods mutate the receiver, when copying would
+  be expensive, or when receiver consistency requires it. Otherwise prefer
+  value receivers for small immutable values.
+- Keep zero values meaningful where practical. If the zero value is not valid,
+  make validation explicit at construction or use sites.
+
+== Functions
+
+Prefer small, explicit functions with clear names over clever abstractions.
+
+- Name functions after concrete actions (e.g. `parseDurationMins`,
+  `buildTxnBatch`, `logSQL`, `validate`).
+- Choose verbs that match the actual operation. Use `parse*` for functions
+  that extract structured values from existing text; reserve `read*` for
+  functions that read from files, streams, subprocesses, or external sources.
+- Name functions after what they do, not where their result is used. For
+  example, prefer `format*` for a function that returns formatted text; do
+  not use `log*` unless the function actually writes to a log.
+- Data containers are plain structs, not deep type hierarchies.
+- Control flow is explicit rather than hidden behind generic frameworks. Don’t
+  introduce a generic framework when a direct function is enough.
+- Validation and transformation logic is written plainly, even when verbose.
+- Abstractions exist where they represent real boundaries (e.g. `RecordSource`,
+  `RecordSink`, formatter interfaces, config structs).
+- Don’t hide important behavior behind overly abstract names.
+- Avoid names that make simple text formatting or path selection sound more
+  abstract than it is.
+- Split code when it improves readability, but don’t create abstraction layers
+  just for style.
+- Maintain straightforward style unless there is a clear reason to generalize.
+- Order function parameters as per their relative dependence. A dependent
+  parameter should come after the one that it depends upon.
+
+== Maintainability
+
+- Keep changes scoped to the relevant package.
+- Follow existing local patterns before introducing a new abstraction.
+- Add comments only where they explain non-obvious reasoning or safety
+  constraints, except for required Go documentation comments.
+- Do not rename or restructure unrelated code while making a focused change.
+
+== Portability
+
+- Use portable standard library APIs for file paths, time handling and process
+  interaction where practical.
+- Prefer `filepath` for filesystem paths and `path` for slash-separated
+  logical paths such as URLs or archive entries.
+
+== Output Formatting
+
+- Keep internal numeric values at the precision needed for computation, but
+  format human-facing output at the precision needed for decisions.
+- Avoid printing fractional values when the fractional part does not affect
+  interpretation. For example, whole milliseconds are usually easier to scan
+  than fractional milliseconds in summaries, logs, and reports.
+- Keep machine-readable output and human-readable output separate. Human text
+  may be reworded for clarity, but structured output should have a stable
+  contract that downstream code can parse.
+
+== Logging and Errors
+
+- Use `fmt.Errorf` with `%w` when adding context to errors that callers may
+  need to unwrap.
+- Return errors from library/package code instead of logging and exiting.
+- For fatal configuration or validation errors in CLI code, log or print the
+  error and exit with a non-zero status.
+- Avoid colon-heavy log messages. Prefer prose such as:
+  `log.Printf("Concern direction specified in %s that is not a measure",
+  name)` rather than: `log.Printf("profile field %q: concern_direction is
+  only valid", name)`.
+- Keep normal logs grep-friendly and operationally useful.
+- Put normalization at the boundary that owns the contract. If a program emits
+  a structured format, it should emit values in the documented form. Consumers
+  should parse and validate that format, not silently repair producer output,
+  unless they are explicitly adapting an external or legacy format. Different
+  conventions for the same type of value across producers or call paths are an
+  avoidable source of confusion.
+
+== Config Validation
+
+* Validate config values according to their documented contract. Do not
+  silently coerce or rewrite config values to make them fit. A contract
+  answers questions such as the following:
+  - Is the property required or optional?
+  - What type should it have?
+  - What is the default if it is absent?
+  - Is the value used exactly as provided or transformed?
+  - If it is a path, is it relative to the current working directory, the
+    config file, the project root or should be made absolute?
+  - What happens if the value is invalid?
+* Catch errors to notify the user about values that are invalid from the
+  perspective of the application.
+* Do not make relative paths absolute, expand `~` or normalize the value
+  unless that behavior is explicitly part of the property's contract.
+* If a config property is required, fail clearly when it is missing.
+* If a config property is optional, apply the documented default when it is
+  absent.
+
+== Security
+
+- Be careful with SQL construction. Parameterize values. If identifiers must
+  be interpolated, validate them first.
+- Be careful when passing user-controlled values to subprocesses. Prefer
+  argument slices over shell command strings.
+
+== Static Analysis
+
+- Run `gofmt` on changed Go files before finishing changes.
+- Run `go test ./...` from the project root before finishing changes.
+- Run `go vet ./...` when the change touches concurrency, formatting,
+  reflection, unsafe code, build tags or exported APIs.
+- If the project has additional linters, run the relevant configured checks.
+- If tests or checks cannot be run, report exactly what was not run and why.

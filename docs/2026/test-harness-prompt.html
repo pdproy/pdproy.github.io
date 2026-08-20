@@ -5,7 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>Personal Tips &amp; Tricks</title>
+<meta name="author" content="Pradeep Roy">
+<title>Shell Test Harness Guidelines</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -435,365 +436,723 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge .cm {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cp {
+  color: #999999;
+  font-weight: bold;
+}
+pre.rouge .c1 {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cs {
+  color: #999999;
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .err {
+  color: #a61717;
+  background-color: #e3d2d2;
+}
+pre.rouge .gd {
+  color: #000000;
+  background-color: #ffdddd;
+}
+pre.rouge .ge {
+  color: #000000;
+  font-style: italic;
+}
+pre.rouge .gr {
+  color: #aa0000;
+}
+pre.rouge .gh {
+  color: #999999;
+}
+pre.rouge .gi {
+  color: #000000;
+  background-color: #ddffdd;
+}
+pre.rouge .go {
+  color: #888888;
+}
+pre.rouge .gp {
+  color: #555555;
+}
+pre.rouge .gs {
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #aaaaaa;
+}
+pre.rouge .gt {
+  color: #aa0000;
+}
+pre.rouge .kc {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kd {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kn {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kp {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kr {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kt {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .k, pre.rouge .kv {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .mf {
+  color: #009999;
+}
+pre.rouge .mh {
+  color: #009999;
+}
+pre.rouge .il {
+  color: #009999;
+}
+pre.rouge .mi {
+  color: #009999;
+}
+pre.rouge .mo {
+  color: #009999;
+}
+pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
+  color: #009999;
+}
+pre.rouge .sa {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .sb {
+  color: #d14;
+}
+pre.rouge .sc {
+  color: #d14;
+}
+pre.rouge .sd {
+  color: #d14;
+}
+pre.rouge .s2 {
+  color: #d14;
+}
+pre.rouge .se {
+  color: #d14;
+}
+pre.rouge .sh {
+  color: #d14;
+}
+pre.rouge .si {
+  color: #d14;
+}
+pre.rouge .sx {
+  color: #d14;
+}
+pre.rouge .sr {
+  color: #009926;
+}
+pre.rouge .s1 {
+  color: #d14;
+}
+pre.rouge .ss {
+  color: #990073;
+}
+pre.rouge .s, pre.rouge .dl {
+  color: #d14;
+}
+pre.rouge .na {
+  color: #008080;
+}
+pre.rouge .bp {
+  color: #999999;
+}
+pre.rouge .nb {
+  color: #0086B3;
+}
+pre.rouge .nc {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .no {
+  color: #008080;
+}
+pre.rouge .nd {
+  color: #3c5d5d;
+  font-weight: bold;
+}
+pre.rouge .ni {
+  color: #800080;
+}
+pre.rouge .ne {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nl {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nn {
+  color: #555555;
+}
+pre.rouge .nt {
+  color: #000080;
+}
+pre.rouge .vc {
+  color: #008080;
+}
+pre.rouge .vg {
+  color: #008080;
+}
+pre.rouge .vi {
+  color: #008080;
+}
+pre.rouge .nv, pre.rouge .vm {
+  color: #008080;
+}
+pre.rouge .ow {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .o {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .w {
+  color: #bbbbbb;
+}
+pre.rouge {
+  background-color: #f8f8f8;
+}
+</style>
 <link rel="icon" href="/favicon.png" type="image/png">
 </head>
 <body class="article">
 <div id="header">
-<h1>Personal Tips &amp; Tricks</h1>
+<h1>Shell Test Harness Guidelines</h1>
+<div class="details">
+<span id="author" class="author">Pradeep Roy</span><br>
+</div>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_platform">Platform</h2>
+<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>My working environment is mostly CentOS 7. Thus, unless specified otherwise, it
-can be assumed that the commands are to be run on this OS.</p>
+<p>Follow the guidelines in this document when writing a shell test harness
+conventionally named <code>run-tests.sh</code>.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tips_tricks">Tips &amp; Tricks</h2>
+<h2 id="_motivation">Motivation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>run-tests.sh</code> is a local shell test harness. It selects tests,
+executes them, reports results and returns a non-zero exit status on failure.
+The goal of this document is to make command-line behavior and code style
+consistent without needing to copy another project&#8217;s script as an example.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_terminology">Terminology</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Test Case</dt>
+<dd>
+<p>A test case or test is a minimal unit of testing. Every test starts from
+predefined conditions, executes the program under test and verifies that the
+program behaved as expected.</p>
+</dd>
+<dt class="hdlist1">Test Harness</dt>
+<dd>
+<p>A test harness is a program or component that executes all or part of the
+defined tests, analyzes their outcomes and reports the results
+(<a href="https://www.gnu.org/software/automake/manual/html_node/Generalities-about-Testing.html">source</a>).</p>
+</dd>
+<dt class="hdlist1">Fixture</dt>
+<dd>
+<p>A fixture provides a predefined context for a test. This could include
+environment (for example a database configured with known parameters) or
+content (such as a dataset).
+(<a href="https://docs.pytest.org/en/stable/explanation/fixtures.html">source</a>).</p>
+</dd>
+<dt class="hdlist1">Golden Output</dt>
+<dd>
+<p>Golden output is checked-in expected output used as the comparison baseline.</p>
+</dd>
+<dt class="hdlist1">Generated Output</dt>
+<dd>
+<p>Generated output is data produced by the program under test during a test run.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_external_contract">External Contract</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_openssh_generating_keys">OpenSSH - Generating Keys</h3>
+<h3 id="_running">Running</h3>
 <div class="paragraph">
-<p>Generating authentication keys for OpenSSH:</p>
+<p>Write the harness as an executable Bash script named <code>run-tests.sh</code>. Typically,
+it is run as <code>./run-tests.sh</code> from the tool&#8217;s directory.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_directory_layout">Directory Layout</h3>
+<div class="paragraph">
+<p>Place the harness beside the program or command being tested. Example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ ssh-keygen -t rsa -b 4096 -C &lt;hostname&gt;</pre>
+<pre class="rouge highlight"><code data-lang="text">cmd/&lt;tool&gt;/
+  run-tests.sh
+  &lt;tool&gt;
+  test/
+    cases/
+      tc01/
+        input/
+          metadata.json
+          data/
+            data_file_1.csv
+            data_file_2.csv
+        expected/
+          report.txt
+    output/
+      tc01/
+        report.txt</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_sysstat_pidstat_timestamp">Sysstat - pidstat timestamp</h3>
+<h3 id="_cleanup">Cleanup</h3>
 <div class="paragraph">
-<p>This issue occurred on 7.9.2009 with sysstat 10.1.5-20.el7_9. <code>pidstat</code>
-printed the opening timestamp in a different format depending on the logged-in
-user:</p>
-</div>
-<div class="paragraph">
-<p>Sample 1 (memory value is at position 8):</p>
+<p>Do not clean generated output with destructive broad patterns. Remove only the
+known output directory owned by the harness. The separate directory for
+generated output makes cleanup trivial:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>05:29:05 AM     0      7144 224393.65      0.00 4629044 1943848   1.97  app</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Sample 2 (memory value is at position 7):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>04:14:22        0     34658 210790.37      0.00 4786596 2050684   2.08  app</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>We were not able to resolve by using the <code>S_TIME_FORMAT</code> environment variable.
-We resolved it by using the <code>-h</code> switch that made <code>pidstat</code> print the
-timestamp in seconds since Epoch.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_asciidoc_pdf">AsciiDoc - PDF</h3>
-<div class="paragraph">
-<p>Install the packages necessary to convert AsciiDoc (usually <code>.adoc</code> file
-extension) file to PDF:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$  sudo yum install asciidoc dblatex</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>A command-line that I have used:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ a2x --icons-dir /usr/share/asciidoc/images -f pdf  \
- --dblatex-opts "-P doc.publisher.show=0 -P latex.output.revhistory=0 \
- -Pdoc.layout=\"coverpage frontmatter mainmatter index \"" \
- --doctype=article README.adoc</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This is useful when the table of contents needs to be disabled. Otherwise, the
-<code>-Pdoc.layout</code> switch is not required.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_markdown_generate_table_of_contents">Markdown - Generate Table of Contents</h3>
-<div class="paragraph">
-<p><a href="https://github.com/thlorenz/doctoc">Doctoc</a> can be used to generate table of
-contents in markdown files. Essentially:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo npm install -g doctoc</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The table of contents of this file has been generated using <code>doctoc</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ doctoc Tips.md</pre>
+<pre class="rouge highlight"><code data-lang="bash">clean_output_dirs<span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="nt">-d</span> <span class="s2">"</span><span class="nv">$OUTPUT_DIR</span><span class="s2">"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">rm</span> <span class="nt">-r</span> <span class="nt">--</span> <span class="s2">"</span><span class="nv">$OUTPUT_DIR</span><span class="s2">"</span>
+    <span class="k">fi</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_markdown_cli_preview">Markdown - CLI Preview</h3>
+<h3 id="_output_format">Output Format</h3>
 <div class="paragraph">
-<p><a href="https://github.com/charmbracelet/glow">Glow</a> makes it possible to preview
-Markdown files on the terminal. Download an install a suitable binary package
-from the <a href="https://github.com/charmbracelet/glow/releases">releases page</a></p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_markdown_table_genrator">Markdown - Table Genrator</h3>
-<div class="paragraph">
-<p>The <a href="https://www.tablesgenerator.com/markdown_tables">tables generator</a>
-site can be used to generate markdown for tables.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_vim_installing_vim_8_on_centos_7">Vim - Installing Vim 8 on CentOS 7</h3>
-<div class="paragraph">
-<p>It is always easiest to install from binary packages (than compiling from
-source). Vim 8 is available from the GhettoForge Plus repo. Install it:</p>
+<p>The harness should report test results in the format shown by this
+<code>run_test()</code> function:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ sudo yum install
-https://mirror.ghettoforge.org/distributions/gf/gf-release-latest.gf.el7.noarch.rpm</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The repo has to be manually enabled:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo vi /etc/yum.repos.d/gf.repo</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The package conflicts with the one coming from base CentOS and so has to be
-removed. Do keep a backup of <code>sudo</code> config (e.g. <code>/etc/sudoers</code>) because it
-gets removed in the process:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum autoremove vim-minimal
-$ sudo yum install vim-enhanced sudo</pre>
+<pre class="rouge highlight"><code data-lang="bash">run_test<span class="o">()</span> <span class="o">{</span>
+    <span class="nb">local </span><span class="nv">test_name</span><span class="o">=</span><span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>
+    <span class="nb">local </span><span class="nv">err</span><span class="o">=</span>0
+    <span class="nb">local </span>ok
+    <span class="nb">local </span>start_ms end_ms elapsed_ms
+
+    <span class="nv">start_ms</span><span class="o">=</span><span class="si">$(</span><span class="nb">date</span> +%s%3N<span class="si">)</span>
+
+    <span class="k">if</span> <span class="s2">"</span><span class="nv">$test_name</span><span class="s2">"</span><span class="p">;</span> <span class="k">then
+        </span><span class="nv">ok</span><span class="o">=</span><span class="s2">"[PASS]"</span>
+    <span class="k">else
+        </span><span class="nv">ok</span><span class="o">=</span><span class="s2">"[FAIL]"</span>
+        <span class="nv">err</span><span class="o">=</span>1
+    <span class="k">fi
+
+    </span><span class="nv">end_ms</span><span class="o">=</span><span class="si">$(</span><span class="nb">date</span> +%s%3N<span class="si">)</span>
+    <span class="nv">elapsed_ms</span><span class="o">=</span><span class="k">$((</span>end_ms <span class="o">-</span> start_ms<span class="k">))</span>
+    <span class="nb">printf</span> <span class="s2">"%-60s %s %6d ms</span><span class="se">\n</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$test_name</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$ok</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$elapsed_ms</span><span class="s2">"</span>
+
+    <span class="k">return</span> <span class="nv">$err</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_vim_building_vim_8_on_centos_7">Vim - Building Vim 8 on CentOS 7</h3>
+<h3 id="_fixtures">Fixtures</h3>
 <div class="paragraph">
-<p>The main reason why I wanted to upgrade to Vim 8 on CentOS 7 was the
-<a href="https://github.com/fatih/vim-go">vim-go</a> plugin. It did not find the version
-that came from GhettoForge new enough and kept complaining. Therefore, I had to
-resort to compiling from sources:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum groupinstall "Development Tools"
-$ sudo yum install ncurses ncurses-devel</pre>
-</div>
+<p>Keep input fixtures small and hand-written unless the test specifically covers
+large inputs or generated input data.</p>
 </div>
 <div class="paragraph">
-<p>As of this writing the tip of the master branch was <code>4b4b1b8</code> tagged as
-<code>v8.2.3426</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ git clone https://github.com/vim/vim.git
-$ cd vim
-$ ./configure --with-features=huge \
-    --enable-multibyte \
-    --enable-rubyinterp \
-    --enable-pythoninterp \
-    --enable-luainterp \
-    --prefix=/usr/local/vim8</pre>
-</div>
+<p>Each fixture directory should contain the input files as the program expects
+them, plus an <code>expected/</code> directory containing the golden output.</p>
 </div>
 <div class="paragraph">
-<p>Enabling Perl did not work for me. The compilation failed with an "Unrecognized
-switch: -rototypes" error message. So, I had to drop it.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>sudo mkdir /usr/local/vim8
-sudo chown osboxes:osboxes /usr/local/vim8</pre>
-</div>
+<p>Use fixture names such as <code>tc01</code>, <code>tc02</code>, and so on for compatibility with
+simple shell variable construction. Put the intent in the test function name
+and comment rather than in a long directory name.</p>
 </div>
 <div class="paragraph">
-<p>Finally, compile and install:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ make
-$ make install</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Notice how the install step was run as non-root. This ensures that we don&#8217;t
-modify system-wide locations any more than expected. If uninstallation is
-required, then removing this one directory is enough.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum autoremove vim-enhanced
-$ sudo ln -s /usr/local/vim8/bin/vim /usr/local/bin/</pre>
-</div>
+<p>Golden output should be exact, deterministic, and reviewable in a diff.
+Avoid storing generated timestamps, random IDs, or machine-specific paths in
+golden output unless the test is specifically about those values.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_go_setting_up_vim">Go - Setting up Vim</h3>
+<h3 id="_git_hygiene">Git Hygiene</h3>
 <div class="paragraph">
-<p>After installing Vim 8, just do:</p>
+<p>Commit fixtures, golden output, and the harness. Do not commit generated
+output; add the generated output directory to <code>.gitignore</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_code_style">Code Style</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_general">General</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Start with <code>#!/bin/bash</code>, <code>set -e</code>, and an optional commented <code>#set -x</code>.</p>
+</li>
+<li>
+<p>Keep the script self-contained unless the project already has established
+shared test helpers.</p>
+</li>
+<li>
+<p>Prefer explicit shell functions over generic frameworks.</p>
+</li>
+<li>
+<p>Keep test bodies repetitive when that makes each fixture&#8217;s command line and
+output paths obvious.</p>
+</li>
+<li>
+<p>Do not hide important behavior behind clever loops, implicit discovery, or
+computed test names.</p>
+</li>
+<li>
+<p>Use ASCII in fixtures and scripts unless the test specifically needs
+non-ASCII input.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_test_selection">Test Selection</h3>
+<div class="paragraph">
+<p>Define a global <code>TESTS</code> array containing test function names. This is the
+primary mechanism for enabling and disabling regression tests.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go</pre>
+<pre class="rouge highlight"><code data-lang="bash"><span class="nv">TESTS</span><span class="o">=(</span>
+    test_example_case
+    <span class="o">!</span>test_disabled_case
+    <span class="o">!</span>test_future_case
+<span class="o">)</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Commits that have worked in the past:</p>
+<p>In this example, <code>test_example_case</code> is enabled, <code>test_disabled_case</code> is an
+implemented test that is disabled and <code>test_future_case</code> is a disabled stub.</p>
+</div>
+<div class="paragraph">
+<p>Prefix a function name with <code>!</code> to keep the test in the test plan without
+enabling it. Keep stub functions present so the test plan is visible and the
+names can be reviewed.</p>
+</div>
+<div class="paragraph">
+<p>Do not use filesystem discovery as the main test selection mechanism. The
+array gives reviewers a clear list of what is expected to run.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_common_global_variables">Common Global Variables</h3>
+<div class="paragraph">
+<p>Use these standard variables near the top of the script:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="nb">readonly </span><span class="nv">SCRIPT_DIR</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span><span class="nb">cd</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">dirname</span> <span class="s2">"</span><span class="nv">$0</span><span class="s2">"</span><span class="si">)</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">pwd</span><span class="si">)</span><span class="s2">"</span>
+<span class="nb">readonly </span><span class="nv">PYTHON</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">PYTHON</span><span class="k">:-</span><span class="nv">python3</span><span class="k">}</span><span class="s2">"</span>
+<span class="nb">readonly </span><span class="nv">PROG_UNDER_TEST</span><span class="o">=(</span><span class="s2">"</span><span class="k">${</span><span class="nv">SCRIPT_DIR</span><span class="k">}</span><span class="s2">/&lt;tool&gt;"</span><span class="o">)</span>
+<span class="nb">readonly </span><span class="nv">TEST_DIR</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">SCRIPT_DIR</span><span class="k">}</span><span class="s2">/test"</span>
+<span class="nb">readonly </span><span class="nv">FIXTURES_DIR</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">TEST_DIR</span><span class="k">}</span><span class="s2">/cases"</span>
+<span class="nb">readonly </span><span class="nv">OUTPUT_DIR</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">TEST_DIR</span><span class="k">}</span><span class="s2">/output"</span>
+
+<span class="nv">VERBOSE</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">VERBOSE</span><span class="k">:-</span><span class="nv">0</span><span class="k">}</span><span class="s2">"</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Adjust <code>PROG_UNDER_TEST</code> for the local program. For a Python script that should
+always be run through the interpreter, use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="nb">readonly </span><span class="nv">PROG_UNDER_TEST</span><span class="o">=(</span><span class="s2">"</span><span class="nv">$PYTHON</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">SCRIPT_DIR</span><span class="k">}</span><span class="s2">/&lt;tool&gt;.py"</span><span class="o">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Store checked-in fixtures under <code>test/cases</code>. Configure the test command or
+pass command-line options so generated output is written to <code>test/output</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_common_functions">Common Functions</h3>
+<div class="paragraph">
+<p>Provide small helpers with concrete behavior:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">debug<span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">((</span> VERBOSE <span class="o">&gt;</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"DEBUG: </span><span class="nv">$*</span><span class="s2">"</span>
+    <span class="k">fi</span>
+<span class="o">}</span>
+
+info<span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">((</span> VERBOSE <span class="o">&gt;</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"== </span><span class="nv">$*</span><span class="s2">"</span>
+    <span class="k">fi</span>
+<span class="o">}</span>
+
+error<span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> <span class="s2">"** </span><span class="k">${</span><span class="nv">0</span><span class="p">##*/</span><span class="k">}</span><span class="s2">: error: </span><span class="nv">$*</span><span class="s2">"</span> <span class="o">&gt;</span>&amp;2
+<span class="o">}</span>
+
+die<span class="o">()</span> <span class="o">{</span>
+    error <span class="s2">"</span><span class="nv">$*</span><span class="s2">"</span>
+    <span class="nb">exit </span>1
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Do not end single-sentence log or status messages with a full stop.</p>
+</div>
+<div class="paragraph">
+<p>Add <code>check_dependencies_installed()</code> and check only dependencies that the
+harness actually needs. For a Python command-line tool, this usually includes
+<code>$PYTHON</code> and the program under test.</p>
+</div>
+<div class="paragraph">
+<p>For file comparisons, use <code>diff -u</code> for single text files:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">compare_output_file<span class="o">()</span> <span class="o">{</span>
+    <span class="nb">local </span><span class="nv">golden</span><span class="o">=</span><span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>
+    <span class="nb">local </span><span class="nv">actual</span><span class="o">=</span><span class="s2">"</span><span class="nv">$2</span><span class="s2">"</span>
+
+    diff <span class="nt">-u</span> <span class="s2">"</span><span class="nv">$golden</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$actual</span><span class="s2">"</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For directory comparisons, use <code>diff -q -r</code> only when exact recursive
+comparison is the desired contract.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_program_invocation">Program Invocation</h3>
+<div class="paragraph">
+<p>Use the program&#8217;s command-line defaults intentionally. When a test exists to
+verify default behavior, omit the option and make that clear in the test
+comment or fixture description.</p>
+</div>
+<div class="paragraph">
+<p>When a test exists to verify a non-default option, pass that option explicitly.</p>
+</div>
+<div class="paragraph">
+<p>Keep command lines vertically aligned when they have several options; this
+makes fixture paths and behavioral switches easy to review.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_observable_behavior">Observable Behavior</h3>
+<div class="paragraph">
+<p>The harness should compare the same observable output a user or downstream
+system would consume. Call the program through its command-line entry point.</p>
+</div>
+<div class="paragraph">
+<p>If the program supports writing to an output path, use that path and compare
+the resulting file. If the program only writes to <code>stdout</code>, capture it into a
+file in <code>OUTPUT_DIR</code>.</p>
+</div>
+<div class="paragraph">
+<p>Do not compare logs unless log text is part of the behavior being tested.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_test_function_structure">Test Function Structure</h3>
+<div class="paragraph">
+<p>Give each test a stable <code>tcNN</code> test case ID. Keep the shell body direct and
+localize the paths at the top.</p>
+</div>
+<div class="paragraph">
+<p>Use the test case ID to derive the per-test generated output directory under
+<code>OUTPUT_DIR</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="c"># Verifies report generation from a minimal metadata and input dataset</span>
+test_example_case<span class="o">()</span> <span class="o">{</span>
+    <span class="nb">local </span><span class="nv">tc_id</span><span class="o">=</span><span class="s2">"tc01"</span>
+    <span class="nb">local </span><span class="nv">fixture_dir</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">FIXTURES_DIR</span><span class="k">}</span><span class="s2">/</span><span class="k">${</span><span class="nv">tc_id</span><span class="k">}</span><span class="s2">"</span>
+    <span class="nb">local </span><span class="nv">input_dir</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">fixture_dir</span><span class="k">}</span><span class="s2">/input"</span>
+    <span class="nb">local </span><span class="nv">metadata_path</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">input_dir</span><span class="k">}</span><span class="s2">/metadata.json"</span>
+    <span class="nb">local </span><span class="nv">golden_report</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">fixture_dir</span><span class="k">}</span><span class="s2">/expected/report.txt"</span>
+    <span class="nb">local </span><span class="nv">output_root</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">OUTPUT_DIR</span><span class="k">}</span><span class="s2">/</span><span class="k">${</span><span class="nv">tc_id</span><span class="k">}</span><span class="s2">"</span>
+    <span class="nb">local </span><span class="nv">actual_report</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">output_root</span><span class="k">}</span><span class="s2">/report.txt"</span>
+
+    <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="nv">$output_root</span><span class="s2">"</span>
+
+    <span class="s2">"</span><span class="k">${</span><span class="nv">PROG_UNDER_TEST</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span>                      <span class="se">\</span>
+        <span class="nt">--metadata</span> <span class="s2">"</span><span class="nv">$metadata_path</span><span class="s2">"</span>              <span class="se">\</span>
+        <span class="nt">--input</span>    <span class="s2">"</span><span class="nv">$input_dir</span><span class="s2">"</span>                  <span class="se">\</span>
+        <span class="nt">--output</span>   <span class="s2">"</span><span class="nv">$actual_report</span><span class="s2">"</span>
+
+    compare_output_file <span class="s2">"</span><span class="nv">$golden_report</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$actual_report</span><span class="s2">"</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add a concise comment immediately before each implemented test function. The
+comment should explain why the test exists, not restate every line of fixture
+data. Keep it to one or two lines.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_test_stubs">Test Stubs</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">stub_test<span class="o">()</span> <span class="o">{</span>
+    <span class="nb">local </span><span class="nv">tc_id</span><span class="o">=</span><span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>
+    <span class="nb">local </span><span class="nv">description</span><span class="o">=</span><span class="s2">"</span><span class="nv">$2</span><span class="s2">"</span>
+
+    die <span class="s2">"test case </span><span class="k">${</span><span class="nv">tc_id</span><span class="k">}</span><span class="s2"> is not implemented yet: </span><span class="nv">$description</span><span class="s2">"</span>
+<span class="o">}</span>
+
+test_future_case<span class="o">()</span> <span class="o">{</span>
+    stub_test <span class="s2">"tc03"</span> <span class="s2">"future case description"</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Stub functions should remain disabled with a <code>!</code> prefix in <code>TESTS</code> until
+implemented.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_main_loop">Main Loop</h3>
+<div class="paragraph">
+<p>Use this structure for <code>main()</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">main<span class="o">()</span> <span class="o">{</span>
+    <span class="nb">local </span><span class="nv">err</span><span class="o">=</span>0
+    <span class="nb">local </span><span class="nv">enabled</span><span class="o">=</span>0
+    <span class="nb">local </span>test_name
+
+    check_dependencies_installed
+    clean_output_dirs
+
+    <span class="k">if</span> <span class="o">((</span> <span class="k">${#</span><span class="nv">TESTS</span><span class="p">[@]</span><span class="k">}</span> <span class="o">==</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"No regression tests defined"</span>
+        <span class="nb">echo</span> <span class="s2">"Add test function names to TESTS inside </span><span class="k">${</span><span class="nv">0</span><span class="p">##*/</span><span class="k">}</span><span class="s2">"</span>
+        <span class="k">return </span>0
+    <span class="k">fi
+
+    </span><span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="nv">$OUTPUT_DIR</span><span class="s2">"</span>
+
+    <span class="k">for </span>test_name <span class="k">in</span> <span class="s2">"</span><span class="k">${</span><span class="nv">TESTS</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span><span class="p">;</span> <span class="k">do
+        if</span> <span class="o">[[</span> <span class="k">${</span><span class="nv">test_name</span>::1<span class="k">}</span> <span class="o">==</span> <span class="s1">'!'</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            continue
+        fi</span>
+
+        <span class="o">((</span>enabled <span class="o">=</span> enabled + 1<span class="o">))</span>
+        <span class="k">if</span> <span class="o">!</span> <span class="nb">declare</span> <span class="nt">-F</span> <span class="s2">"</span><span class="nv">$test_name</span><span class="s2">"</span> <span class="o">&gt;</span>/dev/null<span class="p">;</span> <span class="k">then
+            </span>error <span class="s2">"unknown test listed in TESTS: </span><span class="nv">$test_name</span><span class="s2">"</span>
+            <span class="nv">err</span><span class="o">=</span>1
+            <span class="k">continue
+        fi
+
+        </span>run_test <span class="s2">"</span><span class="nv">$test_name</span><span class="s2">"</span> <span class="o">||</span> <span class="nv">err</span><span class="o">=</span>1
+    <span class="k">done
+
+    if</span> <span class="o">((</span> enabled <span class="o">==</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"No regression tests enabled"</span>
+        <span class="nb">echo</span> <span class="s2">"Delete the ! prefix from TESTS entries inside </span><span class="k">${</span><span class="nv">0</span><span class="p">##*/</span><span class="k">}</span><span class="s2"> to enable them"</span>
+    <span class="k">fi
+
+    return</span> <span class="nv">$err</span>
+<span class="o">}</span>
+
+main <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_verification">Verification</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>After changing the harness, fixtures, or golden output:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>2024-01-14</strong> Go 1.18.10 (<a href="https://github.com/fatih/vim-go/commit/e2e7ad7c">commit</a>)</p>
+<p>run <code>./run-tests.sh</code> from the tool directory or the equivalent path from the
+project root</p>
 </li>
 <li>
-<p><strong>2023-06-21</strong> Go 1.18.10 (<a href="https://github.com/fatih/vim-go/commit/397a9c57">commit</a>)</p>
+<p>run relevant unit tests if the program has them</p>
 </li>
 <li>
-<p><strong>2023-05-29</strong> Go 1.18.10 (<a href="https://github.com/fatih/vim-go/commit/2a874910">commit</a>)</p>
+<p>run <code>git diff --check</code> on changed scripts, fixtures and golden output</p>
+</li>
+<li>
+<p>inspect <code>git status --short</code> to ensure generated output is not listed as
+untracked or modified</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>That&#8217;s it! For details see <a href="https://tpaschalis.github.io/vim-go-setup/">this</a> blog.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_go_directory_layout">Go - Directory Layout</h3>
-<div class="paragraph">
-<p>I have kind of started liking the Go Project
-<a href="https://github.com/golang-standards/project-layout">layout</a>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_git_git_2_on_centos_7">Git - Git 2 on CentOS 7</h3>
-<div class="paragraph">
-<p>Installing the newer Git 2 on CentOS 7 is required to avoid <code>git fetch-pack</code>
-errors (<a href="https://github.com/golang/go/issues/38373">38373</a>). First, uninstall
-Git coming from base CentOS:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum erase git perl-Git</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then, install the Inline with Upstream Stable (<a href="https://ius.io/">IUS</a>) Yum
-repository:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ yum install \
-  https://repo.ius.io/ius-release-el7.rpm \
-  https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Install Git 2:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install git222</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_git_email_id_per_repo">Git - Email id per Repo</h3>
-<div class="paragraph">
-<p>Sometimes there is a need to use separate author emails IDs in Git commits
-residing in differente repos (e.g.  work and personal). To setup an email ID
-specific to a repo, change directory to it and then run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ git config user.email "own_email@domain"</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_git_renaming_branches">Git - Renaming branches</h3>
-<div class="listingblock">
-<div class="content">
-<pre>$ git branch -m main master
-$ git push -u origin master
-$ git push origin --delete main</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_python_pip_on_python_2_7">Python - Pip on Python 2.7</h3>
-<div class="paragraph">
-<p>To install a newer version of Pip on CentOS 7 than the one coming with the
-distribution, do:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py
-$ python get-pip.py</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This helped me get Pip 20.3.4.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_cli_lftp">CLI - lftp</h3>
-<div class="paragraph">
-<p><code>lftp</code> is a useful command. The interaction with a FTP server is faster and
-more Bash-like. It also has an option to download complete directory trees.
-Install it by running:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ sudo yum install lftp</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The command reads login information from <code>/.netrc</code>. Example contents:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>machine &lt;hostname1&gt; login &lt;user1&gt; password &lt;pass1&gt;
-machine &lt;hostname2&gt;.login &lt;user2&gt; password &lt;pass2&gt;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then logging to a server and directly switching to a directory
-becomes very convenient:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ lftp sftp://&lt;user1&gt;@&lt;hostname1&gt;/upload</pre>
-</div>
-</div>
+<p>If any check cannot be run, report exactly what was not run and why.</p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-11 15:04:00 +0530
+Last updated 2026-08-20 23:54:22 +0530
 </div>
 </div>
 </body>

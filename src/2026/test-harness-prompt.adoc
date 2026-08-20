@@ -1,0 +1,388 @@
+= Shell Test Harness Guidelines
+Pradeep Roy
+:source-highlighter: rouge
+:source-language: bash
+:gnutesting: https://www.gnu.org/software/automake/manual/html_node/Generalities-about-Testing.html
+:pytestfixture: https://docs.pytest.org/en/stable/explanation/fixtures.html
+
+Follow the guidelines in this document when writing a shell test harness
+conventionally named `run-tests.sh`.
+
+== Motivation
+
+`run-tests.sh` is a local shell test harness. It selects tests,
+executes them, reports results and returns a non-zero exit status on failure.
+The goal of this document is to make command-line behavior and code style
+consistent without needing to copy another project's script as an example.
+
+== Terminology
+
+Test Case::
+A test case or test is a minimal unit of testing. Every test starts from
+predefined conditions, executes the program under test and verifies that the
+program behaved as expected.
+
+Test Harness::
+A test harness is a program or component that executes all or part of the
+defined tests, analyzes their outcomes and reports the results
+({gnutesting}[source]).
+
+Fixture::
+A fixture provides a predefined context for a test. This could include
+environment (for example a database configured with known parameters) or
+content (such as a dataset).
+({pytestfixture}[source]).
+
+Golden Output::
+Golden output is checked-in expected output used as the comparison baseline.
+
+Generated Output::
+Generated output is data produced by the program under test during a test run.
+
+== External Contract
+
+=== Running
+
+Write the harness as an executable Bash script named `run-tests.sh`. Typically,
+it is run as `./run-tests.sh` from the tool's directory.
+
+=== Directory Layout
+
+Place the harness beside the program or command being tested. Example:
+
+[source,text]
+----
+cmd/<tool>/
+  run-tests.sh
+  <tool>
+  test/
+    cases/
+      tc01/
+        input/
+          metadata.json
+          data/
+            data_file_1.csv
+            data_file_2.csv
+        expected/
+          report.txt
+    output/
+      tc01/
+        report.txt
+----
+
+=== Cleanup
+
+Do not clean generated output with destructive broad patterns. Remove only the
+known output directory owned by the harness. The separate directory for
+generated output makes cleanup trivial:
+
+----
+clean_output_dirs() {
+    if [[ -d "$OUTPUT_DIR" ]]; then
+        rm -r -- "$OUTPUT_DIR"
+    fi
+}
+----
+
+=== Output Format
+
+The harness should report test results in the format shown by this
+`run_test()` function:
+
+[source,bash]
+----
+run_test() {
+    local test_name="$1"
+    local err=0
+    local ok
+    local start_ms end_ms elapsed_ms
+
+    start_ms=$(date +%s%3N)
+
+    if "$test_name"; then
+        ok="[PASS]"
+    else
+        ok="[FAIL]"
+        err=1
+    fi
+
+    end_ms=$(date +%s%3N)
+    elapsed_ms=$((end_ms - start_ms))
+    printf "%-60s %s %6d ms\n" "$test_name" "$ok" "$elapsed_ms"
+
+    return $err
+}
+----
+
+=== Fixtures
+
+Keep input fixtures small and hand-written unless the test specifically covers
+large inputs or generated input data.
+
+Each fixture directory should contain the input files as the program expects
+them, plus an `expected/` directory containing the golden output.
+
+Use fixture names such as `tc01`, `tc02`, and so on for compatibility with
+simple shell variable construction. Put the intent in the test function name
+and comment rather than in a long directory name.
+
+Golden output should be exact, deterministic, and reviewable in a diff.
+Avoid storing generated timestamps, random IDs, or machine-specific paths in
+golden output unless the test is specifically about those values.
+
+=== Git Hygiene
+
+Commit fixtures, golden output, and the harness. Do not commit generated
+output; add the generated output directory to `.gitignore`.
+
+== Code Style
+
+=== General
+
+- Start with `#!/bin/bash`, `set -e`, and an optional commented `#set -x`.
+- Keep the script self-contained unless the project already has established
+  shared test helpers.
+- Prefer explicit shell functions over generic frameworks.
+- Keep test bodies repetitive when that makes each fixture's command line and
+  output paths obvious.
+- Do not hide important behavior behind clever loops, implicit discovery, or
+  computed test names.
+- Use ASCII in fixtures and scripts unless the test specifically needs
+  non-ASCII input.
+
+=== Test Selection
+
+Define a global `TESTS` array containing test function names. This is the
+primary mechanism for enabling and disabling regression tests.
+
+[source,bash]
+----
+TESTS=(
+    test_example_case
+    !test_disabled_case
+    !test_future_case
+)
+----
+
+In this example, `test_example_case` is enabled, `test_disabled_case` is an
+implemented test that is disabled and `test_future_case` is a disabled stub.
+
+Prefix a function name with `!` to keep the test in the test plan without
+enabling it. Keep stub functions present so the test plan is visible and the
+names can be reviewed.
+
+Do not use filesystem discovery as the main test selection mechanism. The
+array gives reviewers a clear list of what is expected to run.
+
+=== Common Global Variables
+
+Use these standard variables near the top of the script:
+
+[source,bash]
+----
+readonly SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+readonly PYTHON="${PYTHON:-python3}"
+readonly PROG_UNDER_TEST=("${SCRIPT_DIR}/<tool>")
+readonly TEST_DIR="${SCRIPT_DIR}/test"
+readonly FIXTURES_DIR="${TEST_DIR}/cases"
+readonly OUTPUT_DIR="${TEST_DIR}/output"
+
+VERBOSE="${VERBOSE:-0}"
+----
+
+Adjust `PROG_UNDER_TEST` for the local program. For a Python script that should
+always be run through the interpreter, use:
+
+[source,bash]
+----
+readonly PROG_UNDER_TEST=("$PYTHON" "${SCRIPT_DIR}/<tool>.py")
+----
+
+Store checked-in fixtures under `test/cases`. Configure the test command or
+pass command-line options so generated output is written to `test/output`.
+
+=== Common Functions
+
+Provide small helpers with concrete behavior:
+
+[source,bash]
+----
+debug() {
+    if (( VERBOSE > 0 )); then
+        echo "DEBUG: $*"
+    fi
+}
+
+info() {
+    if (( VERBOSE > 0 )); then
+        echo "== $*"
+    fi
+}
+
+error() {
+    echo "** ${0##*/}: error: $*" >&2
+}
+
+die() {
+    error "$*"
+    exit 1
+}
+----
+
+Do not end single-sentence log or status messages with a full stop.
+
+Add `check_dependencies_installed()` and check only dependencies that the
+harness actually needs. For a Python command-line tool, this usually includes
+`$PYTHON` and the program under test.
+
+For file comparisons, use `diff -u` for single text files:
+
+[source,bash]
+----
+compare_output_file() {
+    local golden="$1"
+    local actual="$2"
+
+    diff -u "$golden" "$actual"
+}
+----
+
+For directory comparisons, use `diff -q -r` only when exact recursive
+comparison is the desired contract.
+
+=== Program Invocation
+
+Use the program's command-line defaults intentionally. When a test exists to
+verify default behavior, omit the option and make that clear in the test
+comment or fixture description.
+
+When a test exists to verify a non-default option, pass that option explicitly.
+
+Keep command lines vertically aligned when they have several options; this
+makes fixture paths and behavioral switches easy to review.
+
+=== Observable Behavior
+
+The harness should compare the same observable output a user or downstream
+system would consume. Call the program through its command-line entry point.
+
+If the program supports writing to an output path, use that path and compare
+the resulting file. If the program only writes to `stdout`, capture it into a
+file in `OUTPUT_DIR`.
+
+Do not compare logs unless log text is part of the behavior being tested.
+
+=== Test Function Structure
+
+Give each test a stable `tcNN` test case ID. Keep the shell body direct and
+localize the paths at the top.
+
+Use the test case ID to derive the per-test generated output directory under
+`OUTPUT_DIR`.
+
+[source,bash]
+----
+# Verifies report generation from a minimal metadata and input dataset
+test_example_case() {
+    local tc_id="tc01"
+    local fixture_dir="${FIXTURES_DIR}/${tc_id}"
+    local input_dir="${fixture_dir}/input"
+    local metadata_path="${input_dir}/metadata.json"
+    local golden_report="${fixture_dir}/expected/report.txt"
+    local output_root="${OUTPUT_DIR}/${tc_id}"
+    local actual_report="${output_root}/report.txt"
+
+    mkdir -p "$output_root"
+
+    "${PROG_UNDER_TEST[@]}"                      \
+        --metadata "$metadata_path"              \
+        --input    "$input_dir"                  \
+        --output   "$actual_report"
+
+    compare_output_file "$golden_report" "$actual_report"
+}
+----
+
+Add a concise comment immediately before each implemented test function. The
+comment should explain why the test exists, not restate every line of fixture
+data. Keep it to one or two lines.
+
+=== Test Stubs
+
+[source,bash]
+----
+stub_test() {
+    local tc_id="$1"
+    local description="$2"
+
+    die "test case ${tc_id} is not implemented yet: $description"
+}
+
+test_future_case() {
+    stub_test "tc03" "future case description"
+}
+----
+
+Stub functions should remain disabled with a `!` prefix in `TESTS` until
+implemented.
+
+=== Main Loop
+
+Use this structure for `main()`:
+
+[source,bash]
+----
+main() {
+    local err=0
+    local enabled=0
+    local test_name
+
+    check_dependencies_installed
+    clean_output_dirs
+
+    if (( ${#TESTS[@]} == 0 )); then
+        echo "No regression tests defined"
+        echo "Add test function names to TESTS inside ${0##*/}"
+        return 0
+    fi
+
+    mkdir -p "$OUTPUT_DIR"
+
+    for test_name in "${TESTS[@]}"; do
+        if [[ ${test_name::1} == '!' ]]; then
+            continue
+        fi
+
+        ((enabled = enabled + 1))
+        if ! declare -F "$test_name" >/dev/null; then
+            error "unknown test listed in TESTS: $test_name"
+            err=1
+            continue
+        fi
+
+        run_test "$test_name" || err=1
+    done
+
+    if (( enabled == 0 )); then
+        echo "No regression tests enabled"
+        echo "Delete the ! prefix from TESTS entries inside ${0##*/} to enable them"
+    fi
+
+    return $err
+}
+
+main "$@"
+----
+
+== Verification
+
+After changing the harness, fixtures, or golden output:
+
+- run `./run-tests.sh` from the tool directory or the equivalent path from the
+  project root
+- run relevant unit tests if the program has them
+- run `git diff --check` on changed scripts, fixtures and golden output
+- inspect `git status --short` to ensure generated output is not listed as
+  untracked or modified
+
+If any check cannot be run, report exactly what was not run and why.

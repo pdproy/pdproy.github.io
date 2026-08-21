@@ -39,54 +39,16 @@ Golden output is checked-in expected output used as the comparison baseline.
 Generated Output::
 Generated output is data produced by the program under test during a test run.
 
-== External Contract
+== Harness Interface
 
 === Running
 
 Write the harness as an executable Bash script named `run-tests.sh`. Typically,
 it is run as `./run-tests.sh` from the tool's directory.
 
-=== Directory Layout
-
-Place the harness beside the program or command being tested. Example:
-
-[source,text]
-----
-cmd/<tool>/
-  run-tests.sh
-  <tool>
-  test/
-    cases/
-      tc01/
-        input/
-          metadata.json
-          data/
-            data_file_1.csv
-            data_file_2.csv
-        expected/
-          report.txt
-    output/
-      tc01/
-        report.txt
-----
-
-=== Cleanup
-
-Do not clean generated output with destructive broad patterns. Remove only the
-known output directory owned by the harness. The separate directory for
-generated output makes cleanup trivial:
-
-----
-clean_output_dirs() {
-    if [[ -d "$OUTPUT_DIR" ]]; then
-        rm -r -- "$OUTPUT_DIR"
-    fi
-}
-----
-
 === Output Format
 
-The harness should report test results in the format shown by this
+`run-tests.sh` should report test results in the format shown by this
 `run_test()` function:
 
 [source,bash]
@@ -114,25 +76,48 @@ run_test() {
 }
 ----
 
+== Repository Conventions
+
+=== Directory Layout
+
+Place `run-tests.sh` beside the program or command being tested. Example:
+
+[source,text]
+----
+cmd/<tool>/
+  run-tests.sh
+  <tool>
+  test/
+    cases/
+      tc01/
+        input/
+          metadata.json
+          data/
+            data_file_1.csv
+            data_file_2.csv
+        expected/
+          report.txt
+    output/
+      tc01/
+        report.txt
+----
+
 === Fixtures
 
-Keep input fixtures small and hand-written unless the test specifically covers
-large inputs or generated input data.
-
-Each fixture directory should contain the input files as the program expects
-them, plus an `expected/` directory containing the golden output.
-
-Use fixture names such as `tc01`, `tc02`, and so on for compatibility with
-simple shell variable construction. Put the intent in the test function name
-and comment rather than in a long directory name.
-
-Golden output should be exact, deterministic, and reviewable in a diff.
-Avoid storing generated timestamps, random IDs, or machine-specific paths in
-golden output unless the test is specifically about those values.
+- Keep input fixtures small and hand-written unless the test specifically
+  covers large inputs or generated input data.
+- Each fixture directory should contain the input files as the program expects
+  them, plus an `expected/` directory containing the golden output.
+- Use fixture names such as `tc01`, `tc02`, and so on for compatibility with
+  simple shell variable construction. Put the intent in the test function name
+  and comment rather than in a long directory name.
+- Golden output should be exact, deterministic and reviewable in a diff.
+  Avoid storing generated timestamps, random IDs, or machine-specific paths in
+  golden output unless the test is specifically about those values.
 
 === Git Hygiene
 
-Commit fixtures, golden output, and the harness. Do not commit generated
+Commit fixtures, golden output and `run-tests.sh`. Do not commit generated
 output; add the generated output directory to `.gitignore`.
 
 == Code Style
@@ -250,27 +235,39 @@ compare_output_file() {
 For directory comparisons, use `diff -q -r` only when exact recursive
 comparison is the desired contract.
 
+=== Cleanup
+
+Do not clean generated output with destructive broad patterns. Remove only the
+known output directory owned by the harness. The separate directory for
+generated output makes cleanup trivial:
+
+----
+clean_output_dirs() {
+    if [[ -d "$OUTPUT_DIR" ]]; then
+        rm -r -- "$OUTPUT_DIR"
+    fi
+}
+----
+
 === Program Invocation
 
-Use the program's command-line defaults intentionally. When a test exists to
-verify default behavior, omit the option and make that clear in the test
-comment or fixture description.
+- Use the program's command-line defaults intentionally. When a test exists to
+  verify default behavior, omit the option and make that clear in the test
+  comment or fixture description.
+- When a test exists to verify a non-default option, pass that option
+  explicitly.
+- Keep command lines vertically aligned when they have several options; this
+  makes fixture paths and behavioral switches easy to review.
 
-When a test exists to verify a non-default option, pass that option explicitly.
+=== Output Comparison
 
-Keep command lines vertically aligned when they have several options; this
-makes fixture paths and behavioral switches easy to review.
-
-=== Observable Behavior
-
-The harness should compare the same observable output a user or downstream
-system would consume. Call the program through its command-line entry point.
-
-If the program supports writing to an output path, use that path and compare
-the resulting file. If the program only writes to `stdout`, capture it into a
-file in `OUTPUT_DIR`.
-
-Do not compare logs unless log text is part of the behavior being tested.
+- Test functions should compare the same observable output a user or
+  downstream system would consume. Call the program through its command-line
+  entry point.
+- If the program supports writing to an output path, use that path and compare
+  the resulting file. If the program only writes to `stdout`, capture it into
+  a file in `OUTPUT_DIR`.
+- Do not compare logs unless log text is part of the behavior being tested.
 
 === Test Function Structure
 

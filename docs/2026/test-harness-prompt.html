@@ -717,7 +717,7 @@ content (such as a dataset).
 </div>
 </div>
 <div class="sect1">
-<h2 id="_external_contract">External Contract</h2>
+<h2 id="_harness_interface">Harness Interface</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_running">Running</h3>
@@ -727,52 +727,9 @@ it is run as <code>./run-tests.sh</code> from the tool&#8217;s directory.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_directory_layout">Directory Layout</h3>
-<div class="paragraph">
-<p>Place the harness beside the program or command being tested. Example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="text">cmd/&lt;tool&gt;/
-  run-tests.sh
-  &lt;tool&gt;
-  test/
-    cases/
-      tc01/
-        input/
-          metadata.json
-          data/
-            data_file_1.csv
-            data_file_2.csv
-        expected/
-          report.txt
-    output/
-      tc01/
-        report.txt</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_cleanup">Cleanup</h3>
-<div class="paragraph">
-<p>Do not clean generated output with destructive broad patterns. Remove only the
-known output directory owned by the harness. The separate directory for
-generated output makes cleanup trivial:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="bash">clean_output_dirs<span class="o">()</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">[[</span> <span class="nt">-d</span> <span class="s2">"</span><span class="nv">$OUTPUT_DIR</span><span class="s2">"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
-        </span><span class="nb">rm</span> <span class="nt">-r</span> <span class="nt">--</span> <span class="s2">"</span><span class="nv">$OUTPUT_DIR</span><span class="s2">"</span>
-    <span class="k">fi</span>
-<span class="o">}</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
 <h3 id="_output_format">Output Format</h3>
 <div class="paragraph">
-<p>The harness should report test results in the format shown by this
+<p><code>run-tests.sh</code> should report test results in the format shown by this
 <code>run_test()</code> function:</p>
 </div>
 <div class="listingblock">
@@ -801,31 +758,66 @@ generated output makes cleanup trivial:</p>
 </div>
 </div>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_repository_conventions">Repository Conventions</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_directory_layout">Directory Layout</h3>
+<div class="paragraph">
+<p>Place <code>run-tests.sh</code> beside the program or command being tested. Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">cmd/&lt;tool&gt;/
+  run-tests.sh
+  &lt;tool&gt;
+  test/
+    cases/
+      tc01/
+        input/
+          metadata.json
+          data/
+            data_file_1.csv
+            data_file_2.csv
+        expected/
+          report.txt
+    output/
+      tc01/
+        report.txt</code></pre>
+</div>
+</div>
+</div>
 <div class="sect2">
 <h3 id="_fixtures">Fixtures</h3>
-<div class="paragraph">
-<p>Keep input fixtures small and hand-written unless the test specifically covers
-large inputs or generated input data.</p>
-</div>
-<div class="paragraph">
+<div class="ulist">
+<ul>
+<li>
+<p>Keep input fixtures small and hand-written unless the test specifically
+covers large inputs or generated input data.</p>
+</li>
+<li>
 <p>Each fixture directory should contain the input files as the program expects
 them, plus an <code>expected/</code> directory containing the golden output.</p>
-</div>
-<div class="paragraph">
+</li>
+<li>
 <p>Use fixture names such as <code>tc01</code>, <code>tc02</code>, and so on for compatibility with
 simple shell variable construction. Put the intent in the test function name
 and comment rather than in a long directory name.</p>
-</div>
-<div class="paragraph">
-<p>Golden output should be exact, deterministic, and reviewable in a diff.
+</li>
+<li>
+<p>Golden output should be exact, deterministic and reviewable in a diff.
 Avoid storing generated timestamps, random IDs, or machine-specific paths in
 golden output unless the test is specifically about those values.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_git_hygiene">Git Hygiene</h3>
 <div class="paragraph">
-<p>Commit fixtures, golden output, and the harness. Do not commit generated
+<p>Commit fixtures, golden output and <code>run-tests.sh</code>. Do not commit generated
 output; add the generated output directory to <code>.gitignore</code>.</p>
 </div>
 </div>
@@ -979,33 +971,60 @@ comparison is the desired contract.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_program_invocation">Program Invocation</h3>
+<h3 id="_cleanup">Cleanup</h3>
 <div class="paragraph">
-<p>Use the program&#8217;s command-line defaults intentionally. When a test exists to
-verify default behavior, omit the option and make that clear in the test
-comment or fixture description.</p>
+<p>Do not clean generated output with destructive broad patterns. Remove only the
+known output directory owned by the harness. The separate directory for
+generated output makes cleanup trivial:</p>
 </div>
-<div class="paragraph">
-<p>When a test exists to verify a non-default option, pass that option explicitly.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">clean_output_dirs<span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="nt">-d</span> <span class="s2">"</span><span class="nv">$OUTPUT_DIR</span><span class="s2">"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">rm</span> <span class="nt">-r</span> <span class="nt">--</span> <span class="s2">"</span><span class="nv">$OUTPUT_DIR</span><span class="s2">"</span>
+    <span class="k">fi</span>
+<span class="o">}</span></code></pre>
 </div>
-<div class="paragraph">
-<p>Keep command lines vertically aligned when they have several options; this
-makes fixture paths and behavioral switches easy to review.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_observable_behavior">Observable Behavior</h3>
-<div class="paragraph">
-<p>The harness should compare the same observable output a user or downstream
-system would consume. Call the program through its command-line entry point.</p>
+<h3 id="_program_invocation">Program Invocation</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Use the program&#8217;s command-line defaults intentionally. When a test exists to
+verify default behavior, omit the option and make that clear in the test
+comment or fixture description.</p>
+</li>
+<li>
+<p>When a test exists to verify a non-default option, pass that option
+explicitly.</p>
+</li>
+<li>
+<p>Keep command lines vertically aligned when they have several options; this
+makes fixture paths and behavioral switches easy to review.</p>
+</li>
+</ul>
 </div>
-<div class="paragraph">
+</div>
+<div class="sect2">
+<h3 id="_output_comparison">Output Comparison</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Test functions should compare the same observable output a user or
+downstream system would consume. Call the program through its command-line
+entry point.</p>
+</li>
+<li>
 <p>If the program supports writing to an output path, use that path and compare
-the resulting file. If the program only writes to <code>stdout</code>, capture it into a
-file in <code>OUTPUT_DIR</code>.</p>
-</div>
-<div class="paragraph">
+the resulting file. If the program only writes to <code>stdout</code>, capture it into
+a file in <code>OUTPUT_DIR</code>.</p>
+</li>
+<li>
 <p>Do not compare logs unless log text is part of the behavior being tested.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
@@ -1152,7 +1171,7 @@ untracked or modified</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-20 23:54:22 +0530
+Last updated 2026-08-21 12:32:14 +0530
 </div>
 </div>
 </body>

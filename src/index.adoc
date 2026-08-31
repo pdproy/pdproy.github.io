@@ -4,7 +4,7 @@
 == 2026
 
 - link:2026/Tips.adoc[Tips & Tricks]
-- link:2026/dnf.adoc[DNF Command Cheat Sheet]
+- link:2026/dnf-command-cheat-sheet.adoc[DNF Command Cheat Sheet]
 - link:2026/python-style-prompt.adoc[Python Style Guidelines]
 - link:2026/test-harness-prompt.adoc[Test Harness Guidelines]
 - link:2026/readme-structure.adoc[README file structure]

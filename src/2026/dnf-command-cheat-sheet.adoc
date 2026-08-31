@@ -17,6 +17,14 @@ document is to collect useful DNF commands and make them easily accessible.
 
 The commands in this document were tried inside a Rocky Linux 8 container.
 
+== Terminology
+
+Whenever we mention the term "repository" with respect to a DNF operation
+(e.g. listing, searching), assume that it is an *enabled* repository. Disabled
+repositories don't participate unless explicit command-line switches are used.
+We choose this style to avoid making the text heavy by repeated qualification
+with the term "enabled".
+
 == Examples
 
 === Installing Packages
@@ -60,9 +68,14 @@ The following command lists all enabled repositories:
 $ dnf repolist
 ----
 
-Use `dnf repolist --all` to see every configured repository whether it is
-enabled or disabled. This is useful before deciding whether `--enablerepo` is
-needed.
+To list disabled repositories:
+
+----
+$ dnf repolist --disabled
+----
+
+To see every configured repository. This is useful before deciding whether
+`--enablerepo` is needed.
 
 ----
 $ dnf repolist --all
@@ -70,9 +83,19 @@ $ dnf repolist --all
 
 === Listing Packages
 
-Use `dnf list` when you want to check whether specific packages are installed
-or available from enabled repositories. Add `--enablerepo` when the package
-may live in a disabled repository.
+Use `dnf list` variants when you want to check whether specific packages are
+installed or available from enabled repositories. To list all installed
+packages:
+
+----
+$ dnf list --installed
+----
+
+NOTE: Merely running `dnf list` is likely to produce a large output listing
+all packages available from all repositories and also all packages installed
+on the system.
+
+Add `--enablerepo` when the package may live in a disabled repository.
 
 ----
 $ dnf --enablerepo=powertools list autoconf-archive doxygen
@@ -100,13 +123,6 @@ provides it.
 
 ----
 $ dnf provides '*/yaml-0.1.pc'
-----
-
-Use `dnf provides -q` for quieter provider lookups when the output will be
-pasted into notes or compared across several files.
-
-----
-$ dnf provides -q '*/libdpdk.pc' '*/sodium.h'
 ----
 
 Use `dnf makecache` after adding or changing repository files so that metadata

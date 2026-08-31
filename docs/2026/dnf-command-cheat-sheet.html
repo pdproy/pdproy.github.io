@@ -5,7 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>Car</title>
+<meta name="author" content="Pradeep Roy">
+<title>DNF</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -435,571 +436,451 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge .cm {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cp {
+  color: #999999;
+  font-weight: bold;
+}
+pre.rouge .c1 {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cs {
+  color: #999999;
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .err {
+  color: #a61717;
+  background-color: #e3d2d2;
+}
+pre.rouge .gd {
+  color: #000000;
+  background-color: #ffdddd;
+}
+pre.rouge .ge {
+  color: #000000;
+  font-style: italic;
+}
+pre.rouge .gr {
+  color: #aa0000;
+}
+pre.rouge .gh {
+  color: #999999;
+}
+pre.rouge .gi {
+  color: #000000;
+  background-color: #ddffdd;
+}
+pre.rouge .go {
+  color: #888888;
+}
+pre.rouge .gp {
+  color: #555555;
+}
+pre.rouge .gs {
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #aaaaaa;
+}
+pre.rouge .gt {
+  color: #aa0000;
+}
+pre.rouge .kc {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kd {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kn {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kp {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kr {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kt {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .k, pre.rouge .kv {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .mf {
+  color: #009999;
+}
+pre.rouge .mh {
+  color: #009999;
+}
+pre.rouge .il {
+  color: #009999;
+}
+pre.rouge .mi {
+  color: #009999;
+}
+pre.rouge .mo {
+  color: #009999;
+}
+pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
+  color: #009999;
+}
+pre.rouge .sa {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .sb {
+  color: #d14;
+}
+pre.rouge .sc {
+  color: #d14;
+}
+pre.rouge .sd {
+  color: #d14;
+}
+pre.rouge .s2 {
+  color: #d14;
+}
+pre.rouge .se {
+  color: #d14;
+}
+pre.rouge .sh {
+  color: #d14;
+}
+pre.rouge .si {
+  color: #d14;
+}
+pre.rouge .sx {
+  color: #d14;
+}
+pre.rouge .sr {
+  color: #009926;
+}
+pre.rouge .s1 {
+  color: #d14;
+}
+pre.rouge .ss {
+  color: #990073;
+}
+pre.rouge .s, pre.rouge .dl {
+  color: #d14;
+}
+pre.rouge .na {
+  color: #008080;
+}
+pre.rouge .bp {
+  color: #999999;
+}
+pre.rouge .nb {
+  color: #0086B3;
+}
+pre.rouge .nc {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .no {
+  color: #008080;
+}
+pre.rouge .nd {
+  color: #3c5d5d;
+  font-weight: bold;
+}
+pre.rouge .ni {
+  color: #800080;
+}
+pre.rouge .ne {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nl {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nn {
+  color: #555555;
+}
+pre.rouge .nt {
+  color: #000080;
+}
+pre.rouge .vc {
+  color: #008080;
+}
+pre.rouge .vg {
+  color: #008080;
+}
+pre.rouge .vi {
+  color: #008080;
+}
+pre.rouge .nv, pre.rouge .vm {
+  color: #008080;
+}
+pre.rouge .ow {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .o {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .w {
+  color: #bbbbbb;
+}
+pre.rouge {
+  background-color: #f8f8f8;
+}
+</style>
 <link rel="icon" href="/favicon.png" type="image/png">
 </head>
 <body class="article">
 <div id="header">
-<h1>Car</h1>
+<h1>DNF</h1>
+<div class="details">
+<span id="author" class="author">Pradeep Roy</span><br>
+</div>
 </div>
 <div id="content">
-<div id="preamble">
+<div class="sect1">
+<h2 id="_motivation">Motivation</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This article contains my notes around a four wheeler. I have not made any
-particular attempt to provide information in a logical manner or explain terms
-before first use.</p>
+<p>Dandified Yum or DNF became the default package manager in Fedora 22 that was
+(<a href="https://fedoramagazine.org/fedora-22-released/">announced</a>) on 26-May-2015. I have been very comfortable
+with Yum having worked on applications on CentOS 6/7. Now in 2026, the
+RHEL-family systems that I come across use DNF only. The idea behind this
+document is to collect useful DNF commands and make them easily accessible.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_terms">Terms</h2>
+<h2 id="_platform">Platform</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This section contains brief descriptions of some features commonly available
-in cars these days. It is for minimum understanding and is likely to be
-inaccurate and incomplete.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Automatic Headlamps</strong> This is about automatic detection of low light and
-turning on of headlamps (and possibly other lights).</p>
-</li>
-<li>
-<p><strong>Cruise Control</strong></p>
-</li>
-<li>
-<p><strong>Automatic boot lid</strong> Also called <strong>electric tailgate opening</strong>, this is about
-pressing a button to open or close the rear boot.</p>
-</li>
-<li>
-<p><strong>Wireless connectivity</strong> This is used in reference to Android Auto and Apple
-CarPlay. It is about the smartphone connecting to the car without the use of
-cables - through bluetooth and Wi-Fi.</p>
-</li>
-<li>
-<p><strong>Tweeters</strong> These are speakers designed to reproduce high-frequency sound.</p>
-</li>
-<li>
-<p>Passive entry passive start (PEPS) Passive entry is the functionality to
-open the car when the key is near and the door handle is touched. It is a
-convenience feature that might be particularly useful for women drivers who
-typically don&#8217;t have pockets in their dresses. However, attackers can
-amplify the key signal from a distance. It will be useful to know if
-key-less entry can be disabled. Passive start is about starting the engine
-using a push button.</p>
-</li>
-</ul>
+<p>The commands in this document were tried inside a Rocky Linux 8 container.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tata_tigor">Tata Tigor</h2>
+<h2 id="_terminology">Terminology</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Why?</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Good visibility</p>
-</li>
-<li>
-<p>It is narrower than other similar cars like Maruti Dzire, Maruti Swift and
-Honda Amaze. This is expected to make parking easier. Most of the driving
-will be in the city.</p>
-</li>
-<li>
-<p>Decent headroom</p>
-</li>
-<li>
-<p>It makes many safety features like anti break locking system (ABS) and
-electronic breakforce distribution (EBD), corner stability control (CSC),
-electronic stability program (ESP), rear parking sensors and reverse parking
-camera available to the budget buyer.</p>
-</li>
-<li>
-<p>Comfortable rear sitting experience</p>
-</li>
-<li>
-<p>Moderate (not flashy) interiors</p>
-</li>
-<li>
-<p>People appear to report good mileage of 15-16 kmpl even in the city</p>
-</li>
-<li>
-<p>Higher ground clearance of 170 mm</p>
-</li>
-<li>
-<p>Large boot space of over 400 litres</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Why not?</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>It is possible that Tata&#8217;s service centres don&#8217;t offer the same kind of
-smooth experience as that of Maruti. The number of service centre visits is
-just around 1-2 per year. One can decide to remain stoic during those
-visits.</p>
-</li>
-<li>
-<p>One will have to adapt to the lower sitting position of a sedan.</p>
-</li>
-</ul>
+<p>Whenever we mention the term "repository" with respect to a DNF operation
+(e.g. listing, searching), assume that it is an <strong>enabled</strong> repository. Disabled
+repositories don&#8217;t participate unless explicit command-line switches are used.
+We choose this style to avoid making the text heavy by repeated qualification
+with the term "enabled".</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_variants">Variants</h2>
+<h2 id="_examples">Examples</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_installing_packages">Installing Packages</h3>
 <div class="paragraph">
-<p>Tigor from Tata Motors has many variants like XM, XT, XZ, XZ+. Additional
-features in <strong>XT</strong> variant in comparison to Tata Tigor XM:</p>
+<p>Use <code>dnf install</code> to install a package along with its dependencies.  The <code>-y</code>
+switch answers yes to prompts, which is useful in Dockerfiles and repeatable
+setup scripts.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Steel wheels with dual tone full wheel cover</p>
-</li>
-<li>
-<p>Adjustable driver seat</p>
-</li>
-<li>
-<p>Central Locking</p>
-</li>
-<li>
-<p>Follow me home headlamps</p>
-</li>
-<li>
-<p>All four power windows</p>
-</li>
-<li>
-<p>Steering mounted controls</p>
-</li>
-<li>
-<p>USB power outlet</p>
-</li>
-<li>
-<p>Day/Night IRVM</p>
-</li>
-<li>
-<p>Rear defogger</p>
-</li>
-<li>
-<p>3.5" Next-Gen infotainment system by Harman</p>
-</li>
-<li>
-<p>Microphone</p>
-</li>
-<li>
-<p>Four speakers</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nb">install</span> <span class="nt">-y</span> libtool</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>Additional features in <strong>XZ</strong> variant in comparison to Tata Tigor XT:</p>
+<p>Use <code>--enablerepo</code> when a package is available in a repository that exists on
+the system but is disabled by default. This is common for development packages
+in Rocky Linux 8&#8217;s <code>powertools</code> repository.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Body colored exterior door handles</p>
-</li>
-<li>
-<p>Black tape on B pillar</p>
-</li>
-<li>
-<p>LED headlamps</p>
-</li>
-<li>
-<p>LED DRLs</p>
-</li>
-<li>
-<p>Piano black ORVM finish</p>
-</li>
-<li>
-<p>ORVM with turn indicators</p>
-</li>
-<li>
-<p>Dual tone hyper-style wheels</p>
-</li>
-<li>
-<p>Rear seat armrest</p>
-</li>
-<li>
-<p>Electrically adjustable ORVMS</p>
-</li>
-<li>
-<p>Front armrest</p>
-</li>
-<li>
-<p>One shot auto down driver window</p>
-</li>
-<li>
-<p>Corner Stability Control (CSC)</p>
-</li>
-<li>
-<p>Hill Hold Control</p>
-</li>
-<li>
-<p>Reverse parking camera</p>
-</li>
-<li>
-<p>Speed dependent auto door locks</p>
-</li>
-<li>
-<p>Apple CarPlay and Android Auto</p>
-</li>
-<li>
-<p>FM/AM, Bluetooth, USB</p>
-</li>
-<li>
-<p>Image and video playback</p>
-</li>
-<li>
-<p>7.0" infotainment system by Harman</p>
-</li>
-<li>
-<p>SMS notifications and read-outs</p>
-</li>
-<li>
-<p>Speed dependent volume control</p>
-</li>
-<li>
-<p>2 Tweeters</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nt">--enablerepo</span><span class="o">=</span>powertools <span class="nb">install</span> <span class="nt">-y</span> autoconf-archive</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>Additional features in <strong>XZ+</strong> variant in comparison to Tata Tigor XZ:</p>
+<p>Use <code>--disablerepo</code> when a configured repository is not relevant for the
+current operation or is causing metadata, GPG, or network delays. Multiple
+repositories can be disabled in the same command.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Shark fin antenna</p>
-</li>
-<li>
-<p>Chrome lined exterior door handles</p>
-</li>
-<li>
-<p>Black upper and lower grille with chrome finishing inserts in the upper
-grille</p>
-</li>
-<li>
-<p>Front fog lamps</p>
-</li>
-<li>
-<p>Leather wrapped steering wheel</p>
-</li>
-<li>
-<p>Leather finish on gear knob</p>
-</li>
-<li>
-<p>Chrome finish on interior door handle</p>
-</li>
-<li>
-<p>Advanced fully digital instrument cluster</p>
-</li>
-<li>
-<p>Knitted fabric on roof headliner</p>
-</li>
-<li>
-<p>Fully automatic temperature control (FATC)</p>
-</li>
-<li>
-<p>Electrically foldable ORVMs</p>
-</li>
-<li>
-<p>Automatic headlamps</p>
-</li>
-<li>
-<p>Cruise control</p>
-</li>
-<li>
-<p>Electric tailgate opening</p>
-</li>
-<li>
-<p>Cooled glove box</p>
-</li>
-<li>
-<p>Push button start stop with smart key</p>
-</li>
-<li>
-<p>Rain sensing wipers</p>
-</li>
-<li>
-<p>45 W C-type charger</p>
-</li>
-<li>
-<p>Driver and co-driver vanity mirror</p>
-</li>
-<li>
-<p>HD reverse parking digital camera</p>
-</li>
-<li>
-<p>10.2" floating touch-screen infotainment system</p>
-</li>
-<li>
-<p>4 tweeters</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nt">--disablerepo</span><span class="o">=</span>task-task <span class="nb">install</span> <span class="nt">-y</span> doxygen</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>Additional features in <strong>XZ+ Lux</strong> variant in comparison to Tata Tigor XZ+:</p>
+<p>The EPEL repository contains many useful packages like <code>hiredis-devel</code> or
+<code>ShellCheck</code>. Make the repository available by installing <code>epel-release</code>:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Sonic silver alloy wheels</p>
-</li>
-<li>
-<p>A + C type charger</p>
-</li>
-<li>
-<p>Tyre pressure monitoring system</p>
-</li>
-<li>
-<p>10.2" floating touch-screen infotainment system from Harman</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nb">install</span> <span class="nt">-y</span> epel-release</code></pre>
 </div>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_price">Price</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_listing_repositories">Listing Repositories</h3>
 <div class="paragraph">
-<p>On-road price comparison as on 15-Feb-2026:</p>
+<p>The following command lists all enabled repositories:</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 16.6666%;">
-<col style="width: 16.667%;">
-</colgroup>
-<thead>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf repolist</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To list disabled repositories:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf repolist <span class="nt">--disabled</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To see every configured repository. This is useful before deciding whether
+<code>--enablerepo</code> is needed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf repolist <span class="nt">--all</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_listing_packages">Listing Packages</h3>
+<div class="paragraph">
+<p>Use <code>dnf list</code> variants when you want to check whether specific packages are
+installed or available from enabled repositories. To list all installed
+packages:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf list <span class="nt">--installed</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
 <tr>
-<th class="tableblock halign-left valign-top">Variant</th>
-<th class="tableblock halign-left valign-top">Ex-Showroom</th>
-<th class="tableblock halign-left valign-top">RTO</th>
-<th class="tableblock halign-left valign-top">Insurance</th>
-<th class="tableblock halign-left valign-top">Others</th>
-<th class="tableblock halign-left valign-top">Total</th>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Merely running <code>dnf list</code> is likely to produce a large output listing
+all packages available from all repositories and also all packages installed
+on the system.
+</td>
 </tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">XM</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">5,48,990</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">26,810</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28,932</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">500</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">6,05,232</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">XT</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">6,21,990</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">29,730</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">30,815</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">500</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">6,83,035</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">XZ</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">6,76,990</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">52,239</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32,234</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">500</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">7,61,963</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">XZA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">7,27,290</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">55,760</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">33,532</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">500</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8,17,082</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">XZ+</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">7,31,890</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">56,082</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">33,650</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">500</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8,22,122</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">XZ+ Lux</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">7,77,690</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">59,288</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">34,832</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">500</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8,72,310</p></td>
-</tr>
-</tbody>
 </table>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_comparison_table">Comparison Table</h2>
-<div class="sectionbody">
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 14.2857%;">
-<col style="width: 14.2857%;">
-<col style="width: 14.2857%;">
-<col style="width: 14.2857%;">
-<col style="width: 14.2857%;">
-<col style="width: 14.2857%;">
-<col style="width: 14.2858%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Car</th>
-<th class="tableblock halign-left valign-top">Length</th>
-<th class="tableblock halign-left valign-top">Width</th>
-<th class="tableblock halign-left valign-top">Height</th>
-<th class="tableblock halign-left valign-top">Boot</th>
-<th class="tableblock halign-left valign-top">Clearance</th>
-<th class="tableblock halign-left valign-top">Wheel Base</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Maruti Swift</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3860</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1735</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1520</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">265</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">163</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2450</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Maruti Dzire</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3995</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1735</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1525</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">382</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">163</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2450</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Honda Amaze</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3995</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1733</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1500</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">416</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">172</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2470</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tata Tigor</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3995</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1677</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1532</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">419</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">170</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2450</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tata Tiago</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3767</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1677</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1535</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">242</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">170</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2400</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tata Punch</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3876</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1742</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1615</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">366</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">193</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2445</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tata Nexon</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3995</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1804</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1620</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">382</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">208</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2498</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Hyundai Exter</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3815</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1710</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1631</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">391</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">185</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2450</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Zen Estilo</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3600</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1495</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1595</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">212</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">165</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2360</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_cost_of_ownership">Cost of Ownership</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>The cost of owning a car for 15 years can be approximated as follows:</p>
+<p>Add <code>--enablerepo</code> when the package may live in a disabled repository.</p>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf <span class="nt">--enablerepo</span><span class="o">=</span>powertools list autoconf-archive doxygen</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Quoted wildcards can be used with to limit results to matching package names:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf <span class="nt">--enablerepo</span><span class="o">=</span>powertools list <span class="s1">'*dpdk*'</span> <span class="s1">'*hiredis*'</span> <span class="s1">'*luajit*'</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_searching_packages">Searching Packages</h3>
+<div class="paragraph">
+<p>Use <code>dnf search</code> when you the package name partly. The <code>-q</code> switch reduces
+extra output so the result is easier to scan. A good thing is that the search
+is case insensitive.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf search <span class="nt">-q</span> shellcheck zeromq uriparser hiredis luajit dpdk</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use <code>dnf provides</code> when you know the file that the build needs, such as a
+header, binary, shared library or pkg-config file, but not the package that
+provides it.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf provides <span class="s1">'*/yaml-0.1.pc'</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use <code>dnf makecache</code> after adding or changing repository files so that metadata
+is fetched before package installation begins. This can separate repository
+problems from package dependency problems.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf makecache</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use <code>dnf config-manager --set-enabled</code> after installing <code>dnf-plugins-core</code>
+when you want to enable a repository persistently instead of passing
+<code>--enablerepo</code> on every command.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf config-manager <span class="nt">--set-enabled</span> powertools</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the <code>config-manager</code> command is not available then install it by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf <span class="nb">install</span> <span class="nt">-y</span> dnf-plugins-core</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_further_reading">Further Reading</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Car</strong> This is fixed and has to be paid in the beginning: 8,50,000</p>
+<p><a href="https://dnf.readthedocs.io/en/latest/command_ref.html">DNF Command Reference</a></p>
 </li>
 <li>
-<p><strong>Maintenance</strong> Maintenance tends to be lower in the initial 5 years and then
-goes up. Assuming it to be 10,000 per year: 1,50,000</p>
-</li>
-<li>
-<p><strong>Insurance</strong> Insurance is highest at the time of buying and then keeps
-decreasing as the car becomes old. Assuming an average of 15,000 per year:
-2,25,000</p>
-</li>
-<li>
-<p><strong>Petrol</strong> Petrol expenditure involves usage (kilometers) and cost. Assuming
-total cost to be 7,000/month: 12,60,00</p>
-</li>
-<li>
-<p><strong>Total</strong> The total cost of ownership gets computed as Rs 24,85,000 or Rs
-14,000/month or Rs 455/day.</p>
+<p><a href="https://dnf.readthedocs.io/en/latest/conf_ref.html">DNF Configuration Reference</a></p>
 </li>
 </ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_conclusion">Conclusion</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>TBD</p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-27 23:24:18 +0530
+Last updated 2026-08-31 23:09:07 +0530
 </div>
 </div>
 </body>

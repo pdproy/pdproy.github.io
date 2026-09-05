@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<meta name="author" content="Pradeep Roy">
-<title>DNF</title>
+<title>Debian 12 VirtualBox GRUB Recovery</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -655,200 +654,440 @@ pre.rouge {
 </head>
 <body class="article">
 <div id="header">
-<h1>DNF</h1>
-<div class="details">
-<span id="author" class="author">Pradeep Roy</span><br>
-</div>
+<h1>Debian 12 VirtualBox GRUB Recovery</h1>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_motivation">Motivation</h2>
+<h2 id="_problem_statement">Problem Statement</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Dandified Yum or DNF became the default package manager in Fedora 22 that was
-(<a href="https://fedoramagazine.org/fedora-22-released/">announced</a>) on 26-May-2015. I have been very comfortable
-with Yum having worked on applications on CentOS 6/7. Now in 2026, the
-RHEL-family systems that I come across use DNF only. The idea behind this
-document is to collect useful DNF commands and make them easily accessible.</p>
+<p>A Debian 12 virtual machine running on Windows 11 with VirtualBox 7.2.6 failed
+to boot after running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get update
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get upgrade</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>During the upgrade, the GRUB package asked where to install the boot loader. I
+made the mistake of installing GRUB to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">/dev/sda1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After reboot, the VM failed to start. VirtualBox logs showed that the
+virtual disk was accessible and that execution reached GRUB:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">GRUB loading.
+Welcome to GRUB!
+Guru Meditation 1155 (VINF_EM_TRIPLE_FAULT)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The VM configuration was BIOS boot, not EFI boot. Therefore, for this VM, GRUB
+needed to be installed to the whole disk:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">/dev/sda</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And not to the <code>/boot</code> partition:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">/dev/sda1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The VM also used disk encryption. At normal boot, GRUB prompted for the
+decryption passphrase.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_platform">Platform</h2>
+<h2 id="_cause">Cause</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The commands in this document were tried inside a Rocky Linux 8 container.</p>
+<p>The likely cause was that BIOS GRUB was installed to the partition boot sector
+<code>/dev/sda1</code> instead of the disk boot area <code>/dev/sda</code>.</p>
+</div>
+<div class="paragraph">
+<p>For a BIOS-boot Debian VM, the GRUB target is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">i386-pc</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This target name does not mean the installed operating system is 32-bit. It
+means "legacy BIOS PC boot". It is also correct for a 64-bit Debian
+installation when booting via BIOS.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_examples">Examples</h2>
+<h2 id="_recovery_summary">Recovery Summary</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_installing_packages">Installing Packages</h3>
 <div class="paragraph">
-<p>Use <code>dnf install</code> to install a package along with its dependencies.  The <code>-y</code>
-switch answers yes to prompts, which is useful in Dockerfiles and repeatable
-setup scripts.</p>
+<p>The recovery was performed from Debian rescue mode by:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nb">install</span> <span class="nt">-y</span> libtool</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Use <code>--enablerepo</code> when a package is available in a repository that exists on
-the system but is disabled by default. This is common for development packages
-in Rocky Linux 8&#8217;s <code>powertools</code> repository.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nt">--enablerepo</span><span class="o">=</span>powertools <span class="nb">install</span> <span class="nt">-y</span> autoconf-archive</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Use <code>--disablerepo</code> when a configured repository is not relevant for the
-current operation or is causing metadata, GPG, or network delays. Multiple
-repositories can be disabled in the same command.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nt">--disablerepo</span><span class="o">=</span>task-task <span class="nb">install</span> <span class="nt">-y</span> doxygen</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The EPEL repository contains many useful packages like <code>hiredis-devel</code> or
-<code>ShellCheck</code>. Make the repository available by installing <code>epel-release</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nb">install</span> <span class="nt">-y</span> epel-release</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_listing_repositories">Listing Repositories</h3>
-<div class="paragraph">
-<p>The following command lists all enabled repositories:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf repolist</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Use <code>dnf repolist --all</code> to see every configured repository whether it is
-enabled or disabled. This is useful before deciding whether <code>--enablerepo</code> is
-needed.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf repolist <span class="nt">--all</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_listing_packages">Listing Packages</h3>
-<div class="paragraph">
-<p>Use <code>dnf list</code> when you want to check whether specific packages are installed
-or available from enabled repositories. Add <code>--enablerepo</code> when the package
-may live in a disabled repository.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf <span class="nt">--enablerepo</span><span class="o">=</span>powertools list autoconf-archive doxygen</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Quoted wildcards can be used with to limit results to matching package names:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf <span class="nt">--enablerepo</span><span class="o">=</span>powertools list <span class="s1">'*dpdk*'</span> <span class="s1">'*hiredis*'</span> <span class="s1">'*luajit*'</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_searching_packages">Searching Packages</h3>
-<div class="paragraph">
-<p>Use <code>dnf search</code> when you the package name partly. The <code>-q</code> switch reduces
-extra output so the result is easier to scan. A good thing is that the search
-is case insensitive.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf search <span class="nt">-q</span> shellcheck zeromq uriparser hiredis luajit dpdk</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Use <code>dnf provides</code> when you know the file that the build needs, such as a
-header, binary, shared library or pkg-config file, but not the package that
-provides it.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf provides <span class="s1">'*/yaml-0.1.pc'</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Use <code>dnf provides -q</code> for quieter provider lookups when the output will be
-pasted into notes or compared across several files.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf provides <span class="nt">-q</span> <span class="s1">'*/libdpdk.pc'</span> <span class="s1">'*/sodium.h'</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Use <code>dnf makecache</code> after adding or changing repository files so that metadata
-is fetched before package installation begins. This can separate repository
-problems from package dependency problems.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf makecache</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Use <code>dnf config-manager --set-enabled</code> after installing <code>dnf-plugins-core</code>
-when you want to enable a repository persistently instead of passing
-<code>--enablerepo</code> on every command.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf config-manager <span class="nt">--set-enabled</span> powertools</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If the <code>config-manager</code> command is not available then install it by running:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf <span class="nb">install</span> <span class="nt">-y</span> dnf-plugins-core</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_further_reading">Further Reading</h2>
-<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://dnf.readthedocs.io/en/latest/command_ref.html">DNF Command Reference</a></p>
+<p>Booting from a Debian ISO.</p>
 </li>
 <li>
-<p><a href="https://dnf.readthedocs.io/en/latest/conf_ref.html">DNF Configuration Reference</a></p>
+<p>Opening a rescue shell.</p>
+</li>
+<li>
+<p>Unlocking the encrypted LUKS partition.</p>
+</li>
+<li>
+<p>Activating the LVM volume group.</p>
+</li>
+<li>
+<p>Mounting the root filesystem and <code>/boot</code>.</p>
+</li>
+<li>
+<p>Chrooting into the installed Debian system.</p>
+</li>
+<li>
+<p>Reinstalling GRUB to <code>/dev/sda</code>.</p>
+</li>
+<li>
+<p>Running <code>update-grub</code>.</p>
+</li>
+<li>
+<p>Running <code>dpkg-reconfigure grub-pc</code> and selecting only <code>/dev/sda</code>.</p>
 </li>
 </ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_recovery_procedure">Recovery Procedure</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_1_boot_debian_rescue_mode">1. Boot Debian Rescue Mode</h3>
+<div class="paragraph">
+<p>Download and attach a Debian 12 ISO file (e.g.
+<code>debian-12.12.0-amd64-DVD-1.iso</code>) to the VM&#8217;s optical drive and boot from it.</p>
+</div>
+<div class="paragraph">
+<p>Select:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">Rescue mode</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The graphical rescue mode should also work, but plain rescue mode is
+sufficient and avoids display-related complications. The rescue environment
+may look like the Debian installer and may download components or ask
+language/location questions. That is expected.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_open_a_shell">2. Open a Shell</h3>
+<div class="paragraph">
+<p>From the rescue menu, launch a shell.</p>
+</div>
+<div class="paragraph">
+<p>In this environment, <code>lsblk</code> was not available, but <code>fdisk</code> worked:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>fdisk <span class="nt">-l</span> /dev/sda</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The encrypted partition was identified as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">/dev/sda5</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The separate <code>/boot</code> partition was:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">/dev/sda1</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_3_unlock_the_encrypted_partition">3. Unlock the Encrypted Partition</h3>
+<div class="paragraph">
+<p>Unlock the LUKS encrypted partition:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>cryptsetup luksOpen /dev/sda5 cryptroot</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Enter the disk encryption passphrase when prompted.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_4_activate_lvm">4. Activate LVM</h3>
+<div class="paragraph">
+<p>After unlocking the encrypted volume, activate the LVM volume group:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>vgchange <span class="nt">-ay</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The logical volumes became visible under <code>/dev/mapper</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">ls</span> <span class="nt">-l</span> /dev/mapper</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The root and swap volumes were:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">venus--vg-root
+venus--vg-swap_1</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_mount_the_root_filesystem">5. Mount the Root Filesystem</h3>
+<div class="paragraph">
+<p>Attempting to mount <code>/dev/mapper/cryptroot</code> directly returned:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">Invalid argument</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That was because <code>/dev/mapper/cryptroot</code> contained LVM, not the root
+filesystem directly. The actual root filesystem was:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">/dev/mapper/venus--vg-root</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>blkid</code> was used to identify the filesystem type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>blkid /dev/mapper/venus--vg-root</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then the root filesystem was mounted with an explicit filesystem type. For
+example, if <code>blkid</code> showed <code>TYPE="ext4"</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>mount <span class="nt">-t</span> ext4 /dev/mapper/venus--vg-root /mnt</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After this, the installed system files were visible under <code>/mnt</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_6_mount_boot">6. Mount /boot</h3>
+<div class="paragraph">
+<p>Mount the separate <code>/boot</code> partition:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">mount /dev/sda1 /mnt/boot</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_7_bind_mount_runtime_filesystems">7. Bind Mount Runtime Filesystems</h3>
+<div class="paragraph">
+<p>Bind mount the runtime filesystems needed for <code>chroot</code> and GRUB installation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>mount <span class="nt">--bind</span> /dev /mnt/dev
+<span class="gp">$</span><span class="w"> </span>mount <span class="nt">--bind</span> /proc /mnt/proc
+<span class="gp">$</span><span class="w"> </span>mount <span class="nt">--bind</span> /sys /mnt/sys</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_8_chroot_into_the_installed_system">8. Chroot Into the Installed System</h3>
+<div class="paragraph">
+<p>Enter the installed Debian system:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">chroot</span> /mnt</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_9_reinstall_grub_to_the_whole_disk">9. Reinstall GRUB to the Whole Disk</h3>
+<div class="paragraph">
+<p>Install GRUB for BIOS boot to the whole disk:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>grub-install <span class="nt">--target</span><span class="o">=</span>i386-pc <span class="nt">--recheck</span> /dev/sda</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Important: install to <code>/dev/sda</code>, not <code>/dev/sda1</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_10_regenerate_the_grub_menu">10. Regenerate the GRUB Menu</h3>
+<div class="paragraph">
+<p>Run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>update-grub</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_11_reconfigure_grub_pc">11. Reconfigure grub-pc</h3>
+<div class="paragraph">
+<p>Run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dpkg-reconfigure grub-pc</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When prompted where GRUB should be installed, the choices included:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">/dev/sda (161061 MB: ???)
+/dev/sda1 (510 MB: /boot)
+/dev/mapper/venus--vg-root (159475 MB: venus--vg-root)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Select only:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">/dev/sda (161061 MB: ???)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Do not select:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">/dev/sda1
+/dev/mapper/venus--vg-root</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_12_exit_and_reboot">12. Exit and Reboot</h3>
+<div class="paragraph">
+<p>Exit the chroot:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="nb">exit</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Unmount filesystems:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">umount /mnt/dev
+umount /mnt/proc
+umount /mnt/sys
+umount /mnt/boot
+umount /mnt</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Deactivate LVM and close the encrypted volume:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">vgchange <span class="nt">-an</span>
+cryptsetup luksClose cryptroot</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Reboot:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">reboot</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Remove or eject the Debian ISO before the VM boots again.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_result">Result</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>After reinstalling GRUB to <code>/dev/sda</code>, the Debian 12 VM booted successfully again.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_future_upgrade_guidance">Future Upgrade Guidance</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If a future Debian upgrade asks where to install GRUB, select only:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">/dev/sda</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Do not select:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">/dev/sda1
+/boot
+/dev/mapper/venus--vg-root</code></pre>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-27 23:21:43 +0530
+Last updated 2026-09-05 17:31:39 +0530
 </div>
 </div>
 </body>

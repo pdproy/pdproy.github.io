@@ -3,9 +3,10 @@ Pradeep Roy
 :source-highlighter: rouge
 :source-language: console
 
-These are a collection of mainly software usage tips that I have noted
-down over several years. My working environment is mostly Ubuntu 22.04 or
-Oracle Linux 9. Earlier, it used to be CentOS 7.
+These are a collection of mainly software usage tips that I have noted down
+over several years. My working environment is mostly Ubuntu 24.04, but also
+includes Debian 12, Oracle Linux 9 and Rocky Linux 8. Earlier, it used to be
+CentOS 7.
 
 == OpenSSH - Generating Keys
 
@@ -1200,6 +1201,66 @@ $ cat /etc/wsl.conf
 [network]
 hostname=pluto
 generateHosts=true
+----
+
+== Codex - Installing
+
+=== Ubuntu 24.04
+
+Instructions in this section worked with Node.js 22.23.2, npm 10.9.8 and codex
+0.153.0.
+
+Install Codex:
+
+----
+$ sudo npm install -g @openai/codex
+----
+
+Install relevant packages necessary for sandboxing:
+
+----
+$ sudo apt install bubblewrap apparmor-profiles apparmor-utils
+----
+
+Configure AppArmour:
+
+----
+$ sudo install -m 0644 /usr/share/apparmor/extra-profiles/bwrap-userns-restrict /etc/apparmor.d/bwrap-userns-restrict
+$ sudo systemctl reload apparmor.service
+----
+
+=== Rocky Linux 8
+
+Stock Rocky Linux 8 packages Node.js 10.24.0 and npm 6.14.11. This was not
+sufficient for Codex 0.153.0.
+
+Install https://nodesource.com/products/distributions[Node.js]:
+
+----
+$ curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash -
+$ sudo dnf install -y nodejs
+----
+
+Install Codex:
+
+----
+$ sudo npm install -g @openai/codex
+----
+
+Following these steps installed Node.js 22.23.2 and npm 10.9.8. Then, install
+the sandboxing tool:
+
+----
+$ sudo dnf install bubblewrap
+----
+
+=== Validation
+
+If sandboxing everything is setup correctly (on Ubuntu 24.04 or Rocky Linux 8)
+then the following command should return an exit status of zero:
+
+----
+$ bwrap --unshare-user --unshare-pid --ro-bind / / --proc /proc --dev /dev /usr/bin/true
 ----
 
 == Windows - Disk Cleanup

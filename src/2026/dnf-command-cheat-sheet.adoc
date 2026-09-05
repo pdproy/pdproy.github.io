@@ -1,4 +1,4 @@
-= DNF
+= DNF Command Cheat Sheet
 Pradeep Roy
 :source-highlighter: rouge
 :source-language: console
@@ -7,11 +7,11 @@ Pradeep Roy
 
 == Motivation
 
-Dandified Yum or DNF became the default package manager in Fedora 22 that was
-({f22announcemagazine}[announced]) on 26-May-2015. I have been very comfortable
-with Yum having worked on applications on CentOS 6/7. Now in 2026, the
-RHEL-family systems that I come across use DNF only. The idea behind this
-document is to collect useful DNF commands and make them easily accessible.
+Dandified Yum or DNF became the default package manager in Fedora 22
+({f22announcemagazine}[announce]). I have an experience with Yum having worked
+on applications on CentOS 6/7. Now in 2026, the RHEL-family systems that I
+come across use DNF only. The idea behind this document is to collect useful
+DNF commands and make them easily accessible.
 
 == Platform
 

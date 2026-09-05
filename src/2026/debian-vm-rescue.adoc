@@ -1,0 +1,321 @@
+= Debian 12 VirtualBox GRUB Recovery
+:source-highlighter: rouge
+:source-language: console
+
+== Problem Statement
+
+A Debian 12 virtual machine running on Windows 11 with VirtualBox 7.2.6 failed
+to boot after running:
+
+----
+$ sudo apt-get update
+$ sudo apt-get upgrade
+----
+
+During the upgrade, the GRUB package asked where to install the boot loader. I
+made the mistake of installing GRUB to:
+
+[,text]
+----
+/dev/sda1
+----
+
+After reboot, the VM failed to start. VirtualBox logs showed that the
+virtual disk was accessible and that execution reached GRUB:
+
+[,text]
+----
+GRUB loading.
+Welcome to GRUB!
+Guru Meditation 1155 (VINF_EM_TRIPLE_FAULT)
+----
+
+The VM configuration was BIOS boot, not EFI boot. Therefore, for this VM, GRUB
+needed to be installed to the whole disk:
+
+[,text]
+----
+/dev/sda
+----
+
+And not to the `/boot` partition:
+
+[,text]
+----
+/dev/sda1
+----
+
+The VM also used disk encryption. At normal boot, GRUB prompted for the
+decryption passphrase.
+
+== Cause
+
+The likely cause was that BIOS GRUB was installed to the partition boot sector
+`/dev/sda1` instead of the disk boot area `/dev/sda`.
+
+For a BIOS-boot Debian VM, the GRUB target is:
+
+[,text]
+----
+i386-pc
+----
+
+This target name does not mean the installed operating system is 32-bit. It
+means "legacy BIOS PC boot". It is also correct for a 64-bit Debian
+installation when booting via BIOS.
+
+== Recovery Summary
+
+The recovery was performed from Debian rescue mode by:
+
+- Booting from a Debian ISO.
+- Opening a rescue shell.
+- Unlocking the encrypted LUKS partition.
+- Activating the LVM volume group.
+- Mounting the root filesystem and `/boot`.
+- Chrooting into the installed Debian system.
+- Reinstalling GRUB to `/dev/sda`.
+- Running `update-grub`.
+- Running `dpkg-reconfigure grub-pc` and selecting only `/dev/sda`.
+
+== Recovery Procedure
+
+=== 1. Boot Debian Rescue Mode
+
+Download and attach a Debian 12 ISO file (e.g.
+`debian-12.12.0-amd64-DVD-1.iso`) to the VM's optical drive and boot from it.
+
+Select:
+
+[,text]
+----
+Rescue mode
+----
+
+The graphical rescue mode should also work, but plain rescue mode is
+sufficient and avoids display-related complications. The rescue environment
+may look like the Debian installer and may download components or ask
+language/location questions. That is expected.
+
+=== 2. Open a Shell
+
+From the rescue menu, launch a shell.
+
+In this environment, `lsblk` was not available, but `fdisk` worked:
+
+----
+$ fdisk -l /dev/sda
+----
+
+The encrypted partition was identified as:
+
+[source,text]
+----
+/dev/sda5
+----
+
+The separate `/boot` partition was:
+
+[,text]
+----
+/dev/sda1
+----
+
+=== 3. Unlock the Encrypted Partition
+
+Unlock the LUKS encrypted partition:
+
+----
+$ cryptsetup luksOpen /dev/sda5 cryptroot
+----
+
+Enter the disk encryption passphrase when prompted.
+
+=== 4. Activate LVM
+
+After unlocking the encrypted volume, activate the LVM volume group:
+
+----
+$ vgchange -ay
+----
+
+The logical volumes became visible under `/dev/mapper`:
+
+----
+$ ls -l /dev/mapper
+----
+
+The root and swap volumes were:
+
+[,text]
+----
+venus--vg-root
+venus--vg-swap_1
+----
+
+=== 5. Mount the Root Filesystem
+
+Attempting to mount `/dev/mapper/cryptroot` directly returned:
+
+[source,text]
+----
+Invalid argument
+----
+
+That was because `/dev/mapper/cryptroot` contained LVM, not the root
+filesystem directly. The actual root filesystem was:
+
+----
+/dev/mapper/venus--vg-root
+----
+
+`blkid` was used to identify the filesystem type:
+
+----
+$ blkid /dev/mapper/venus--vg-root
+----
+
+Then the root filesystem was mounted with an explicit filesystem type. For
+example, if `blkid` showed `TYPE="ext4"`:
+
+----
+$ mount -t ext4 /dev/mapper/venus--vg-root /mnt
+----
+
+After this, the installed system files were visible under `/mnt`.
+
+=== 6. Mount /boot
+
+Mount the separate `/boot` partition:
+
+[source,bash]
+----
+mount /dev/sda1 /mnt/boot
+----
+
+=== 7. Bind Mount Runtime Filesystems
+
+Bind mount the runtime filesystems needed for `chroot` and GRUB installation:
+
+----
+$ mount --bind /dev /mnt/dev
+$ mount --bind /proc /mnt/proc
+$ mount --bind /sys /mnt/sys
+----
+
+=== 8. Chroot Into the Installed System
+
+Enter the installed Debian system:
+
+----
+$ chroot /mnt
+----
+
+=== 9. Reinstall GRUB to the Whole Disk
+
+Install GRUB for BIOS boot to the whole disk:
+
+----
+$ grub-install --target=i386-pc --recheck /dev/sda
+----
+
+Important: install to `/dev/sda`, not `/dev/sda1`.
+
+=== 10. Regenerate the GRUB Menu
+
+Run:
+
+----
+$ update-grub
+----
+
+=== 11. Reconfigure grub-pc
+
+Run:
+
+----
+$ dpkg-reconfigure grub-pc
+----
+
+When prompted where GRUB should be installed, the choices included:
+
+[,text]
+----
+/dev/sda (161061 MB: ???)
+/dev/sda1 (510 MB: /boot)
+/dev/mapper/venus--vg-root (159475 MB: venus--vg-root)
+----
+
+Select only:
+
+[,text]
+----
+/dev/sda (161061 MB: ???)
+----
+
+Do not select:
+
+[,text]
+----
+/dev/sda1
+/dev/mapper/venus--vg-root
+----
+
+=== 12. Exit and Reboot
+
+Exit the chroot:
+
+[source,bash]
+----
+exit
+----
+
+Unmount filesystems:
+
+[source,bash]
+----
+umount /mnt/dev
+umount /mnt/proc
+umount /mnt/sys
+umount /mnt/boot
+umount /mnt
+----
+
+Deactivate LVM and close the encrypted volume:
+
+[source,bash]
+----
+vgchange -an
+cryptsetup luksClose cryptroot
+----
+
+Reboot:
+
+[source,bash]
+----
+reboot
+----
+
+Remove or eject the Debian ISO before the VM boots again.
+
+== Result
+
+After reinstalling GRUB to `/dev/sda`, the Debian 12 VM booted successfully again.
+
+== Future Upgrade Guidance
+
+If a future Debian upgrade asks where to install GRUB, select only:
+
+[source,text]
+----
+/dev/sda
+----
+
+Do not select:
+
+[source,text]
+----
+/dev/sda1
+/boot
+/dev/mapper/venus--vg-root
+----

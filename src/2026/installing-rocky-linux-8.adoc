@@ -1,0 +1,64 @@
+= Installing Rocky Linux 8
+Pradeep Roy
+
+== Platform
+
+These notes were made while installing Rocky Linux 8 inside VirtualBox 7.2.6
+r172322.
+
+== Downloading
+
+Rocky Linux 8's minimal ISO was fetched from the
+https://rockylinux.org/download[download] page.
+
+== Installation
+
+=== VM Configuration
+
+I reused the settings that I generally keep for a development box.
+
+- Disk: 80 GiB
+- RAM: 8192 MiB
+- CPU: 4
+
+=== SELinux
+
+Rocky Linux 8 enables SELinux by default. I did not want it enabled for a more
+seamless experience. It was disabled by adding `selinux=0` to the kernel
+command-line that was accessed by pressing TAB at the *Install Rocky Linux 8*
+installation menu.
+
+=== Manual Partitioning
+
+A single standard partition covering the entire disk was good enough for me.
+Filesystem type was set to ext4 although the installer's default was xfs. I
+did not need high performance IO on the VirtualBox VM. Therefore, the
+general-purpose and mature of ext4 was adequate. Also, I also did not select a
+swap partition.
+
+=== Network and Hostname
+
+Hostname was set as per my preference. A single `enp0s3` network adaptor was
+selected. It got automatically configured (e.g. IP address, default route).
+
+=== Users
+
+Root password was set. User was created.
+
+=== Time & Date
+
+Timezone was set to Asia/Kolkata.
+
+=== Keyboard & Language
+
+Keyboard and language were set to English (US).
+
+== Further Reading
+
+- https://anaconda-installer.readthedocs.io/en/latest/user-guide/boot-options.html[Anaconda
+  Boot Options]
+- https://wiki.rockylinux.org/rocky/repo/[Rocky Linux Repositories]
+- https://developers.redhat.com/blog/2018/11/15/introducing-codeready-linux-builder[Introducing
+  CodeReady Linux Builder]
+- https://archive.kernel.org/oldwiki/ext4.wiki.kernel.org/index.php/Ext4_Howto.html[Ext4
+  Howto] Old article providing provides historical background on ext4

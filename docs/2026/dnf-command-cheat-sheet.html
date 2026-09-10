@@ -665,11 +665,11 @@ pre.rouge {
 <h2 id="_motivation">Motivation</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Dandified Yum or DNF became the default package manager in Fedora 22
-(<a href="https://fedoramagazine.org/fedora-22-released/">announce</a>). I have an experience with Yum having worked
-on applications on CentOS 6/7. Now in 2026, the RHEL-family systems that I
-come across use DNF only. The idea behind this document is to collect useful
-DNF commands and make them easily accessible.</p>
+<p>Dandified Yum, or DNF, became the default package manager in Fedora 22
+(<a href="https://fedoramagazine.org/fedora-22-released/">announce</a>). I have experience with Yum from working on
+applications on CentOS 6 and 7. Now, in 2026, the RHEL-family systems I
+encounter use DNF rather than Yum. The idea behind this document is to
+collect useful DNF commands and make them easily accessible.</p>
 </div>
 </div>
 </div>
@@ -677,7 +677,7 @@ DNF commands and make them easily accessible.</p>
 <h2 id="_platform">Platform</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The commands in this document were tried inside a Rocky Linux 8 container.</p>
+<p>The commands in this document were tested in a Rocky Linux 8 container.</p>
 </div>
 </div>
 </div>
@@ -685,11 +685,10 @@ DNF commands and make them easily accessible.</p>
 <h2 id="_terminology">Terminology</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Whenever we mention the term "repository" with respect to a DNF operation
-(e.g. listing, searching), assume that it is an <strong>enabled</strong> repository. Disabled
-repositories don&#8217;t participate unless explicit command-line switches are used.
-We choose this style to avoid making the text heavy by repeated qualification
-with the term "enabled".</p>
+<p>In this document, the term "repository" means an enabled repository unless
+stated otherwise. Disabled repositories don&#8217;t participate unless explicit
+command-line switches are used. This convention avoids repeatedly qualifying
+"repository" with "enabled".</p>
 </div>
 </div>
 </div>
@@ -697,21 +696,45 @@ with the term "enabled".</p>
 <h2 id="_examples">Examples</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_installing_packages">Installing Packages</h3>
+<h3 id="_searching_packages">Searching Packages</h3>
 <div class="paragraph">
-<p>Use <code>dnf install</code> to install a package along with its dependencies.  The <code>-y</code>
-switch answers yes to prompts, which is useful in Dockerfiles and repeatable
-setup scripts.</p>
+<p>Perhaps the first thing one wants to do is search for a package without
+knowing its exact name. The following example searches for package names and
+summaries that contain both <code>postgresql</code> and <code>server</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nb">install</span> <span class="nt">-y</span> libtool</code></pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf search postgresql server</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Use <code>--enablerepo</code> when a package is available in a repository that exists on
-the system but is disabled by default. This is common for development packages
-in Rocky Linux 8&#8217;s <code>powertools</code> repository.</p>
+<p>To find which package provides a particular file, use the <code>whatprovides</code>
+command.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf whatprovides <span class="s1">'*/yaml-0.1.pc'</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_installing_packages">Installing Packages</h3>
+<div class="paragraph">
+<p>When the name of a package is known, use <code>dnf install</code> to install it.</p>
+</div>
+<div class="paragraph">
+<p>The <code>-y</code> switch automatically answers yes to confirmation prompts, which is
+useful in Dockerfiles and scripts.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nb">install</span> <span class="nt">-y</span> postgresql-server</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use <code>--enablerepo</code> when a package is available from a repository that is
+configured on the system but disabled by default. This is common for
+development packages in Rocky Linux 8&#8217;s <code>powertools</code> repository.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -719,22 +742,23 @@ in Rocky Linux 8&#8217;s <code>powertools</code> repository.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Use <code>--disablerepo</code> when a configured repository is not relevant for the
-current operation or is causing metadata, GPG, or network delays. Multiple
-repositories can be disabled in the same command.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nt">--disablerepo</span><span class="o">=</span>task-task <span class="nb">install</span> <span class="nt">-y</span> doxygen</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The EPEL repository contains many useful packages like <code>hiredis-devel</code> or
+<p>The EPEL repository contains many useful packages such as <code>hiredis-devel</code> or
 <code>ShellCheck</code>. Make the repository available by installing <code>epel-release</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nb">install</span> <span class="nt">-y</span> epel-release</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use <code>--disablerepo</code> when a configured repository is not relevant to the
+current operation or is causing metadata, GPG verification or network
+problems. The switch accepts globs, so <code>--disablerepo='epel*'</code> can disable
+multiple matching repositories.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nt">--disablerepo</span><span class="o">=</span><span class="s1">'epel*'</span> <span class="nb">install</span> <span class="nt">-y</span> postgresql-server</code></pre>
 </div>
 </div>
 </div>
@@ -757,8 +781,8 @@ repositories can be disabled in the same command.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>To see every configured repository. This is useful before deciding whether
-<code>--enablerepo</code> is needed.</p>
+<p>Use the following command to see every configured repository. This is useful
+before deciding whether <code>--enablerepo</code> is needed.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -785,15 +809,15 @@ packages:</p>
 <div class="title">Note</div>
 </td>
 <td class="content">
-Merely running <code>dnf list</code> is likely to produce a large output listing
-all packages available from all repositories and also all packages installed
-on the system.
+Merely running <code>dnf list</code> is likely to produce a long list of all
+packages available from repositories and all packages installed on the system.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Add <code>--enablerepo</code> when the package may live in a disabled repository.</p>
+<p>Add <code>--enablerepo</code> when the package may be available from a disabled
+repository.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -801,7 +825,7 @@ on the system.
 </div>
 </div>
 <div class="paragraph">
-<p>Quoted wildcards can be used with to limit results to matching package names:</p>
+<p>Quoted wildcards can be used to limit results to matching package names:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -810,53 +834,34 @@ on the system.
 </div>
 </div>
 <div class="sect2">
-<h3 id="_searching_packages">Searching Packages</h3>
+<h3 id="_changing_configuration">Changing Configuration</h3>
 <div class="paragraph">
-<p>Use <code>dnf search</code> when you the package name partly. The <code>-q</code> switch reduces
-extra output so the result is easier to scan. A good thing is that the search
-is case insensitive.</p>
+<p>Make the <code>config-manager</code> command available by installing <code>dnf-plugins-core</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf search <span class="nt">-q</span> shellcheck zeromq uriparser hiredis luajit dpdk</code></pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nb">install</span> <span class="nt">-y</span> dnf-plugins-core</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Use <code>dnf provides</code> when you know the file that the build needs, such as a
-header, binary, shared library or pkg-config file, but not the package that
-provides it.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf provides <span class="s1">'*/yaml-0.1.pc'</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Use <code>dnf makecache</code> after adding or changing repository files so that metadata
-is fetched before package installation begins. This can separate repository
-problems from package dependency problems.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf makecache</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Use <code>dnf config-manager --set-enabled</code> after installing <code>dnf-plugins-core</code>
-when you want to enable a repository persistently instead of passing
-<code>--enablerepo</code> on every command.</p>
+<p>Permanently enable the <code>powertools</code> repository:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf config-manager <span class="nt">--set-enabled</span> powertools</code></pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_refreshing_repository_metadata">Refreshing Repository Metadata</h3>
 <div class="paragraph">
-<p>If the <code>config-manager</code> command is not available then install it by running:</p>
+<p>After adding or changing repository files, use <code>dnf makecache</code> to fetch
+metadata and identify repository problems before attempting package
+installation.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dnf <span class="nb">install</span> <span class="nt">-y</span> dnf-plugins-core</code></pre>
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf makecache</code></pre>
 </div>
 </div>
 </div>
@@ -868,10 +873,15 @@ when you want to enable a repository persistently instead of passing
 <div class="ulist">
 <ul>
 <li>
+<p><a href="https://fedoraproject.org/wiki/F22_release_announcement">Fedora 22 Release
+Announcement</a></p>
+</li>
+<li>
 <p><a href="https://dnf.readthedocs.io/en/latest/command_ref.html">DNF Command Reference</a></p>
 </li>
 <li>
-<p><a href="https://dnf.readthedocs.io/en/latest/conf_ref.html">DNF Configuration Reference</a></p>
+<p><a href="https://dnf.readthedocs.io/en/latest/conf_ref.html">DNF Configuration
+Reference</a></p>
 </li>
 </ul>
 </div>
@@ -880,7 +890,7 @@ when you want to enable a repository persistently instead of passing
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-09-05 17:33:46 +0530
+Last updated 2026-09-11 00:29:00 +0530
 </div>
 </div>
 </body>

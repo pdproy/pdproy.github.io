@@ -2,62 +2,79 @@
 Pradeep Roy
 :source-highlighter: rouge
 :source-language: console
-:f22announcewiki: https://fedoraproject.org/wiki/F22_release_announcement
 :f22announcemagazine: https://fedoramagazine.org/fedora-22-released/
 
 == Motivation
 
-Dandified Yum or DNF became the default package manager in Fedora 22
-({f22announcemagazine}[announce]). I have an experience with Yum having worked
-on applications on CentOS 6/7. Now in 2026, the RHEL-family systems that I
-come across use DNF only. The idea behind this document is to collect useful
-DNF commands and make them easily accessible.
+Dandified Yum, or DNF, became the default package manager in Fedora 22
+({f22announcemagazine}[announce]). I have experience with Yum from working on
+applications on CentOS 6 and 7. Now, in 2026, the RHEL-family systems I
+encounter use DNF rather than Yum. The idea behind this document is to
+collect useful DNF commands and make them easily accessible.
 
 == Platform
 
-The commands in this document were tried inside a Rocky Linux 8 container.
+The commands in this document were tested in a Rocky Linux 8 container.
 
 == Terminology
 
-Whenever we mention the term "repository" with respect to a DNF operation
-(e.g. listing, searching), assume that it is an *enabled* repository. Disabled
-repositories don't participate unless explicit command-line switches are used.
-We choose this style to avoid making the text heavy by repeated qualification
-with the term "enabled".
+In this document, the term "repository" means an enabled repository unless
+stated otherwise. Disabled repositories don't participate unless explicit
+command-line switches are used. This convention avoids repeatedly qualifying
+"repository" with "enabled".
 
 == Examples
 
+=== Searching Packages
+
+Perhaps the first thing one wants to do is search for a package without
+knowing its exact name. The following example searches for package names and
+summaries that contain both `postgresql` and `server`:
+
+----
+$ dnf search postgresql server
+----
+
+To find which package provides a particular file, use the `whatprovides`
+command.
+
+----
+$ dnf whatprovides '*/yaml-0.1.pc'
+----
+
 === Installing Packages
 
-Use `dnf install` to install a package along with its dependencies.  The `-y`
-switch answers yes to prompts, which is useful in Dockerfiles and repeatable
-setup scripts.
+When the name of a package is known, use `dnf install` to install it.
+
+The `-y` switch automatically answers yes to confirmation prompts, which is
+useful in Dockerfiles and scripts.
 
 ----
-$ sudo dnf install -y libtool
+$ sudo dnf install -y postgresql-server
 ----
 
-Use `--enablerepo` when a package is available in a repository that exists on
-the system but is disabled by default. This is common for development packages
-in Rocky Linux 8's `powertools` repository.
+Use `--enablerepo` when a package is available from a repository that is
+configured on the system but disabled by default. This is common for
+development packages in Rocky Linux 8's `powertools` repository.
 
 ----
 $ sudo dnf --enablerepo=powertools install -y autoconf-archive
 ----
 
-Use `--disablerepo` when a configured repository is not relevant for the
-current operation or is causing metadata, GPG, or network delays. Multiple
-repositories can be disabled in the same command.
-
-----
-$ sudo dnf --disablerepo=task-task install -y doxygen
-----
-
-The EPEL repository contains many useful packages like `hiredis-devel` or
+The EPEL repository contains many useful packages such as `hiredis-devel` or
 `ShellCheck`. Make the repository available by installing `epel-release`:
 
 ----
 $ sudo dnf install -y epel-release
+----
+
+Use `--disablerepo` when a configured repository is not relevant to the
+current operation or is causing metadata, GPG verification or network
+problems. The switch accepts globs, so `--disablerepo='epel*'` can disable
+multiple matching repositories.
+
+----
+$ sudo dnf --disablerepo='epel*' install -y postgresql-server
 ----
 
 === Listing Repositories
@@ -74,8 +91,8 @@ To list disabled repositories:
 $ dnf repolist --disabled
 ----
 
-To see every configured repository. This is useful before deciding whether
-`--enablerepo` is needed.
+Use the following command to see every configured repository. This is useful
+before deciding whether `--enablerepo` is needed.
 
 ----
 $ dnf repolist --all
@@ -91,63 +108,50 @@ packages:
 $ dnf list --installed
 ----
 
-NOTE: Merely running `dnf list` is likely to produce a large output listing
-all packages available from all repositories and also all packages installed
-on the system.
+NOTE: Merely running `dnf list` is likely to produce a long list of all
+packages available from repositories and all packages installed on the system.
 
-Add `--enablerepo` when the package may live in a disabled repository.
+Add `--enablerepo` when the package may be available from a disabled
+repository.
 
 ----
 $ dnf --enablerepo=powertools list autoconf-archive doxygen
 ----
 
-Quoted wildcards can be used with to limit results to matching package names:
+Quoted wildcards can be used to limit results to matching package names:
 
 ----
 $ dnf --enablerepo=powertools list '*dpdk*' '*hiredis*' '*luajit*'
 ----
 
-=== Searching Packages
+=== Changing Configuration
 
-Use `dnf search` when you the package name partly. The `-q` switch reduces
-extra output so the result is easier to scan. A good thing is that the search
-is case insensitive.
+Make the `config-manager` command available by installing `dnf-plugins-core`:
 
 ----
-$ dnf search -q shellcheck zeromq uriparser hiredis luajit dpdk
+$ sudo dnf install -y dnf-plugins-core
 ----
 
-Use `dnf provides` when you know the file that the build needs, such as a
-header, binary, shared library or pkg-config file, but not the package that
-provides it.
-
-----
-$ dnf provides '*/yaml-0.1.pc'
-----
-
-Use `dnf makecache` after adding or changing repository files so that metadata
-is fetched before package installation begins. This can separate repository
-problems from package dependency problems.
-
-----
-$ sudo dnf makecache
-----
-
-Use `dnf config-manager --set-enabled` after installing `dnf-plugins-core`
-when you want to enable a repository persistently instead of passing
-`--enablerepo` on every command.
+Permanently enable the `powertools` repository:
 
 ----
 $ sudo dnf config-manager --set-enabled powertools
 ----
 
-If the `config-manager` command is not available then install it by running:
+=== Refreshing Repository Metadata
+
+After adding or changing repository files, use `dnf makecache` to fetch
+metadata and identify repository problems before attempting package
+installation.
 
 ----
-$ dnf install -y dnf-plugins-core
+$ sudo dnf makecache
 ----
 
 == Further Reading
 
+- https://fedoraproject.org/wiki/F22_release_announcement[Fedora 22 Release
+  Announcement]
 - https://dnf.readthedocs.io/en/latest/command_ref.html[DNF Command Reference]
-- https://dnf.readthedocs.io/en/latest/conf_ref.html[DNF Configuration Reference]
+- https://dnf.readthedocs.io/en/latest/conf_ref.html[DNF Configuration
+  Reference]

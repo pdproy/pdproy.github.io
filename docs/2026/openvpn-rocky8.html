@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
 <meta name="author" content="Pradeep Roy">
-<title>Circuit Breaker</title>
+<title>Configuring OpenVPN on Rocky Linux 8</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/pages-themes/minimal@latest/assets/css/style.css">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,136 +436,601 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge .cm {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cp {
+  color: #999999;
+  font-weight: bold;
+}
+pre.rouge .c1 {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cs {
+  color: #999999;
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .err {
+  color: #a61717;
+  background-color: #e3d2d2;
+}
+pre.rouge .gd {
+  color: #000000;
+  background-color: #ffdddd;
+}
+pre.rouge .ge {
+  color: #000000;
+  font-style: italic;
+}
+pre.rouge .gr {
+  color: #aa0000;
+}
+pre.rouge .gh {
+  color: #999999;
+}
+pre.rouge .gi {
+  color: #000000;
+  background-color: #ddffdd;
+}
+pre.rouge .go {
+  color: #888888;
+}
+pre.rouge .gp {
+  color: #555555;
+}
+pre.rouge .gs {
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #aaaaaa;
+}
+pre.rouge .gt {
+  color: #aa0000;
+}
+pre.rouge .kc {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kd {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kn {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kp {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kr {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kt {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .k, pre.rouge .kv {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .mf {
+  color: #009999;
+}
+pre.rouge .mh {
+  color: #009999;
+}
+pre.rouge .il {
+  color: #009999;
+}
+pre.rouge .mi {
+  color: #009999;
+}
+pre.rouge .mo {
+  color: #009999;
+}
+pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
+  color: #009999;
+}
+pre.rouge .sa {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .sb {
+  color: #d14;
+}
+pre.rouge .sc {
+  color: #d14;
+}
+pre.rouge .sd {
+  color: #d14;
+}
+pre.rouge .s2 {
+  color: #d14;
+}
+pre.rouge .se {
+  color: #d14;
+}
+pre.rouge .sh {
+  color: #d14;
+}
+pre.rouge .si {
+  color: #d14;
+}
+pre.rouge .sx {
+  color: #d14;
+}
+pre.rouge .sr {
+  color: #009926;
+}
+pre.rouge .s1 {
+  color: #d14;
+}
+pre.rouge .ss {
+  color: #990073;
+}
+pre.rouge .s, pre.rouge .dl {
+  color: #d14;
+}
+pre.rouge .na {
+  color: #008080;
+}
+pre.rouge .bp {
+  color: #999999;
+}
+pre.rouge .nb {
+  color: #0086B3;
+}
+pre.rouge .nc {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .no {
+  color: #008080;
+}
+pre.rouge .nd {
+  color: #3c5d5d;
+  font-weight: bold;
+}
+pre.rouge .ni {
+  color: #800080;
+}
+pre.rouge .ne {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nl {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nn {
+  color: #555555;
+}
+pre.rouge .nt {
+  color: #000080;
+}
+pre.rouge .vc {
+  color: #008080;
+}
+pre.rouge .vg {
+  color: #008080;
+}
+pre.rouge .vi {
+  color: #008080;
+}
+pre.rouge .nv, pre.rouge .vm {
+  color: #008080;
+}
+pre.rouge .ow {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .o {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .w {
+  color: #bbbbbb;
+}
+pre.rouge {
+  background-color: #f8f8f8;
+}
+</style>
 <link rel="icon" href="/favicon.png" type="image/png">
 </head>
 <body class="article">
 <div id="header">
-<h1>Circuit Breaker</h1>
+<h1>Configuring OpenVPN on Rocky Linux 8</h1>
 <div class="details">
 <span id="author" class="author">Pradeep Roy</span><br>
 </div>
 </div>
 <div id="content">
-<div id="preamble">
+<div class="sect1">
+<h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The Circuit Breaker is a pattern in software to automatically avoid calls to
-a remote service (e.g. database on a different machine) for a temporary
-period of time.  Related, is a complementary pattern known as retry that
-expects success while circuit breaker anticipates failure. There are many
-articles available online that provide a good introduction. In this article I
-will share the insights that I gained while implementing it in November 2025.</p>
+<p>This guide describes the working setup for a Rocky Linux 8 VM running in
+VirtualBox on Windows 11, with SSH access from WSL. NetworkManager manages the
+VPN. The IPv4 split-tunnel configuration keeps ordinary IPv4 internet traffic
+on the VM&#8217;s normal connection while traffic for configured corporate networks
+uses OpenVPN.</p>
 </div>
 <div class="paragraph">
-<p>A circuit breaker software component sits between the core application and an
-remote service. It does not let requests pass to the remote service if it
-has reported many recent errors. It has three states:
-- <strong>Closed</strong> The circuit breaker allows requests to pass to the service.
-- <strong>Open</strong> The circuit breaker does not allow requests to pass.
-- <strong>Half Open</strong> The circuit breaker will allow a single trial request to pass.
-  If the request succeeds then it goes to closed, otherwise to open.</p>
+<p>Custard is a fictitious organization used throughout this guide to make the
+examples easier to understand. Its example OpenVPN profile is <code>custard.ovpn</code>,
+and its VPN connection is named <code>custard</code>.</p>
 </div>
 <div class="paragraph">
-<p>There are at least two config parameters that have to be supported by the
-circuit breaker:</p>
+<p>The commands use <code>custard</code> as the VPN connection name and <code>enp0s3</code> as the VM&#8217;s
+Ethernet interface. Substitute the names and addresses reported by your own
+machine. Run interactive connection commands yourself so that passwords remain
+private.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_prerequisites">Prerequisites</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Have the following available for the username/password setup described here:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Failure Threshold</strong> Number of consecutive failures that must occur for the
-circuit breaker to go from closed to open state. A value of 0 means that the
-circuit breaker feature will be disabled.</p>
+<p>An OpenVPN connection profile, usually a file with a <code>.ovpn</code> extension</p>
 </li>
 <li>
-<p><strong>Reset Timeout</strong> Amount of time the circuit breaker will remain in the open
-state before automatically transitioning to the half-open state.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Core steps:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>The circuit breaker starts in the closed state. In this state it allows
-incoming requests to go to the remote service.</p>
+<p>Your VPN username</p>
 </li>
 <li>
-<p>Errors from the remote service result in incrementing a failure count.
-Business errors are not failures. For instance, missing records or improper
-format are not errors from the circuit breaker&#8217;s perspective. I/O errors are
-the ones that need to be caught.</p>
-</li>
-<li>
-<p>The circuit breaker transitions to the open state when the failure count
-becomes more than the failure threshold. The failure count is reset to 0 on
-any successful request while in the closed state.</p>
-</li>
-<li>
-<p>It transitions to the half-open state after remaining in the open state till
-reset timeout (e.g. 5 seconds). A single trial request is allowed to pass in
-the half-open state. The result of this request determines if the circuit
-breaker will next transition to the closed or the open state.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Key considerations:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Which piece of code should be wrapped behind the circuit breaker? It can be
-all calls to an remote service or only those that are called frequently.</p>
-</li>
-<li>
-<p>Will the circuit breaker code be called concurrently? This is very likely to
-be yes, which means synchronization mechanism will be required while
-updating internal data like current state, number of failed requests.</p>
-</li>
-<li>
-<p>Avoid duplicate trial runs. If this is not done then a large number of
-requests can get fired to the remote service at the same time in the
-half-open state.</p>
-</li>
-<li>
-<p>Is it fine to fail all requests that arrive while a trial run is taking
-place? If requests wait while the trial run is taking place then they might
-get the opportunity to execute very soon if the trial run were to succeed.</p>
+<p>Your VPN password</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_further_study">Further Study</h2>
+<h2 id="_installation">Installation</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Install EPEL if it is not already enabled, then install the client and
+NetworkManager integration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nb">install </span>epel-release
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>dnf <span class="nb">install </span>openvpn NetworkManager-openvpn</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The package <code>openvpn</code> provides the VPN client, while <code>NetworkManager-openvpn</code> lets
+NetworkManager manage it, including connection profiles, routes and DNS.
+<code>nmcli</code> is NetworkManager&#8217;s command-line interface.</p>
+</div>
+<div class="paragraph">
+<p>Verify that NetworkManager is running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>systemctl is-active NetworkManager</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configuration">Configuration</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_understanding_the_profiles">Understanding the profiles</h3>
+<div class="paragraph">
+<p>An <code>.ovpn</code> file is a text connection profile. It specifies the server,
+transport, certificate verification, authentication and possibly routing or
+DNS settings. The VPN server can also supply routes and DNS settings when the
+client connects.</p>
+</div>
+<div class="paragraph">
+<p>Import each supplied file as a separate connection. Multiple files may
+represent different locations or access options; confirm their intended use
+with IT. Normally, connect to one at a time.</p>
+</div>
+<div class="paragraph">
+<p>Treat profiles as confidential. They can contain private keys or other
+credentials. In the tested setup, each profile contained configuration settings
+and a CA certificate, but no private keys or passwords. The password was
+entered interactively when connecting.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_importing_profiles">Importing profiles</h3>
+<div class="paragraph">
+<p>From the directory containing the supplied files:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nmcli connection import <span class="nb">type </span>openvpn file custard.ovpn
+<span class="gp">$</span><span class="w"> </span>nmcli connection show</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use the actual connection names printed by the import. Import each file once; repeating an import can create additional profiles.</p>
+</div>
+<div class="paragraph">
+<p>NetworkManager normally saves system profiles under <code>/etc/NetworkManager/system-connections/</code>, which is root-owned. Importing does not modify the original <code>.ovpn</code> file. Use <code>nmcli</code> to manage the imported settings.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_setting_the_vpn_username">Setting the VPN username</h3>
+<div class="paragraph">
+<p>Set the corporate VPN username explicitly:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nmcli connection modify custard vpn.user-name <span class="s1">'YOUR_VPN_USERNAME'</span>
+<span class="gp">$</span><span class="w"> </span>nmcli <span class="nt">-g</span> vpn.user-name connection show custard</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>--ask</code> prompts for secrets such as passwords; it does not necessarily prompt for the username. Without an explicit username, NetworkManager can use the user initiating the connection, which may be wrong when using <code>sudo</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_preserving_ssh_access_from_wsl">Preserving SSH access from WSL</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A VPN that becomes the default route can send SSH replies into the tunnel
+instead of back toward WSL. Keep the VirtualBox console available during
+initial testing.</p>
+</div>
+<div class="paragraph">
+<p>From an existing SSH session, inspect the peer address as seen by the VM:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$SSH_CONNECTION</span><span class="s2">"</span>
+<span class="gp">$</span><span class="w"> </span>ss <span class="nt">-tn</span> state established
+<span class="gp">$</span><span class="w"> </span>ip route</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The first field of <code>SSH_CONNECTION</code> is the SSH client&#8217;s address. In <code>ss</code>, find
+the connection whose local port is <code>22</code>. VirtualBox forwarding and Windows
+networking can make this address differ from the address shown inside WSL
+itself.</p>
+</div>
+<div class="paragraph">
+<p>In the tested setup, the VM saw the SSH peer as <code>172.18.32.1</code> and its normal
+gateway was <code>10.0.2.2</code> on <code>enp0s3</code>. Before connecting the VPN, preserve that
+return path:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>ip route replace 172.18.32.1/32 via 10.0.2.2 dev enp0s3
+<span class="gp">$</span><span class="w"> </span>ip route get 172.18.32.1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The result should show <code>via 10.0.2.2 dev enp0s3</code>, including while the VPN is
+active. Substitute your observed SSH peer and normal gateway rather than
+copying these addresses blindly.</p>
+</div>
+<div class="paragraph">
+<p>This route is temporary: it does not survive a reboot and may disappear when
+networking is reconfigured. If needed permanently, add it to the underlying
+Ethernet connection:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nmcli connection modify enp0s3 +ipv4.routes <span class="s2">"172.18.32.1/32 10.0.2.2"</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here, <code>enp0s3</code> is the NetworkManager connection name, which can differ from
+the interface name; check <code>nmcli connection show</code>. Run the persistent addition
+once. It takes effect on the next activation of that Ethernet connection; the
+temporary route covers the current session. Don&#8217;t restart the network adapter
+while connected over SSH just to apply this configuration.</p>
+</div>
+<div class="paragraph">
+<p>WSL networking addresses can change. Recheck the SSH peer if access stops
+working. With split tunneling, this explicit route is often unnecessary, but
+it also preserves access during full-tunnel testing.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_split_tunnel_access">Split tunnel access</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the tested setup, OpenVPN connected successfully, but NetworkManager made
+the VPN the default IPv4 route. DNS resolution worked while public HTTPS
+connections timed out before TLS began. A specific route preserved SSH access,
+but did not restore general internet access.</p>
+</div>
+<div class="paragraph">
+<p>The working configuration prevents the VPN from taking over the IPv4 default route:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nmcli connection modify custard ipv4.never-default <span class="nb">yes</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>NetworkManager still accepts the corporate routes supplied by the VPN server.
+Ordinary IPv4 internet traffic uses the existing Ethernet default route. This
+setting persists across reconnects and reboots.</p>
+</div>
+<div class="paragraph">
+<p>This configuration assumes split tunneling is appropriate for the corporate
+VPN. It depends on having routes for every required corporate network. In the
+tested setup, the server supplied <code>192.168.2.0/23</code>; other environments may
+require different or additional routes.</p>
+</div>
+<div class="paragraph">
+<p>The setting above changes IPv4 routing only. DNS can still be provided by the
+VPN. If IPv6 is in use, inspect its routing separately with <code>ip -6 route</code>; do
+not assume an IPv4 setting controls IPv6.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_connecting">Connecting</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Importing a profile does not by itself arrange automatic VPN connection at
+boot. Connect and enter the VPN password when prompted:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nmcli <span class="nt">--ask</span> connection up custard</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The sudo password prompt, if shown, is for your local Linux account. The VPN
+password prompt is for your corporate VPN account.</p>
+</div>
+<div class="paragraph">
+<p>If the VPN was already active when you changed its settings, reconnect to
+apply them:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nmcli connection down custard
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nmcli <span class="nt">--ask</span> connection up custard</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_disconnecting">Disconnecting</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To disconnect after work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nmcli connection down custard</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_verification">Verification</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>With the VPN connected, check its state and routing:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>nmcli connection show <span class="nt">--active</span>
+<span class="gp">$</span><span class="w"> </span>ip route
+<span class="gp">$</span><span class="w"> </span>ip route get 1.1.1.1
+<span class="gp">$</span><span class="w"> </span>ip route get 192.168.2.1
+<span class="gp">$</span><span class="w"> </span>ip route get 172.18.32.1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For the tested setup:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://go.dev/blog/go1.13-errors">Working with Errors in Go 1.13</a>, Damien
-Neil and Jonathan Amsterdam, 2019</p>
+<p><code>custard</code> appears as active.</p>
 </li>
 <li>
-<p><a href="https://go.dev/blog/errors-are-values">Errors are values</a>, Rob Pike, 2015</p>
+<p>The public address <code>1.1.1.1</code> uses <code>enp0s3</code> through <code>10.0.2.2</code>.</p>
 </li>
 <li>
-<p><a href="https://martinfowler.com/bliki/CircuitBreaker.html">Circuit Breaker</a>, Martin
-Fowler, 2014</p>
+<p>The corporate address <code>192.168.2.1</code> uses the VPN tunnel, normally <code>tun0</code>.</p>
 </li>
 <li>
-<p><a href="https://github.com/Shopify/toxiproxy">toxiproxy</a>: A TCP proxy to simulate
-network and system conditions for chaos and resiliency testing</p>
+<p>The SSH peer <code>172.18.32.1</code> uses <code>enp0s3</code> through <code>10.0.2.2</code>.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>Route lookups show the selected path, not whether a destination is reachable.
+Test actual public HTTPS access:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-4</span> <span class="nt">-I</span> <span class="nt">--connect-timeout</span> 10 <span class="nt">--max-time</span> 20 https://example.com</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then resolve and access a known corporate service, substituting its real hostname:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>getent hosts internal.example
+<span class="gp">$</span><span class="w"> </span>curl <span class="nt">-I</span> <span class="nt">--connect-timeout</span> 10 <span class="nt">--max-time</span> 20 https://internal.example</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An HTTP response demonstrates connectivity, but an authentication or
+permission error does not establish application access. Successfully using the
+internal application is the final check.</p>
+</div>
+<div class="paragraph">
+<p>DNS resolution alone does not prove internet connectivity. Likewise,
+unanswered ping is inconclusive because networks can block ICMP while allowing
+HTTPS.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_reverting_routing_changes">Reverting Routing Changes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To allow the VPN to become the IPv4 default route again:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nmcli connection modify custard ipv4.never-default no</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Reconnect the VPN to apply the change.</p>
+</div>
+<div class="paragraph">
+<p>If you added the persistent WSL route and no longer need it, remove that exact entry:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nmcli connection modify enp0s3 <span class="nt">-ipv4</span>.routes <span class="s2">"172.18.32.1/32 10.0.2.2"</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To remove the corresponding live route, use the VirtualBox console if SSH depends on it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>ip route del 172.18.32.1/32 via 10.0.2.2 dev enp0s3</code></pre>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-09-11 00:29:44 +0530
+Last updated 2026-09-24 15:58:02 +0530
 </div>
 </div>
 </body>

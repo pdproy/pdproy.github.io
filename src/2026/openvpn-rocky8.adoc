@@ -1,0 +1,258 @@
+= Configuring OpenVPN on Rocky Linux 8
+Pradeep Roy
+:source-highlighter: rouge
+:source-language: console
+
+== Overview
+
+This guide describes the working setup for a Rocky Linux 8 VM running in
+VirtualBox on Windows 11, with SSH access from WSL. NetworkManager manages the
+VPN. The IPv4 split-tunnel configuration keeps ordinary IPv4 internet traffic
+on the VM's normal connection while traffic for configured corporate networks
+uses OpenVPN.
+
+Custard is a fictitious organization used throughout this guide to make the
+examples easier to understand. Its example OpenVPN profile is `custard.ovpn`,
+and its VPN connection is named `custard`.
+
+The commands use `custard` as the VPN connection name and `enp0s3` as the VM's
+Ethernet interface. Substitute the names and addresses reported by your own
+machine. Run interactive connection commands yourself so that passwords remain
+private.
+
+== Prerequisites
+
+Have the following available for the username/password setup described here:
+
+- An OpenVPN connection profile, usually a file with a `.ovpn` extension
+- Your VPN username
+- Your VPN password
+
+== Installation
+
+Install EPEL if it is not already enabled, then install the client and
+NetworkManager integration:
+
+----
+$ sudo dnf install epel-release
+$ sudo dnf install openvpn NetworkManager-openvpn
+----
+
+The package `openvpn` provides the VPN client, while `NetworkManager-openvpn` lets
+NetworkManager manage it, including connection profiles, routes and DNS.
+`nmcli` is NetworkManager's command-line interface.
+
+Verify that NetworkManager is running:
+
+----
+$ systemctl is-active NetworkManager
+----
+
+== Configuration
+
+=== Understanding the profiles
+
+An `.ovpn` file is a text connection profile. It specifies the server,
+transport, certificate verification, authentication and possibly routing or
+DNS settings. The VPN server can also supply routes and DNS settings when the
+client connects.
+
+Import each supplied file as a separate connection. Multiple files may
+represent different locations or access options; confirm their intended use
+with IT. Normally, connect to one at a time.
+
+Treat profiles as confidential. They can contain private keys or other
+credentials. In the tested setup, each profile contained configuration settings
+and a CA certificate, but no private keys or passwords. The password was
+entered interactively when connecting.
+
+=== Importing profiles
+
+From the directory containing the supplied files:
+
+----
+$ sudo nmcli connection import type openvpn file custard.ovpn
+$ nmcli connection show
+----
+
+Use the actual connection names printed by the import. Import each file once; repeating an import can create additional profiles.
+
+NetworkManager normally saves system profiles under `/etc/NetworkManager/system-connections/`, which is root-owned. Importing does not modify the original `.ovpn` file. Use `nmcli` to manage the imported settings.
+
+=== Setting the VPN username
+
+Set the corporate VPN username explicitly:
+
+----
+$ sudo nmcli connection modify custard vpn.user-name 'YOUR_VPN_USERNAME'
+$ nmcli -g vpn.user-name connection show custard
+----
+
+`--ask` prompts for secrets such as passwords; it does not necessarily prompt for the username. Without an explicit username, NetworkManager can use the user initiating the connection, which may be wrong when using `sudo`.
+
+== Preserving SSH access from WSL
+
+A VPN that becomes the default route can send SSH replies into the tunnel
+instead of back toward WSL. Keep the VirtualBox console available during
+initial testing.
+
+From an existing SSH session, inspect the peer address as seen by the VM:
+
+----
+$ echo "$SSH_CONNECTION"
+$ ss -tn state established
+$ ip route
+----
+
+The first field of `SSH_CONNECTION` is the SSH client's address. In `ss`, find
+the connection whose local port is `22`. VirtualBox forwarding and Windows
+networking can make this address differ from the address shown inside WSL
+itself.
+
+In the tested setup, the VM saw the SSH peer as `172.18.32.1` and its normal
+gateway was `10.0.2.2` on `enp0s3`. Before connecting the VPN, preserve that
+return path:
+
+----
+$ sudo ip route replace 172.18.32.1/32 via 10.0.2.2 dev enp0s3
+$ ip route get 172.18.32.1
+----
+
+The result should show `via 10.0.2.2 dev enp0s3`, including while the VPN is
+active. Substitute your observed SSH peer and normal gateway rather than
+copying these addresses blindly.
+
+This route is temporary: it does not survive a reboot and may disappear when
+networking is reconfigured. If needed permanently, add it to the underlying
+Ethernet connection:
+
+----
+$ sudo nmcli connection modify enp0s3 +ipv4.routes "172.18.32.1/32 10.0.2.2"
+----
+
+Here, `enp0s3` is the NetworkManager connection name, which can differ from
+the interface name; check `nmcli connection show`. Run the persistent addition
+once. It takes effect on the next activation of that Ethernet connection; the
+temporary route covers the current session. Don't restart the network adapter
+while connected over SSH just to apply this configuration.
+
+WSL networking addresses can change. Recheck the SSH peer if access stops
+working. With split tunneling, this explicit route is often unnecessary, but
+it also preserves access during full-tunnel testing.
+
+== Split tunnel access
+
+In the tested setup, OpenVPN connected successfully, but NetworkManager made
+the VPN the default IPv4 route. DNS resolution worked while public HTTPS
+connections timed out before TLS began. A specific route preserved SSH access,
+but did not restore general internet access.
+
+The working configuration prevents the VPN from taking over the IPv4 default route:
+
+----
+$ sudo nmcli connection modify custard ipv4.never-default yes
+----
+
+NetworkManager still accepts the corporate routes supplied by the VPN server.
+Ordinary IPv4 internet traffic uses the existing Ethernet default route. This
+setting persists across reconnects and reboots.
+
+This configuration assumes split tunneling is appropriate for the corporate
+VPN. It depends on having routes for every required corporate network. In the
+tested setup, the server supplied `192.168.2.0/23`; other environments may
+require different or additional routes.
+
+The setting above changes IPv4 routing only. DNS can still be provided by the
+VPN. If IPv6 is in use, inspect its routing separately with `ip -6 route`; do
+not assume an IPv4 setting controls IPv6.
+
+== Connecting
+
+Importing a profile does not by itself arrange automatic VPN connection at
+boot. Connect and enter the VPN password when prompted:
+
+----
+$ sudo nmcli --ask connection up custard
+----
+
+The sudo password prompt, if shown, is for your local Linux account. The VPN
+password prompt is for your corporate VPN account.
+
+If the VPN was already active when you changed its settings, reconnect to
+apply them:
+
+----
+$ sudo nmcli connection down custard
+$ sudo nmcli --ask connection up custard
+----
+
+== Disconnecting
+
+To disconnect after work:
+
+----
+$ sudo nmcli connection down custard
+----
+
+== Verification
+
+With the VPN connected, check its state and routing:
+
+----
+$ nmcli connection show --active
+$ ip route
+$ ip route get 1.1.1.1
+$ ip route get 192.168.2.1
+$ ip route get 172.18.32.1
+----
+
+For the tested setup:
+
+- `custard` appears as active.
+- The public address `1.1.1.1` uses `enp0s3` through `10.0.2.2`.
+- The corporate address `192.168.2.1` uses the VPN tunnel, normally `tun0`.
+- The SSH peer `172.18.32.1` uses `enp0s3` through `10.0.2.2`.
+
+Route lookups show the selected path, not whether a destination is reachable.
+Test actual public HTTPS access:
+
+----
+$ curl -4 -I --connect-timeout 10 --max-time 20 https://example.com
+----
+
+Then resolve and access a known corporate service, substituting its real hostname:
+
+----
+$ getent hosts internal.example
+$ curl -I --connect-timeout 10 --max-time 20 https://internal.example
+----
+
+An HTTP response demonstrates connectivity, but an authentication or
+permission error does not establish application access. Successfully using the
+internal application is the final check.
+
+DNS resolution alone does not prove internet connectivity. Likewise,
+unanswered ping is inconclusive because networks can block ICMP while allowing
+HTTPS.
+
+== Reverting Routing Changes
+
+To allow the VPN to become the IPv4 default route again:
+
+----
+$ sudo nmcli connection modify custard ipv4.never-default no
+----
+
+Reconnect the VPN to apply the change.
+
+If you added the persistent WSL route and no longer need it, remove that exact entry:
+
+----
+$ sudo nmcli connection modify enp0s3 -ipv4.routes "172.18.32.1/32 10.0.2.2"
+----
+
+To remove the corresponding live route, use the VirtualBox console if SSH depends on it:
+
+----
+$ sudo ip route del 172.18.32.1/32 via 10.0.2.2 dev enp0s3
+----

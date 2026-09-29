@@ -7,7 +7,7 @@ Pradeep Roy
 
 This guide describes the working setup for a Rocky Linux 8 VM running in
 VirtualBox on Windows 11, with SSH access from WSL. NetworkManager manages the
-VPN. The IPv4 split-tunnel configuration keeps ordinary IPv4 internet traffic
+VPN. The selective VPN routing configuration keeps ordinary IPv4 internet traffic
 on the VM's normal connection while traffic for configured corporate networks
 uses OpenVPN.
 
@@ -50,16 +50,11 @@ $ systemctl is-active NetworkManager
 
 == Configuration
 
-=== Understanding the profiles
+=== Connection Profiles
 
-An `.ovpn` file is a text connection profile. It specifies the server,
-transport, certificate verification, authentication and possibly routing or
-DNS settings. The VPN server can also supply routes and DNS settings when the
-client connects.
-
-Import each supplied file as a separate connection. Multiple files may
-represent different locations or access options; confirm their intended use
-with IT. Normally, connect to one at a time.
+Connection profiles (.ovpn text files) contain the directives, parameters, and
+certificates required to establish the client-server VPN connection. These are
+text files with a `.ovpn` extension.
 
 Treat profiles as confidential. They can contain private keys or other
 credentials. In the tested setup, each profile contained configuration settings
@@ -68,16 +63,20 @@ entered interactively when connecting.
 
 === Importing profiles
 
-From the directory containing the supplied files:
+From the directory containing the connection profile:
 
 ----
 $ sudo nmcli connection import type openvpn file custard.ovpn
 $ nmcli connection show
 ----
 
-Use the actual connection names printed by the import. Import each file once; repeating an import can create additional profiles.
+Use the actual connection names printed by the import. Import each file once;
+repeating an import can create additional profiles.
 
-NetworkManager normally saves system profiles under `/etc/NetworkManager/system-connections/`, which is root-owned. Importing does not modify the original `.ovpn` file. Use `nmcli` to manage the imported settings.
+NetworkManager normally saves system profiles under
+`/etc/NetworkManager/system-connections/`, which is root-owned. Importing does
+not modify the original `.ovpn` file. Use `nmcli` to manage the imported
+settings.
 
 === Setting the VPN username
 
@@ -88,7 +87,9 @@ $ sudo nmcli connection modify custard vpn.user-name 'YOUR_VPN_USERNAME'
 $ nmcli -g vpn.user-name connection show custard
 ----
 
-`--ask` prompts for secrets such as passwords; it does not necessarily prompt for the username. Without an explicit username, NetworkManager can use the user initiating the connection, which may be wrong when using `sudo`.
+`--ask` prompts for secrets such as passwords; it does not necessarily prompt
+for the username. Without an explicit username, NetworkManager can use the
+user initiating the connection, which may be wrong when using `sudo`.
 
 == Preserving SSH access from WSL
 
@@ -137,17 +138,18 @@ temporary route covers the current session. Don't restart the network adapter
 while connected over SSH just to apply this configuration.
 
 WSL networking addresses can change. Recheck the SSH peer if access stops
-working. With split tunneling, this explicit route is often unnecessary, but
-it also preserves access during full-tunnel testing.
+working. With selective VPN routing, this explicit route is often unnecessary, but
+it also preserves access when testing the VPN as the default route.
 
-== Split tunnel access
+== Selective VPN Routing
 
 In the tested setup, OpenVPN connected successfully, but NetworkManager made
 the VPN the default IPv4 route. DNS resolution worked while public HTTPS
 connections timed out before TLS began. A specific route preserved SSH access,
 but did not restore general internet access.
 
-The working configuration prevents the VPN from taking over the IPv4 default route:
+NetworkManager had to be configured to avoid setting up the default IPv4
+address through the VPN:
 
 ----
 $ sudo nmcli connection modify custard ipv4.never-default yes
@@ -157,7 +159,7 @@ NetworkManager still accepts the corporate routes supplied by the VPN server.
 Ordinary IPv4 internet traffic uses the existing Ethernet default route. This
 setting persists across reconnects and reboots.
 
-This configuration assumes split tunneling is appropriate for the corporate
+This configuration assumes selective VPN routing is appropriate for the corporate
 VPN. It depends on having routes for every required corporate network. In the
 tested setup, the server supplied `192.168.2.0/23`; other environments may
 require different or additional routes.
@@ -256,3 +258,47 @@ To remove the corresponding live route, use the VirtualBox console if SSH depend
 ----
 $ sudo ip route del 172.18.32.1/32 via 10.0.2.2 dev enp0s3
 ----
+
+== Saving Password
+
+WARNING: These steps save the password in a file on the system. They should only be
+executed when you are the sole user of the box and no one else has root access.
+
+Saving the VPN password gives a smoother experience. Ask NetworkManager to
+allow saving passwords locally:
+
+----
+$ sudo nmcli connection modify custard +vpn.data password-flags=0
+----
+
+The description of supported values for the `password-flag` key is given in
+the "Secret flags" section in the man page for `nm-settings-keyfile`. The
+value of `0` means that it is owned by NetworkManager.
+
+----
+$ sudo nmcli connection edit custard
+----
+
+At the nmcli> prompt, enter:
+
+[,text]
+----
+set vpn.secrets password=YOUR_PASSWORD
+save
+quit
+----
+
+This keeps the password out of your shell history and nmcli process arguments,
+though it will be visible as you type it in the interactive editor. 
+
+== Further Study
+
+- man 5 nm-settings
+- man 5 nm-settings-keyfile
+- https://openvpn.net/connect-docs/connection-profiles.html[OpenVPN Connection
+  Profiles]
+- https://networkmanager.dev/docs/api/latest/[NetworkManager Reference
+  Manual]
+- OpenVPN plugin keys:
+  https://github.com/NetworkManager/NetworkManager-openvpn/blob/main/shared/nm-service-defines.h[nm-service-defined.h]
+  (e.g. NM_OPENVPN_KEY_PASSWORD)

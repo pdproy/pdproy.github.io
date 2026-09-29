@@ -667,7 +667,7 @@ pre.rouge {
 <div class="paragraph">
 <p>This guide describes the working setup for a Rocky Linux 8 VM running in
 VirtualBox on Windows 11, with SSH access from WSL. NetworkManager manages the
-VPN. The IPv4 split-tunnel configuration keeps ordinary IPv4 internet traffic
+VPN. The selective VPN routing configuration keeps ordinary IPv4 internet traffic
 on the VM&#8217;s normal connection while traffic for configured corporate networks
 uses OpenVPN.</p>
 </div>
@@ -737,17 +737,11 @@ NetworkManager manage it, including connection profiles, routes and DNS.
 <h2 id="_configuration">Configuration</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_understanding_the_profiles">Understanding the profiles</h3>
+<h3 id="_connection_profiles">Connection Profiles</h3>
 <div class="paragraph">
-<p>An <code>.ovpn</code> file is a text connection profile. It specifies the server,
-transport, certificate verification, authentication and possibly routing or
-DNS settings. The VPN server can also supply routes and DNS settings when the
-client connects.</p>
-</div>
-<div class="paragraph">
-<p>Import each supplied file as a separate connection. Multiple files may
-represent different locations or access options; confirm their intended use
-with IT. Normally, connect to one at a time.</p>
+<p>Connection profiles (.ovpn text files) contain the directives, parameters, and
+certificates required to establish the client-server VPN connection. These are
+text files with a <code>.ovpn</code> extension.</p>
 </div>
 <div class="paragraph">
 <p>Treat profiles as confidential. They can contain private keys or other
@@ -759,7 +753,7 @@ entered interactively when connecting.</p>
 <div class="sect2">
 <h3 id="_importing_profiles">Importing profiles</h3>
 <div class="paragraph">
-<p>From the directory containing the supplied files:</p>
+<p>From the directory containing the connection profile:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -768,10 +762,14 @@ entered interactively when connecting.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Use the actual connection names printed by the import. Import each file once; repeating an import can create additional profiles.</p>
+<p>Use the actual connection names printed by the import. Import each file once;
+repeating an import can create additional profiles.</p>
 </div>
 <div class="paragraph">
-<p>NetworkManager normally saves system profiles under <code>/etc/NetworkManager/system-connections/</code>, which is root-owned. Importing does not modify the original <code>.ovpn</code> file. Use <code>nmcli</code> to manage the imported settings.</p>
+<p>NetworkManager normally saves system profiles under
+<code>/etc/NetworkManager/system-connections/</code>, which is root-owned. Importing does
+not modify the original <code>.ovpn</code> file. Use <code>nmcli</code> to manage the imported
+settings.</p>
 </div>
 </div>
 <div class="sect2">
@@ -786,7 +784,9 @@ entered interactively when connecting.</p>
 </div>
 </div>
 <div class="paragraph">
-<p><code>--ask</code> prompts for secrets such as passwords; it does not necessarily prompt for the username. Without an explicit username, NetworkManager can use the user initiating the connection, which may be wrong when using <code>sudo</code>.</p>
+<p><code>--ask</code> prompts for secrets such as passwords; it does not necessarily prompt
+for the username. Without an explicit username, NetworkManager can use the
+user initiating the connection, which may be wrong when using <code>sudo</code>.</p>
 </div>
 </div>
 </div>
@@ -850,13 +850,13 @@ while connected over SSH just to apply this configuration.</p>
 </div>
 <div class="paragraph">
 <p>WSL networking addresses can change. Recheck the SSH peer if access stops
-working. With split tunneling, this explicit route is often unnecessary, but
-it also preserves access during full-tunnel testing.</p>
+working. With selective VPN routing, this explicit route is often unnecessary, but
+it also preserves access when testing the VPN as the default route.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_split_tunnel_access">Split tunnel access</h2>
+<h2 id="_selective_vpn_routing">Selective VPN Routing</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>In the tested setup, OpenVPN connected successfully, but NetworkManager made
@@ -865,7 +865,8 @@ connections timed out before TLS began. A specific route preserved SSH access,
 but did not restore general internet access.</p>
 </div>
 <div class="paragraph">
-<p>The working configuration prevents the VPN from taking over the IPv4 default route:</p>
+<p>NetworkManager had to be configured to avoid setting up the default IPv4
+address through the VPN:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -878,7 +879,7 @@ Ordinary IPv4 internet traffic uses the existing Ethernet default route. This
 setting persists across reconnects and reboots.</p>
 </div>
 <div class="paragraph">
-<p>This configuration assumes split tunneling is appropriate for the corporate
+<p>This configuration assumes selective VPN routing is appropriate for the corporate
 VPN. It depends on having routes for every required corporate network. In the
 tested setup, the server supplied <code>192.168.2.0/23</code>; other environments may
 require different or additional routes.</p>
@@ -1027,10 +1028,89 @@ HTTPS.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_saving_password">Saving Password</h2>
+<div class="sectionbody">
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+These steps save the password in a file on the system. They should only be
+executed when you are the sole user of the box and no one else has root access.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Saving the VPN password gives a smoother experience. Ask NetworkManager to
+allow saving passwords locally:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nmcli connection modify custard +vpn.data password-flags<span class="o">=</span>0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The description of supported values for the <code>password-flag</code> key is given in
+the "Secret flags" section in the man page for <code>nm-settings-keyfile</code>. The
+value of <code>0</code> means that it is owned by NetworkManager.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nmcli connection edit custard</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At the nmcli&gt; prompt, enter:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">set vpn.secrets password=YOUR_PASSWORD
+save
+quit</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This keeps the password out of your shell history and nmcli process arguments,
+though it will be visible as you type it in the interactive editor.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_further_study">Further Study</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>man 5 nm-settings</p>
+</li>
+<li>
+<p>man 5 nm-settings-keyfile</p>
+</li>
+<li>
+<p><a href="https://openvpn.net/connect-docs/connection-profiles.html">OpenVPN Connection
+Profiles</a></p>
+</li>
+<li>
+<p><a href="https://networkmanager.dev/docs/api/latest/">NetworkManager Reference
+Manual</a></p>
+</li>
+<li>
+<p>OpenVPN plugin keys:
+<a href="https://github.com/NetworkManager/NetworkManager-openvpn/blob/main/shared/nm-service-defines.h">nm-service-defined.h</a>
+(e.g. NM_OPENVPN_KEY_PASSWORD)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-09-24 15:58:02 +0530
+Last updated 2026-09-30 00:12:59 +0530
 </div>
 </div>
 </body>

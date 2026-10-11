@@ -477,13 +477,13 @@ while processing their files.</p>
 realized that the code had data race issues.</p>
 </div>
 <div class="paragraph">
-<p>There were two examples. The first was a field that was found from the
-filename. Each worker stored it on the shared object. Record conversion later
-read that field. The problem was that one worker could overwrite the value
-stored by another. This was a data race: goroutines accessed the same memory
-without synchronization, and at least one access was a write. It was also a
-correctness problem. A record could receive the network type of a different
-file, depending on timing.</p>
+<p>There were two examples. The first involved a source region field derived from
+the filename. Each worker stored it on the shared object. Record conversion
+later read that field. The problem was that one worker could overwrite the
+value stored by another. This was a data race: goroutines accessed the same
+memory without synchronization, and at least one access was a write. It was
+also a correctness problem. A record could receive the source region of a
+different file, depending on timing.</p>
 </div>
 <div class="paragraph">
 <p>The second example was related to certain statistics that the program
@@ -510,7 +510,7 @@ resulting measurement meaningful.</p>
 <p>We added a test case to the harness involving two workers and two input files.
 Running the program with the Go race detector exposed the shared-state problem
 that a single-worker test could not exercise. A further case processed files
-with different network types concurrently, making it possible to check the
+with different source regions concurrently, making it possible to check the
 result as well as the concurrent access. These tests matter because a data
 race does not have to produce visibly wrong output on every run: timing may
 conceal the defect, particularly when both files happen to require the same
@@ -518,7 +518,7 @@ value.</p>
 </div>
 <div class="paragraph">
 <p>The fix was to put file-specific state with the file&#8217;s batch. A batch now
-receives its filename, derives its own network type, and keeps it for record
+receives its filename, derives its own source region, and keeps it for record
 conversion. It also owns a stats object. Lookups record their results in that
 batch&#8217;s counters; the shared reference data retains the lookup table but no
 longer owns the counters. At the end of parsing, the batch reports hits,
@@ -580,7 +580,7 @@ reliable software.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-10-11 11:04:57 +0530
+Last updated 2026-10-11 15:21:25 +0530
 </div>
 </div>
 </body>

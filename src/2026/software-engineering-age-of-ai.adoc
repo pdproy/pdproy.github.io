@@ -1,0 +1,106 @@
+= Software Engineering in the Age of AI
+
+AI assistance can enable engineers to build sophisticated systems. Verifying
+the correctness of those systems requires a different set of skills.
+
+== Case Study
+
+=== Issues
+
+Something interesting happened last week. We had a Go program running at
+a customer site for a PoC. It read CSV files, enriched fields using static
+reference data and generated JSON files. The code had been written earlier,
+before the use of AI coding assistants.
+
+Since a lot of data had to be processed, the program had the capability to
+process input files concurrently, assigning each file to a goroutine. Readers
+without a background in Go can think of a goroutine as a thread -- a function
+that can be executed simultaneously with the rest of the program. The goroutines
+shared reference data used to enrich records. This arrangement is reasonable
+for tables loaded before the beginning of processing: concurrent reads of data
+that remains unchanged do not need synchronization. The problem was that the
+same reference-data object also held values that worker goroutines modified
+while processing their files.
+
+During a troubleshooting session that also involved code inspection, I
+realized that the code had data race issues.
+
+There were two examples. The first was a field that was found from the
+filename. Each worker stored it on the shared object. Record conversion later
+read that field. The problem was that one worker could overwrite the value
+stored by another. This was a data race: goroutines accessed the same memory
+without synchronization, and at least one access was a write. It was also a
+correctness problem. A record could receive the network type of a different
+file, depending on timing.
+
+The second example was related to certain statistics that the program
+maintained. The shared reference-data object kept track of certain lookup
+attempts and successes. After finishing a file, each worker printed those
+counters and reset them. Concurrent increments, reads, and resets were
+unsynchronized, so the counters had a data race too. One worker could reset
+them while another was still accumulating results.
+
+=== Fixes
+
+After the troubleshooting session, I worked with an AI assistant on the fixes.
+
+Adding a mutex around the counters would have addressed the conflicting memory
+accesses. However, I was aware that it was more appropriate to print
+statistics per file rather than a group of files that happen to be processed
+together. Synchronization would make the operation safe without making the
+resulting measurement meaningful.
+
+We added a test case to the harness involving two workers and two input files.
+Running the program with the Go race detector exposed the shared-state problem
+that a single-worker test could not exercise. A further case processed files
+with different network types concurrently, making it possible to check the
+result as well as the concurrent access. These tests matter because a data
+race does not have to produce visibly wrong output on every run: timing may
+conceal the defect, particularly when both files happen to require the same
+value.
+
+The fix was to put file-specific state with the file's batch. A batch now
+receives its filename, derives its own network type, and keeps it for record
+conversion. It also owns a stats object. Lookups record their results in that
+batch's counters; the shared reference data retains the lookup table but no
+longer owns the counters. At the end of parsing, the batch reports hits,
+attempts, its filename, and its input record count. Maintaining counters per
+input file not only made the results easier to read but also avoided the use
+of mutex variables.
+
+== Lessons
+
+The immediate lesson from this incident concerns ownership of data under
+concurrency. Before adding synchronization to shared data, we should ask
+whether the data needs to be shared at all. In our case, separating
+file-specific state from shared reference data eliminated the races without
+introducing mutexes.
+
+The incident also illustrates why engineers still need conceptual
+understanding. The problematic mutations were not obviously unsafe when the
+functions were examined in isolation. There was no nearby syntax to indicate
+that these functions ran in goroutines. Recognizing the defects required
+understanding that these functions could execute concurrently and that the
+data they modified was shared between goroutines.
+
+Testing presents another challenge. An engineer unfamiliar with data races
+might not design tests that exercise concurrent access. Even a test suite run
+with Go's race detector cannot establish the absence of races if the relevant
+execution paths are not exercised. A program can therefore pass its tests and
+still contain defects that emerge only under production workloads.
+
+AI assistants can assist with implementation, code review, test generation, and
+defect diagnosis. In fact, an AI assistant helped implement the fixes described
+here. However, generating code and evaluating its correctness are different
+capabilities. An engineer who lacks the relevant conceptual understanding may
+not recognize what needs to be verified or whether the verification performed
+is sufficient.
+
+== Conclusion
+
+Use of AI assistants changes the manner of software development. But this does
+not eliminate the importance of engineering fundamentals. The ability to
+generate sophisticated code should not be confused with the ability to
+establish its correctness. As AI-assisted development becomes more widespread,
+retaining and developing these skills will remain essential to building
+reliable software.

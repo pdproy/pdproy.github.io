@@ -4,6 +4,8 @@
 == 2026
 
 - link:2026/Tips.adoc[Tips & Tricks]
+- link:2026/software-engineering-age-of-ai.adoc[Software Engineering in the
+  age of AI]
 - link:2026/installing-rocky-linux-8.adoc[Installing Rocky Linux 8]
 - link:2026/openvpn-rocky8.adoc[Configuring OpenVPN on Rocky Linux 8]
 - link:2026/dnf-command-cheat-sheet.adoc[DNF Command Cheat Sheet]

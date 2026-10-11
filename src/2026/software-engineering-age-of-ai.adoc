@@ -1,4 +1,5 @@
 = Software Engineering in the Age of AI
+Pradeep Roy
 
 AI assistance can enable engineers to build sophisticated systems. Verifying
 the correctness of those systems requires a different set of skills.

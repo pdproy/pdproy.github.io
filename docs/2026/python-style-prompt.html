@@ -688,6 +688,39 @@ contract that downstream code can parse.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_cli_entrypoints">CLI Entrypoints</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>argparse</code> for command-line parsing unless the project already has a
+different established parser.</p>
+</li>
+<li>
+<p>Keep parser construction in <code>build_argument_parser()</code> and parsing in
+<code>parse_args(argv: list[str])</code> so online help and parser validation can be
+tested without running application logic.</p>
+</li>
+<li>
+<p>Expose <code>main(argv: list[str]) &#8594; int</code> and call
+<code>sys.exit(main(sys.argv[1:]))</code> under the <code>if <em>name</em> == "<em>main</em>"</code>
+guard. This keeps process exit behavior at the program boundary.</p>
+</li>
+<li>
+<p>Let <code>argparse</code> own <code>-h</code>/<code>--help</code>, choices, required options, and parse
+errors. Use <code>parser.error(&#8230;&#8203;)</code> for cross-argument validation, such as an
+option that is required only for one mode.</p>
+</li>
+<li>
+<p>For an early executable stub, parse and validate the CLI first. Then print
+an explicit not-implemented message to standard error and return a non-zero
+exit code.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_logging_and_errors">Logging and Errors</h2>
 <div class="sectionbody">
 <div class="ulist">
@@ -820,7 +853,7 @@ issues and E501 line-length issues</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-10-11 15:22:07 +0530
+Last updated 2026-11-17 11:48:51 +0530
 </div>
 </div>
 </body>

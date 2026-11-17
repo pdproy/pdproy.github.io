@@ -725,6 +725,11 @@ content (such as a dataset).
 <p>Write the harness as an executable Bash script named <code>run-tests.sh</code>. Typically,
 it is run as <code>./run-tests.sh</code> from the tool&#8217;s directory.</p>
 </div>
+<div class="paragraph">
+<p>Keep a new harness standalone. Add it to <code>make check</code> or another automatic
+build or test hook only when explicitly requested; an integration harness can
+require installed components, services and substantial setup time.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_output_format">Output Format</h3>
@@ -743,10 +748,16 @@ it is run as <code>./run-tests.sh</code> from the tool&#8217;s directory.</p>
     <span class="nv">start_ms</span><span class="o">=</span><span class="si">$(</span><span class="nb">date</span> +%s%3N<span class="si">)</span>
 
     <span class="k">if</span> <span class="s2">"</span><span class="nv">$test_name</span><span class="s2">"</span><span class="p">;</span> <span class="k">then
+        </span><span class="nv">err</span><span class="o">=</span>0
+    <span class="k">else
+        </span><span class="nv">err</span><span class="o">=</span>1
+    <span class="k">fi</span>
+
+    <span class="c"># If case cleanup is needed, run it here and set err=1 on failure.</span>
+    <span class="k">if</span> <span class="o">((</span> err <span class="o">==</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
         </span><span class="nv">ok</span><span class="o">=</span><span class="s2">"[PASS]"</span>
     <span class="k">else
         </span><span class="nv">ok</span><span class="o">=</span><span class="s2">"[FAIL]"</span>
-        <span class="nv">err</span><span class="o">=</span>1
     <span class="k">fi
 
     </span><span class="nv">end_ms</span><span class="o">=</span><span class="si">$(</span><span class="nb">date</span> +%s%3N<span class="si">)</span>
@@ -766,7 +777,10 @@ it is run as <code>./run-tests.sh</code> from the tool&#8217;s directory.</p>
 <div class="sect2">
 <h3 id="_directory_layout">Directory Layout</h3>
 <div class="paragraph">
-<p>Place <code>run-tests.sh</code> beside the program or command being tested. Example:</p>
+<p>Prefer placing <code>run-tests.sh</code> beside a standalone program being tested.
+Use the repository&#8217;s established test directory when the harness tests
+multiple components or when placing it beside the program would include
+test files in the product package. Example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -774,8 +788,11 @@ it is run as <code>./run-tests.sh</code> from the tool&#8217;s directory.</p>
   run-tests.sh
   &lt;tool&gt;
   test/
+    config/
+      tool.json
     cases/
       tc01/
+        prepare_input.py
         input/
           metadata.json
           data/
@@ -815,6 +832,15 @@ golden output unless the test is specifically about those values.</p>
 </div>
 </div>
 <div class="sect2">
+<h3 id="_configuration">Configuration</h3>
+<div class="paragraph">
+<p>Keep minimal original configuration files under <code>test/config</code>. Write runtime
+copies with case-specific paths under <code>test/output/tcNN</code>; do not modify the
+originals or installed configuration. Preserve defaults intentionally when
+those defaults are part of the test.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_git_hygiene">Git Hygiene</h3>
 <div class="paragraph">
 <p>Commit fixtures, golden output and <code>run-tests.sh</code>. Do not commit generated
@@ -851,6 +877,20 @@ computed test names.</p>
 <li>
 <p>Use ASCII in fixtures and scripts unless the test specifically needs
 non-ASCII input.</p>
+</li>
+<li>
+<p>Keep substantial Python preparation and verification code in named <code>.py</code>
+files rather than shell here-documents. Put case-specific scripts directly
+under <code>test/cases/tcNN</code>, beside <code>input</code> and <code>expected</code>. Move shared scripts
+to the harness directory when multiple cases need them. Small import checks
+may remain inline. Invoke Python scripts with an explicit interpreter and
+clear arguments; standalone scripts do not require <code><em>init</em>.py</code>.</p>
+</li>
+<li>
+<p>Do not rely on <code>set -e</code> to propagate failures inside test functions invoked
+by <code>if</code> or <code>||</code>. Bash suppresses its normal errexit behavior in that context.
+Check each prerequisite command explicitly, for example with <code>|| return 1</code>,
+so a later successful comparison cannot hide an earlier failure.</p>
 </li>
 </ul>
 </div>
@@ -948,9 +988,15 @@ die<span class="o">()</span> <span class="o">{</span>
 <p>Do not end single-sentence log or status messages with a full stop.</p>
 </div>
 <div class="paragraph">
-<p>Add <code>check_dependencies_installed()</code> and check only dependencies that the
-harness actually needs. For a Python command-line tool, this usually includes
-<code>$PYTHON</code> and the program under test.</p>
+<p>Use <code>require_&lt;condition&gt;</code> for functions that enforce a precondition and
+exit with a diagnostic when it is not met. Examples include
+<code>require_dependencies_installed</code>, <code>require_exclusive_run</code>, and
+<code>require_no_previous_postgres</code>. Use action names such as <code>start_postgres</code>
+for resource creation.</p>
+</div>
+<div class="paragraph">
+<p>Add <code>require_dependencies_installed()</code> and check only dependencies that the
+harness actually needs.</p>
 </div>
 <div class="paragraph">
 <p>For file comparisons, use <code>diff -u</code> for single text files:</p>
@@ -968,6 +1014,74 @@ harness actually needs. For a Python command-line tool, this usually includes
 <div class="paragraph">
 <p>For directory comparisons, use <code>diff -q -r</code> only when exact recursive
 comparison is the desired contract.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_database_lifecycle_and_isolation">Database Lifecycle and Isolation</h3>
+<div class="sect3">
+<h4 id="_server_startup">Server startup</h4>
+<div class="paragraph">
+<p>Start one database server per harness run and use it for all enabled cases.
+Give it a dedicated server data directory under <code>test/output</code>, a test user
+and an explicit port. Direct the program under test and verification queries
+to this server; do not use unrelated databases or credentials.</p>
+</div>
+<div class="paragraph">
+<p>Install exit and interruption traps before starting the server. Wait for the
+server to accept connections before creating databases or applying schema
+changes. A startup failure must stop the run and identify the relevant log.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_schema_preparation_and_case_databases">Schema preparation and case databases</h4>
+<div class="paragraph">
+<p>When cases use the same schema, create a template database and prepare its
+schema once per run. For PostgreSQL, clone that template to create a fresh
+database for each case. Do not start another server or repeat schema
+preparation for every case unless that behavior is itself under test.</p>
+</div>
+<div class="paragraph">
+<p>Give each case database a name derived from its case ID, such as
+<code>harness_test_tc01</code>. Populate it with that case&#8217;s predefined data. Pass the
+same database name to the program under test and every verification query.
+A case must not read or modify another case&#8217;s database, or modify the template.
+If database creation or fixture loading fails, fail the case before executing
+the program under test.</p>
+</div>
+<div class="paragraph">
+<p>Keep the same case database for successive steps within a case, including
+retries. Start the next case with its own fresh database. This allows cases
+to run independently without inheriting rows from earlier cases.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_files_and_inspection">Files and inspection</h4>
+<div class="paragraph">
+<p>Keep generated case configuration, inputs, query results, database exports
+and logs under <code>test/output/tcNN</code>. The shared server data directory, startup
+and shutdown logs, and schema preparation log may live directly under
+<code>test/output</code>. Multiple databases can share one server data directory;
+separate case databases do not require separate servers or server data
+directories.</p>
+</div>
+<div class="paragraph">
+<p>Retain each case database after the case finishes, including on failure.
+Stopping the server must leave its data files available for inspection.
+Document the server data directory, port, database names and test user in the
+README, along with commands to restart the existing server, inspect the
+databases and stop the server again. Inspection must not require database
+initialization. The next harness run may replace the previous output and
+database files after confirming that the previous server has stopped.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_server_shutdown_and_reporting">Server shutdown and reporting</h4>
+<div class="paragraph">
+<p>Stop the server started by the harness on normal completion, test failure
+and handled interruption. Keep startup and shutdown logs for diagnosis.
+Report a shutdown failure and return a non-zero exit status; do not hide an
+earlier test failure.</p>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -1049,12 +1163,12 @@ test_example_case<span class="o">()</span> <span class="o">{</span>
     <span class="nb">local </span><span class="nv">output_root</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">OUTPUT_DIR</span><span class="k">}</span><span class="s2">/</span><span class="k">${</span><span class="nv">tc_id</span><span class="k">}</span><span class="s2">"</span>
     <span class="nb">local </span><span class="nv">actual_report</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">output_root</span><span class="k">}</span><span class="s2">/report.txt"</span>
 
-    <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="nv">$output_root</span><span class="s2">"</span>
+    <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="nv">$output_root</span><span class="s2">"</span> <span class="o">||</span> <span class="k">return </span>1
 
     <span class="s2">"</span><span class="k">${</span><span class="nv">PROG_UNDER_TEST</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span>                      <span class="se">\</span>
         <span class="nt">--metadata</span> <span class="s2">"</span><span class="nv">$metadata_path</span><span class="s2">"</span>              <span class="se">\</span>
         <span class="nt">--input</span>    <span class="s2">"</span><span class="nv">$input_dir</span><span class="s2">"</span>                  <span class="se">\</span>
-        <span class="nt">--output</span>   <span class="s2">"</span><span class="nv">$actual_report</span><span class="s2">"</span>
+        <span class="nt">--output</span>   <span class="s2">"</span><span class="nv">$actual_report</span><span class="s2">"</span> <span class="o">||</span> <span class="k">return </span>1
 
     compare_output_file <span class="s2">"</span><span class="nv">$golden_report</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$actual_report</span><span class="s2">"</span>
 <span class="o">}</span></code></pre>
@@ -1090,7 +1204,10 @@ implemented.</p>
 <div class="sect2">
 <h3 id="_main_loop">Main Loop</h3>
 <div class="paragraph">
-<p>Use this structure for <code>main()</code>:</p>
+<p>Validate test selection before dependency checks, output cleanup, or service
+startup. An empty or fully disabled test plan returns zero without disturbing
+previous output or requiring installed dependencies. Check enabled function
+names before expensive setup. Use this structure for <code>main()</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1099,38 +1216,45 @@ implemented.</p>
     <span class="nb">local </span><span class="nv">enabled</span><span class="o">=</span>0
     <span class="nb">local </span>test_name
 
-    check_dependencies_installed
-    clean_output_dirs
-
     <span class="k">if</span> <span class="o">((</span> <span class="k">${#</span><span class="nv">TESTS</span><span class="p">[@]</span><span class="k">}</span> <span class="o">==</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
         </span><span class="nb">echo</span> <span class="s2">"No regression tests defined"</span>
         <span class="nb">echo</span> <span class="s2">"Add test function names to TESTS inside </span><span class="k">${</span><span class="nv">0</span><span class="p">##*/</span><span class="k">}</span><span class="s2">"</span>
         <span class="k">return </span>0
     <span class="k">fi
 
-    </span><span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="nv">$OUTPUT_DIR</span><span class="s2">"</span>
-
-    <span class="k">for </span>test_name <span class="k">in</span> <span class="s2">"</span><span class="k">${</span><span class="nv">TESTS</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span><span class="p">;</span> <span class="k">do
+    for </span>test_name <span class="k">in</span> <span class="s2">"</span><span class="k">${</span><span class="nv">TESTS</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span><span class="p">;</span> <span class="k">do
         if</span> <span class="o">[[</span> <span class="k">${</span><span class="nv">test_name</span>::1<span class="k">}</span> <span class="o">==</span> <span class="s1">'!'</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
             continue
         fi</span>
-
         <span class="o">((</span>enabled <span class="o">=</span> enabled + 1<span class="o">))</span>
         <span class="k">if</span> <span class="o">!</span> <span class="nb">declare</span> <span class="nt">-F</span> <span class="s2">"</span><span class="nv">$test_name</span><span class="s2">"</span> <span class="o">&gt;</span>/dev/null<span class="p">;</span> <span class="k">then
             </span>error <span class="s2">"unknown test listed in TESTS: </span><span class="nv">$test_name</span><span class="s2">"</span>
             <span class="nv">err</span><span class="o">=</span>1
-            <span class="k">continue
-        fi
-
-        </span>run_test <span class="s2">"</span><span class="nv">$test_name</span><span class="s2">"</span> <span class="o">||</span> <span class="nv">err</span><span class="o">=</span>1
-    <span class="k">done
+        <span class="k">fi
+    done
 
     if</span> <span class="o">((</span> enabled <span class="o">==</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
         </span><span class="nb">echo</span> <span class="s2">"No regression tests enabled"</span>
         <span class="nb">echo</span> <span class="s2">"Delete the ! prefix from TESTS entries inside </span><span class="k">${</span><span class="nv">0</span><span class="p">##*/</span><span class="k">}</span><span class="s2"> to enable them"</span>
+        <span class="k">return </span>0
+    <span class="k">fi
+    if</span> <span class="o">((</span> err <span class="o">!=</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
+        return</span> <span class="s2">"</span><span class="nv">$err</span><span class="s2">"</span>
     <span class="k">fi
 
-    return</span> <span class="nv">$err</span>
+    </span>require_dependencies_installed
+    clean_output_dirs
+    <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="s2">"</span><span class="nv">$OUTPUT_DIR</span><span class="s2">"</span>
+    <span class="c"># Install cleanup traps and initialize any shared resources here.</span>
+
+    <span class="k">for </span>test_name <span class="k">in</span> <span class="s2">"</span><span class="k">${</span><span class="nv">TESTS</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span><span class="p">;</span> <span class="k">do
+        if</span> <span class="o">[[</span> <span class="k">${</span><span class="nv">test_name</span>::1<span class="k">}</span> <span class="o">==</span> <span class="s1">'!'</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            continue
+        fi
+        </span>run_test <span class="s2">"</span><span class="nv">$test_name</span><span class="s2">"</span> <span class="o">||</span> <span class="nv">err</span><span class="o">=</span>1
+    <span class="k">done
+
+    return</span> <span class="s2">"</span><span class="nv">$err</span><span class="s2">"</span>
 <span class="o">}</span>
 
 main <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span></code></pre>
@@ -1155,6 +1279,16 @@ project root</p>
 <p>run relevant unit tests if the program has them</p>
 </li>
 <li>
+<p>check shell syntax and run ShellCheck on changed Bash scripts</p>
+</li>
+<li>
+<p>verify that empty and fully disabled test plans skip setup and cleanup</p>
+</li>
+<li>
+<p>when testing error paths with substituted shell functions, distinguish that
+simulation from an actual service or program failure in the results</p>
+</li>
+<li>
 <p>run <code>git diff --check</code> on changed scripts, fixtures and golden output</p>
 </li>
 <li>
@@ -1168,10 +1302,33 @@ untracked or modified</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_todo">TODO</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section is about the document (and not harness).</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>I will prefer renaming <code>cases</code> to <code>golden</code>. Evaluate <code>fixtures</code> too.</p>
+</li>
+<li>
+<p>I don&#8217;t like using the term "cases" in isolation. It should always be test
+case or TC when brevity is required.</p>
+</li>
+<li>
+<p>Insert a dash in test case specific directory: <code>tc-01</code> instead of <code>tc01</code>.
+The former is more readable.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-10-11 15:22:07 +0530
+Last updated 2026-11-17 11:48:16 +0530
 </div>
 </div>
 </body>

@@ -457,7 +457,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_motivation">Motivation</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>We value ease of understanding and extensibility.</p>
+<p>We value readable code, precise names, useful tests and extensibility. small
+changes and explicit behavior.</p>
 </div>
 </div>
 </div>
@@ -520,7 +521,7 @@ bugs and incorrect reviews.</p>
 <p>Avoid the term <code>knob</code> in code, comments, docs and user-facing text.</p>
 </li>
 <li>
-<p>Use <code>setting</code> for configurable behaviour or a resolved runtime value.</p>
+<p>Use <code>setting</code> for configurable behavior or a resolved runtime value.</p>
 </li>
 <li>
 <p>Use <code>config property</code> when referring specifically to a named field in a
@@ -591,7 +592,11 @@ example, prefer <code>format*</code> for a function that returns formatted text;
 not use <code>log*</code> unless the function actually writes to a log.</p>
 </li>
 <li>
-<p>Data containers are plain structs, not deep type hierarchies.</p>
+<p>Name helper functions after the operation they perform. Do not include
+caller-specific domain terms when that meaning is not part of the helper&#8217;s
+contract. For example, if a function only checks whether a path is a
+directory, prefer a name such as <code>requireDir</code> over a name that refers to one
+particular caller&#8217;s use of that directory.</p>
 </li>
 <li>
 <p>Control flow is explicit rather than hidden behind generic frameworks. Don’t
@@ -621,6 +626,30 @@ just for style.</p>
 <li>
 <p>Order function parameters as per their relative dependence. A dependent
 parameter should come after the one that it depends upon.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_unit_tests">Unit Tests</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>For table-driven tests, name the collection of test cases <code>tests</code>.</p>
+</li>
+<li>
+<p>Name expected values with an <code>expected</code> prefix, such as <code>expectedRate</code> or
+<code>expectedError</code>, rather than <code>want</code>.</p>
+</li>
+<li>
+<p>Name the result being checked <code>actual</code> rather than <code>got</code>. Use descriptive
+names such as <code>actualError</code> when distinguishing multiple results.</p>
+</li>
+<li>
+<p>Use "actual" and "expected" in test failure and log messages. For example:
+<code>t.Fatalf("actual rate = %g, expected %g", actual, tt.expectedRate)</code>.</p>
 </li>
 </ul>
 </div>
@@ -726,41 +755,53 @@ avoidable source of confusion.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_config_validation">Config Validation</h2>
+<h2 id="_input_validation">Input Validation</h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p>Validate config values according to their documented contract. Do not
-silently coerce or rewrite config values to make them fit. A contract
-answers questions such as the following:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Is the property required or optional?</p>
-</li>
-<li>
-<p>What type should it have?</p>
-</li>
-<li>
-<p>What is the default if it is absent?</p>
-</li>
-<li>
-<p>Is the value used exactly as provided or transformed?</p>
-</li>
-<li>
-<p>If it is a path, is it relative to the current working directory, the
-config file, the project root or should be made absolute?</p>
-</li>
-<li>
-<p>What happens if the value is invalid?</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>The general orientation with respect to input validation is to do it
+appropriately, depending on the program&#8217;s purpose and the consequences of
+invalid input.</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>Prefer minimal input validation. There are two aspects related to the
+validation of input. One is to help the user. The other is to remain stable
+even in case of inappropriate input. Do focus on the latter but avoid
+validation to help users.</p>
 </li>
 <li>
-<p>Catch errors to notify the user about values that are invalid from the
-perspective of the application.</p>
+<p>Do not add input validation merely to diagnose user mistakes. For instance,
+a program might require a number of years argument. There is no need to
+check that the value is non-negative unless a negative value would
+compromise program stability.</p>
+</li>
+<li>
+<p>Before adding defensive checks, trace how the value is produced. Avoid
+repeating guarantees already established by its source or earlier
+processing. In particular, do not add NaN or infinity checks solely because
+a value has a floating-point type; identify a relevant way those values
+could arise.</p>
+</li>
+<li>
+<p>Add checks to enforce the preconditions of an operation when they are not
+already guaranteed by earlier processing.</p>
+</li>
+<li>
+<p>Add validation for input when experience has demonstrated that providing it
+correctly is difficult.</p>
+</li>
+<li>
+<p>Checks may reject input, but must not silently alter, repair, or compensate
+for it. Poor input may legitimately produce poor output. Transform input
+only when that transformation is part of the documented operation.</p>
+</li>
+<li>
+<p>For path values, let filesystem operations report failures where practical.
+Avoid pre-validating generic path strings unless the program is enforcing an
+application-specific contract. For example, checking that a path exists and
+is a directory is useful; separately rejecting an empty string may be
+unnecessary if <code>os.Stat</code> will fail naturally.</p>
 </li>
 <li>
 <p>Do not make relative paths absolute, expand <code>~</code> or normalize the value
@@ -822,7 +863,7 @@ reflection, unsafe code, build tags or exported APIs.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-10-11 15:22:07 +0530
+Last updated 2026-11-17 11:48:08 +0530
 </div>
 </div>
 </body>
